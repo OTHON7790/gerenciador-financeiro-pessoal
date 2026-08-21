@@ -51,9 +51,8 @@ export const criarCategoria = createServerFn({ method: "POST" })
 
 export const atualizarCategoria = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(
-    (input) =>
-      categoriaSchema.extend({ id: input.id }).parse(input),
+  .inputValidator((input) =>
+    categoriaSchema.extend({ id: z.string().uuid() }).parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase } = context;
