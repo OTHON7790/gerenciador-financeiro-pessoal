@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { categoriaSchema, type Categoria } from "./schemas";
 import { CATEGORIAS_PADRAO } from "./default-categorias";
