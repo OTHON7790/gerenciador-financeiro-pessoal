@@ -25,7 +25,9 @@ export function formatarData(data: string | Date): string {
 
 export function formatarMes(mes: string): string {
   // mes no formato 'YYYY-MM'
-  const [ano, mesNum] = mes.split("-").map(Number);
+  const partes = mes.split("-").map(Number);
+  const ano = partes[0] ?? new Date().getFullYear();
+  const mesNum = partes[1] ?? new Date().getMonth() + 1;
   const data = new Date(ano, mesNum - 1, 1);
   return new Intl.DateTimeFormat("pt-BR", {
     month: "long",
