@@ -43,7 +43,10 @@ function AuthPage() {
   async function entrar(e: React.FormEvent) {
     e.preventDefault();
     setCarregando("login");
-    const { error } = await supabase.auth.signInWithPassword({ email, senha });
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password: senha,
+    });
     setCarregando(null);
     if (error) {
       toast.error("Credenciais inválidas. Verifique e tente novamente.");
@@ -56,7 +59,10 @@ function AuthPage() {
   async function cadastrar(e: React.FormEvent) {
     e.preventDefault();
     setCarregando("cadastro");
-    const { data, error } = await supabase.auth.signUp({ email, senha });
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password: senha,
+    });
     setCarregando(null);
     if (error) {
       toast.error(error.message);
