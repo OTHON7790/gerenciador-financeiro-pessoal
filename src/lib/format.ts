@@ -1,0 +1,64 @@
+export function formatarMoeda(valor: number): string {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(valor);
+}
+
+export function formatarMoedaCompacta(valor: number): string {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(valor);
+}
+
+export function formatarData(data: string | Date): string {
+  const d = typeof data === "string" ? new Date(data) : data;
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(d);
+}
+
+export function formatarMes(mes: string): string {
+  // mes no formato 'YYYY-MM'
+  const [ano, mesNum] = mes.split("-").map(Number);
+  const data = new Date(ano, mesNum - 1, 1);
+  return new Intl.DateTimeFormat("pt-BR", {
+    month: "long",
+    year: "numeric",
+  }).format(data);
+}
+
+export function mesAtual(): string {
+  const agora = new Date();
+  const ano = agora.getFullYear();
+  const mes = String(agora.getMonth() + 1).padStart(2, "0");
+  return `${ano}-${mes}`;
+}
+
+export function mesesAnteriores(quantidade: number): string[] {
+  const meses: string[] = [];
+  const agora = new Date();
+  for (let i = quantidade - 1; i >= 0; i--) {
+    const d = new Date(agora.getFullYear(), agora.getMonth() - i, 1);
+    const ano = d.getFullYear();
+    const mes = String(d.getMonth() + 1).padStart(2, "0");
+    meses.push(`${ano}-${mes}`);
+  }
+  return meses;
+}
+
+export function paraFloat(valor: string): number {
+  // aceita "1.234,56" ou "1234.56"
+  const normalizado = valor
+    .replace(/\s/g, "")
+    .replace(/R\$/g, "")
+    .replace(/\.(?=\d{3}(\D|$))/g, "")
+    .replace(",", ".");
+  const n = parseFloat(normalizado);
+  return Number.isFinite(n) ? n : 0;
+}
