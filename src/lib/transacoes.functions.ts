@@ -3,19 +3,16 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { transacaoSchema, type Transacao, type TipoTransacao } from "./schemas";
 
+const filtrosSchema = z.object({
+  mes: z.string().regex(/^\d{4}-\d{2}$/).optional(),
+  tipo: z.enum(["receita", "despesa"]).optional(),
+  categoria_id: z.string().uuid().optional(),
+  limite: z.number().int().positive().max(500).optional(),
+});
+
 export const listarTransacoes = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(
-    (input) =>
-      z
-        .object({
-          mes: z.string().regex(/^\d{4}-\d{2}$/).optional(),
-          tipo: z.enum(["receita", "despesa"]).optional(),
-          categoria_id: z.string().uuid().optional(),
-          limite: z.number().int().positive().max(500).optional(),
-        })
-        .parse(input ?? {}),
-  )
+  .inputValidator((input) => filtrosSchema.parse(input ?? {}))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
     let q = supabase
@@ -25,10 +22,7 @@ export const listarTransacoes = createServerFn({ method: "GET" })
       .order("criado_em", { ascending: false });
 
     if (data.mes) {
-      q = q.gte("data", `${data.mes}-01`).lt(
-        "data",
-        proximoMes(data.mes),
-      );
+      q = q.gte("data", `${data.mes}-01`).lt("data", proximoMes(data.mes));
     }
     if (data.tipo) q = q.eq("tipo", data.tipo);
     if (data.categoria_id) q = q.eq("categoria_id", data.categoria_id);
@@ -46,7 +40,14 @@ export const criarTransacao = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { data: linha, error } = await supabase
       .from("transacoes")
-      .insert({ ...data, user_id: userId })
+      .insert({
+        descricao: data.descricao,
+        valor: data.valor,
+        tipo: data.tipo,
+        categoria_id: data.categoria_id ?? null,
+        data: data.data,
+        user_id: userId,
+      })
       .select()
       .single();
     if (error) throw new Error(error.message);
@@ -60,11 +61,16 @@ export const atualizarTransacao = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase } = context;
-    const { id, ...resto } = data;
     const { data: linha, error } = await supabase
       .from("transacoes")
-      .update(resto)
-      .eq("id", id)
+      .update({
+        descricao: data.descricao,
+        valor: data.valor,
+        tipo: data.tipo,
+        categoria_id: data.categoria_id ?? null,
+        data: data.data,
+      })
+      .eq("id", data.id)
       .select()
       .single();
     if (error) throw new Error(error.message);
@@ -115,10 +121,9 @@ export const resumoMes = createServerFn({ method: "GET" })
       receitas,
       despesas,
       saldo: receitas - despesas,
-      porCategoria: porCategoria.entries().toArray().map(([categoria_id, valor]) => ({
-        categoria_id,
-        valor,
-      })),
+      porCategoria: Array.from(porCategoria.entries()).map(
+        ([categoria_id, valor]) => ({ categoria_id, valor }),
+      ),
     };
   });
 
@@ -127,12 +132,15 @@ export const serieMensal = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
     (input) =>
-      z.object({ meses: z.array(z.string().regex(/^\d{4}-\d{2}$/)) }).parse(input),
+      z
+        .object({ meses: z.array(z.string().regex(/^\d{4}-\d{2}$/)).min(1) })
+        .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase } = context;
-    const inicio = `${data.meses[0]}-01`;
-    const fim = proximoMes(data.meses[data.meses.length - 1]);
+    const inicio = `${data.meses[0] ?? ""}-01`;
+    const ultimoMes = data.meses[data.meses.length - 1] ?? "";
+    const fim = proximoMes(ultimoMes);
     const { data: linhas, error } = await supabase
       .from("transacoes")
       .select("valor, tipo, data")
@@ -152,44 +160,46 @@ export const serieMensal = createServerFn({ method: "GET" })
       if (t.tipo === "receita") entry.receitas += Number(t.valor);
       else entry.despesas += Number(t.valor);
     }
-    return mapa.values().toArray();
+    return Array.from(mapa.values());
   });
 
-// Saldo acumulado (todas as transações até hoje) para gráfico de evolução
+// Evolução do saldo acumulado por mês
 export const evolucaoSaldo = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
     (input) =>
-      z.object({ meses: z.array(z.string().regex(/^\d{4}-\d{2}$/)) }).parse(input),
+      z
+        .object({ meses: z.array(z.string().regex(/^\d{4}-\d{2}$/)).min(1) })
+        .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase } = context;
+    const ultimoMes = data.meses[data.meses.length - 1] ?? "";
     const { data: linhas, error } = await supabase
       .from("transacoes")
       .select("valor, tipo, data")
-      .lte("data", proximoMes(data.meses[data.meses.length - 1]))
+      .lte("data", proximoMes(ultimoMes))
       .order("data", { ascending: true });
     if (error) throw new Error(error.message);
 
-    // saldo total acumulado até o final de cada mês da lista
     let acumulado = 0;
     const porMes = new Map<string, number>();
     for (const t of linhas ?? []) {
       acumulado += t.tipo === "receita" ? Number(t.valor) : -Number(t.valor);
       porMes.set(String(t.data).slice(0, 7), acumulado);
     }
-    // projecao: última chave guardada para meses sem movimento
     let ultimo = acumulado;
-    const resultado = data.meses.map((m) => {
+    return data.meses.map((m) => {
       const valor = porMes.get(m);
       if (valor !== undefined) ultimo = valor;
       return { mes: m, saldo: ultimo };
     });
-    return resultado;
   });
 
 function proximoMes(mes: string): string {
-  const [ano, mesNum] = mes.split("-").map(Number);
+  const partes = mes.split("-").map(Number);
+  const ano = partes[0] ?? new Date().getFullYear();
+  const mesNum = partes[1] ?? 1;
   const d = new Date(ano, mesNum, 1);
   const a = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
