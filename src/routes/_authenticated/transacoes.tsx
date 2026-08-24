@@ -59,12 +59,13 @@ function TransacoesPage() {
   const [busca, setBusca] = useState("");
 
   const { data: categorias } = useSuspenseQuery(categoriasQuery);
+  const filtros = {
+    mes,
+    ...(tipo !== "todas" ? { tipo } : {}),
+    ...(categoriaId !== "todas" ? { categoria_id: categoriaId } : {}),
+  };
   const { data: transacoes, isPending } = useSuspenseQuery(
-    transacoesQuery({
-      mes,
-      tipo: tipo === "todas" ? undefined : tipo,
-      categoria_id: categoriaId === "todas" ? undefined : categoriaId,
-    }),
+    transacoesQuery(filtros),
   );
 
   const queryClient = useQueryClient();
