@@ -1,286 +1,153 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect } from "react";
+import {
+  Wallet,
+  TrendingUp,
+  Tags,
+  Target,
+  PieChart,
+  ArrowRight,
+  CheckCircle2,
+} from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Minha Lista de Tarefas" },
+      { title: "Finanças Pessoal · Gerencie suas receitas e despesas" },
       {
         name: "description",
         content:
-          "Organize suas tarefas do dia a dia com filtros, contadores e um visual moderno.",
+          "Aplicativo completo de gestão financeira pessoal: transações, categorias, orçamentos e relatórios.",
       },
-      { property: "og:title", content: "Minha Lista de Tarefas" },
+      { property: "og:title", content: "Finanças Pessoal" },
       {
         property: "og:description",
         content:
-          "Organize suas tarefas do dia a dia com filtros, contadores e um visual moderno.",
+          "Gerencie receitas, despesas, orçamentos e acompanhe seus relatórios num só lugar.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: Index,
+  component: LandingPage,
 });
 
-type Tarefa = {
-  id: string;
-  texto: string;
-  concluida: boolean;
-};
-
-type Filtro = "todas" | "pendentes" | "concluidas";
-
-const STORAGE_KEY = "minha-lista-de-tarefas";
-
-function carregarTarefas(): Tarefa[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const salvo = window.localStorage.getItem(STORAGE_KEY);
-    return salvo ? (JSON.parse(salvo) as Tarefa[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-const FILTROS: { valor: Filtro; rotulo: string }[] = [
-  { valor: "todas", rotulo: "Todas" },
-  { valor: "pendentes", rotulo: "Pendentes" },
-  { valor: "concluidas", rotulo: "Concluídas" },
-];
-
-function Index() {
-  const [tarefas, setTarefas] = useState<Tarefa[]>([]);
-  const [novoTexto, setNovoTexto] = useState("");
-  const [filtro, setFiltro] = useState<Filtro>("todas");
-
+function LandingPage() {
   useEffect(() => {
-    setTarefas(carregarTarefas());
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        // pequena conveniência: se já logado, segue para o dashboard
+      }
+    });
   }, []);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tarefas));
-    }
-  }, [tarefas]);
-
-  function adicionarTarefa() {
-    const texto = novoTexto.trim();
-    if (!texto) return;
-    const nova: Tarefa = {
-      id: crypto.randomUUID(),
-      texto,
-      concluida: false,
-    };
-    setTarefas((atual) => [nova, ...atual]);
-    setNovoTexto("");
-  }
-
-  function alternarConclusao(id: string) {
-    setTarefas((atual) =>
-      atual.map((t) => (t.id === id ? { ...t, concluida: !t.concluida } : t))
-    );
-  }
-
-  function excluirTarefa(id: string) {
-    setTarefas((atual) => atual.filter((t) => t.id !== id));
-  }
-
-  function limparConcluidas() {
-    setTarefas((atual) => atual.filter((t) => !t.concluida));
-  }
-
-  const pendentes = useMemo(
-    () => tarefas.filter((t) => !t.concluida).length,
-    [tarefas]
-  );
-  const concluidas = useMemo(
-    () => tarefas.filter((t) => t.concluida).length,
-    [tarefas]
-  );
-
-  const tarefasVisiveis = useMemo(() => {
-    switch (filtro) {
-      case "pendentes":
-        return tarefas.filter((t) => !t.concluida);
-      case "concluidas":
-        return tarefas.filter((t) => t.concluida);
-      default:
-        return tarefas;
-    }
-  }, [tarefas, filtro]);
-
-  const progresso =
-    tarefas.length === 0 ? 0 : Math.round((concluidas / tarefas.length) * 100);
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 px-4 py-10 dark:from-slate-950 dark:to-slate-900 sm:py-16">
-      <div className="mx-auto w-full max-w-xl">
-        {/* Cabeçalho */}
-        <header className="mb-8 text-center">
-          <div className="mb-3 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-3xl text-primary-foreground shadow-lg shadow-primary/25">
-            ✓
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+      {/* Header */}
+      <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+            <Wallet className="h-5 w-5" />
           </div>
-          <h1 className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-4xl">
-            Minha Lista de Tarefas
-          </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {tarefas.length === 0
-              ? "Comece adicionando sua primeira tarefa."
-              : `${concluidas} de ${tarefas.length} concluídas · ${pendentes} pendente${pendentes === 1 ? "" : "s"}`}
-          </p>
-        </header>
-
-        {/* Barra de progresso */}
-        {tarefas.length > 0 && (
-          <div className="mb-6">
-            <div className="mb-1.5 flex items-center justify-between text-xs font-medium text-muted-foreground">
-              <span>Progresso geral</span>
-              <span>{progresso}%</span>
-            </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-primary to-primary/70 transition-all duration-500 ease-out"
-                style={{ width: `${progresso}%` }}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Campo de nova tarefa */}
+          <span className="text-lg font-bold">Finanças Pessoal</span>
+        </div>
         <div className="flex gap-2">
-          <input
-            type="text"
-            value={novoTexto}
-            onChange={(e) => setNovoTexto(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") adicionarTarefa();
-            }}
-            placeholder="Digite uma nova tarefa..."
-            aria-label="Nova tarefa"
-            className="flex-1 rounded-xl border border-input bg-background px-4 py-2.5 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          <Link to="/auth">
+            <Button variant="ghost">Entrar</Button>
+          </Link>
+          <Link to="/auth">
+            <Button>Começar agora</Button>
+          </Link>
+        </div>
+      </header>
+
+      {/* Hero */}
+      <section className="mx-auto max-w-6xl px-4 py-16 text-center sm:py-24">
+        <div className="mb-5 inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm">
+          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+          100% gratuito · dados protegidos
+        </div>
+        <h1 className="mx-auto max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
+          Suas finanças,{" "}
+          <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            sob controle
+          </span>
+        </h1>
+        <p className="mx-auto mt-4 max-w-xl text-base text-muted-foreground sm:text-lg">
+          Registre receitas e despesas, organize por categorias, defina
+          orçamentos mensais e acompanhe tudo em gráficos claros.
+        </p>
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <Link to="/auth">
+            <Button size="lg" className="gap-1.5">
+              Criar conta grátis
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
+          <Link to="/auth">
+            <Button size="lg" variant="outline">
+              Já tenho conta
+            </Button>
+          </Link>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="mx-auto max-w-6xl px-4 pb-20">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <Feature
+            icon={<TrendingUp className="h-5 w-5" />}
+            title="Transações"
+            desc="Registre receitas e despesas com filtros por mês, tipo e categoria."
           />
-          <button
-            onClick={adicionarTarefa}
-            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/20 transition-all hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98]"
-          >
-            <span className="text-base leading-none">+</span>
-            Adicionar
-          </button>
+          <Feature
+            icon={<Tags className="h-5 w-5" />}
+            title="Categorias"
+            desc="Organize com cores e ícones. Categorias padrão já vêm prontas."
+          />
+          <Feature
+            icon={<Target className="h-5 w-5" />}
+            title="Orçamentos"
+            desc="Defina limites de gastos e veja o progresso em tempo real."
+          />
+          <Feature
+            icon={<PieChart className="h-5 w-5" />}
+            title="Relatórios"
+            desc="Gráficos de receitas, despesas e evolução do saldo."
+          />
         </div>
+      </section>
 
-        {/* Filtros e ação de limpar */}
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-          <div className="inline-flex rounded-lg border border-border bg-background p-1 shadow-sm">
-            {FILTROS.map((f) => {
-              const ativo = filtro === f.valor;
-              const contagem =
-                f.valor === "todas"
-                  ? tarefas.length
-                  : f.valor === "pendentes"
-                    ? pendentes
-                    : concluidas;
-              return (
-                <button
-                  key={f.valor}
-                  onClick={() => setFiltro(f.valor)}
-                  className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                    ativo
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {f.rotulo}
-                  <span
-                    className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${
-                      ativo
-                        ? "bg-primary-foreground/20 text-primary-foreground"
-                        : "bg-muted text-muted-foreground"
-                    }`}
-                  >
-                    {contagem}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          {concluidas > 0 && (
-            <button
-              onClick={limparConcluidas}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-destructive/30 bg-background px-3 py-1.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <span className="leading-none">🗑</span>
-              Limpar concluídas
-              <span className="text-destructive/70">({concluidas})</span>
-            </button>
-          )}
+      <footer className="border-t bg-card/50">
+        <div className="mx-auto max-w-6xl px-4 py-6 text-center text-xs text-muted-foreground">
+          Finanças Pessoal · Feito para você gerenciar seu dinheiro com clareza.
         </div>
-
-        {/* Lista de tarefas */}
-        <ul className="mt-6 space-y-2">
-          {tarefasVisiveis.length === 0 && (
-            <li className="rounded-xl border border-dashed border-border bg-background/50 p-10 text-center">
-              <div className="mb-2 text-3xl opacity-40">
-                {filtro === "concluidas" ? "📋" : "📝"}
-              </div>
-              <p className="text-sm text-muted-foreground">
-                {filtro === "pendentes" && "Nenhuma tarefa pendente. Tudo em dia! 🎉"}
-                {filtro === "concluidas" && "Nenhuma tarefa concluída ainda."}
-                {filtro === "todas" &&
-                  "Nenhuma tarefa ainda. Adicione a primeira acima!"}
-              </p>
-            </li>
-          )}
-          {tarefasVisiveis.map((tarefa) => (
-            <li
-              key={tarefa.id}
-              className="group flex items-center gap-3 rounded-xl border border-border bg-card p-3.5 shadow-sm transition-all hover:shadow-md"
-            >
-              <button
-                onClick={() => alternarConclusao(tarefa.id)}
-                aria-label={
-                  tarefa.concluida ? "Marcar como pendente" : "Marcar como concluída"
-                }
-                title={tarefa.concluida ? "Desfazer" : "Concluir"}
-                className={`inline-flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                  tarefa.concluida
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-input bg-background text-transparent hover:border-primary"
-                }`}
-              >
-                <span className="text-xs leading-none">✓</span>
-              </button>
-              <span
-                className={`flex-1 text-sm transition-colors ${
-                  tarefa.concluida
-                    ? "text-muted-foreground line-through"
-                    : "text-foreground"
-                }`}
-              >
-                {tarefa.texto}
-              </span>
-              <button
-                onClick={() => excluirTarefa(tarefa.id)}
-                aria-label="Excluir tarefa"
-                title="Excluir"
-                className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                ✕
-              </button>
-            </li>
-          ))}
-        </ul>
-
-        {/* Rodapé */}
-        {tarefas.length > 0 && (
-          <footer className="mt-8 text-center text-xs text-muted-foreground">
-            {pendentes === 0
-              ? "Parabéns! Todas as tarefas foram concluídas. 🎉"
-              : "Dica: pressione Enter para adicionar rapidamente."}
-          </footer>
-        )}
-      </div>
+      </footer>
     </div>
+  );
+}
+
+function Feature({
+  icon,
+  title,
+  desc,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+}) {
+  return (
+    <Card>
+      <CardContent className="p-5">
+        <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+          {icon}
+        </div>
+        <h3 className="text-base font-semibold">{title}</h3>
+        <p className="mt-1 text-sm text-muted-foreground">{desc}</p>
+      </CardContent>
+    </Card>
   );
 }
