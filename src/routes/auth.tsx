@@ -2,7 +2,7 @@ import { createFileRoute, redirect, useNavigate, useSearch } from "@tanstack/rea
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Wallet, Loader2 } from "lucide-react";
+import { Wallet, Loader2, ArrowLeft, MailCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -39,6 +39,7 @@ function AuthPage() {
   const [carregando, setCarregando] = useState<null | "login" | "cadastro">(
     null,
   );
+  const [modo, setModo] = useState<"auth" | "recuperar">("auth");
 
   async function entrar(e: React.FormEvent) {
     e.preventDefault();
