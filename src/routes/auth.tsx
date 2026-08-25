@@ -92,50 +92,76 @@ function AuthPage() {
 
         <Card className="shadow-xl">
           <CardHeader>
-            <CardTitle className="text-xl">Acesse sua conta</CardTitle>
-            <CardDescription>
-              Entre para visualizar seu painel financeiro.
-            </CardDescription>
+            {modo === "recuperar" ? (
+              <>
+                <CardTitle className="text-xl">Recuperar senha</CardTitle>
+                <CardDescription>
+                  Informe seu e-mail para receber um link de redefinição.
+                </CardDescription>
+              </>
+            ) : (
+              <>
+                <CardTitle className="text-xl">Acesse sua conta</CardTitle>
+                <CardDescription>
+                  Entre para visualizar seu painel financeiro.
+                </CardDescription>
+              </>
+            )}
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="entrar">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="entrar">Entrar</TabsTrigger>
-                <TabsTrigger value="criar">Criar conta</TabsTrigger>
-              </TabsList>
-              <TabsContent value="entrar">
-                <form onSubmit={entrar} className="space-y-4">
-                  <CampoEmail email={email} setEmail={setEmail} />
-                  <CampoSenha senha={senha} setSenha={setSenha} />
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={carregando !== null}
-                  >
-                    {carregando === "login" && (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    )}
-                    Entrar
-                  </Button>
-                </form>
-              </TabsContent>
-              <TabsContent value="criar">
-                <form onSubmit={cadastrar} className="space-y-4">
-                  <CampoEmail email={email} setEmail={setEmail} />
-                  <CampoSenha senha={senha} setSenha={setSenha} />
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={carregando !== null}
-                  >
-                    {carregando === "cadastro" && (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    )}
-                    Criar conta
-                  </Button>
-                </form>
-              </TabsContent>
-            </Tabs>
+            {modo === "recuperar" ? (
+              <FormularioRecuperacao
+                email={email}
+                setEmail={setEmail}
+                onVoltar={() => setModo("auth")}
+              />
+            ) : (
+              <Tabs defaultValue="entrar">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="entrar">Entrar</TabsTrigger>
+                  <TabsTrigger value="criar">Criar conta</TabsTrigger>
+                </TabsList>
+                <TabsContent value="entrar">
+                  <form onSubmit={entrar} className="space-y-4">
+                    <CampoEmail email={email} setEmail={setEmail} />
+                    <CampoSenha senha={senha} setSenha={setSenha} />
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      disabled={carregando !== null}
+                    >
+                      {carregando === "login" && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      Entrar
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={() => setModo("recuperar")}
+                      className="w-full text-center text-sm text-muted-foreground transition-colors hover:text-foreground hover:underline"
+                    >
+                      Esqueci minha senha
+                    </button>
+                  </form>
+                </TabsContent>
+                <TabsContent value="criar">
+                  <form onSubmit={cadastrar} className="space-y-4">
+                    <CampoEmail email={email} setEmail={setEmail} />
+                    <CampoSenha senha={senha} setSenha={setSenha} />
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      disabled={carregando !== null}
+                    >
+                      {carregando === "cadastro" && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      Criar conta
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
+            )}
           </CardContent>
         </Card>
       </div>
