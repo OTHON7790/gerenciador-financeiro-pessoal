@@ -15,7 +15,17 @@ export function formatarMoedaCompacta(valor: number): string {
 }
 
 export function formatarData(data: string | Date): string {
-  const d = typeof data === "string" ? new Date(data) : data;
+  let d: Date;
+  if (typeof data === "string") {
+    // Datas no formato 'YYYY-MM-DD' devem ser interpretadas como data local,
+    // caso contrário o JS assume UTC e o fuso horário desloca um dia.
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(data.trim());
+    d = m
+      ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]))
+      : new Date(data);
+  } else {
+    d = data;
+  }
   return new Intl.DateTimeFormat("pt-BR", {
     day: "2-digit",
     month: "2-digit",
