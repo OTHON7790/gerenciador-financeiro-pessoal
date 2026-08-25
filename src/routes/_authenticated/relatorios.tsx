@@ -85,7 +85,7 @@ function RelatoriosPage() {
 
   const dadosPizza = resumo.porCategoria
     .map((g) => {
-      const cat = mapaCategorias.get(g.categoria_id);
+      const cat = g.categoria_id ? mapaCategorias.get(g.categoria_id) : undefined;
       return {
         nome: cat?.nome ?? "Sem categoria",
         valor: g.valor,
