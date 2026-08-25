@@ -49,7 +49,11 @@ export const criarCategoria = createServerFn({ method: "POST" })
       .insert({ ...data, user_id: userId })
       .select()
       .single();
-    if (error) throw new Error(error.message);
+    if (error) {
+      if (error.code === "23505")
+        throw new Error("Já existe uma categoria com esse nome.");
+      throw new Error(error.message);
+    }
     return linha as Categoria;
   });
 
