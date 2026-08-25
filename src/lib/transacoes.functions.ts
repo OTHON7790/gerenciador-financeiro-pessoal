@@ -109,12 +109,9 @@ export const resumoMes = createServerFn({ method: "GET" })
       if (t.tipo === "receita") receitas += Number(t.valor);
       else {
         despesas += Number(t.valor);
-        if (t.categoria_id) {
-          porCategoria.set(
-            t.categoria_id,
-            (porCategoria.get(t.categoria_id) ?? 0) + Number(t.valor),
-          );
-        }
+        // Despesas sem categoria entram no grupo "Sem categoria"
+        const chave = t.categoria_id ?? "__sem_categoria__";
+        porCategoria.set(chave, (porCategoria.get(chave) ?? 0) + Number(t.valor));
       }
     }
     return {
@@ -122,7 +119,11 @@ export const resumoMes = createServerFn({ method: "GET" })
       despesas,
       saldo: receitas - despesas,
       porCategoria: Array.from(porCategoria.entries()).map(
-        ([categoria_id, valor]) => ({ categoria_id, valor }),
+        ([categoria_id, valor]) => ({
+          categoria_id:
+            categoria_id === "__sem_categoria__" ? null : categoria_id,
+          valor,
+        }),
       ),
     };
   });
