@@ -18,7 +18,10 @@ export const garantirCategoriasPadrao = createServerFn({ method: "POST" })
     if ((count ?? 0) > 0) return { criadas: 0 };
 
     const linhas = CATEGORIAS_PADRAO.map((c) => ({ ...c, user_id: userId }));
-    const { error } = await supabase.from("categorias").insert(linhas);
+    // upsert idempotente: chamadas simultâneas não quebram na constraint única
+    const { error } = await supabase
+      .from("categorias")
+      .upsert(linhas, { onConflict: "user_id,nome", ignoreDuplicates: true });
     if (error) throw new Error(error.message);
     return { criadas: linhas.length };
   });
