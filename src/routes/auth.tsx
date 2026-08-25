@@ -214,6 +214,75 @@ function CampoSenha({
   );
 }
 
+function FormularioRecuperacao({
+  email,
+  setEmail,
+  onVoltar,
+}: {
+  email: string;
+  setEmail: (v: string) => void;
+  onVoltar: () => void;
+}) {
+  const [enviando, setEnviando] = useState(false);
+  const [enviado, setEnviado] = useState(false);
+
+  async function enviar(e: React.FormEvent) {
+    e.preventDefault();
+    setEnviando(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setEnviando(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setEnviado(true);
+    toast.success("Link de recuperação enviado! Verifique seu e-mail.");
+  }
+
+  if (enviado) {
+    return (
+      <div className="space-y-4 text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+          <MailCheck className="h-6 w-6 text-primary" />
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Enviamos um link de recuperação para{" "}
+          <span className="font-medium text-foreground">{email}</span>. Verifique
+          sua caixa de entrada e o spam.
+        </p>
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={onVoltar}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Voltar para o login
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={enviar} className="space-y-4">
+      <CampoEmail email={email} setEmail={setEmail} />
+      <Button type="submit" className="w-full" disabled={enviando}>
+        {enviando && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        Enviar link de recuperação
+      </Button>
+      <button
+        type="button"
+        onClick={onVoltar}
+        className="flex w-full items-center justify-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground hover:underline"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
+        Voltar para o login
+      </button>
+    </form>
+  );
+}
+
 function sanitizarDestino(raw?: string): string {
   if (!raw) return "/dashboard";
   try {
