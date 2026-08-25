@@ -66,7 +66,8 @@ function OrcamentosPage() {
 
   const gastoPorCategoria = useMemo(() => {
     const m = new Map<string, number>();
-    for (const g of resumo.porCategoria) m.set(g.categoria_id, g.valor);
+    for (const g of resumo.porCategoria)
+      if (g.categoria_id) m.set(g.categoria_id, g.valor);
     return m;
   }, [resumo]);
 
