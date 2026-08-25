@@ -18,7 +18,10 @@ export const garantirCategoriasPadrao = createServerFn({ method: "POST" })
     if ((count ?? 0) > 0) return { criadas: 0 };
 
     const linhas = CATEGORIAS_PADRAO.map((c) => ({ ...c, user_id: userId }));
-    const { error } = await supabase.from("categorias").insert(linhas);
+    // upsert idempotente: chamadas simultâneas não quebram na constraint única
+    const { error } = await supabase
+      .from("categorias")
+      .upsert(linhas, { onConflict: "user_id,nome", ignoreDuplicates: true });
     if (error) throw new Error(error.message);
     return { criadas: linhas.length };
   });
@@ -46,7 +49,11 @@ export const criarCategoria = createServerFn({ method: "POST" })
       .insert({ ...data, user_id: userId })
       .select()
       .single();
-    if (error) throw new Error(error.message);
+    if (error) {
+      if (error.code === "23505")
+        throw new Error("Já existe uma categoria com esse nome.");
+      throw new Error(error.message);
+    }
     return linha as Categoria;
   });
 
