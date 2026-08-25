@@ -2,7 +2,7 @@ import { createFileRoute, redirect, useNavigate, useSearch } from "@tanstack/rea
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Wallet, Loader2 } from "lucide-react";
+import { Wallet, Loader2, ArrowLeft, MailCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -39,6 +39,7 @@ function AuthPage() {
   const [carregando, setCarregando] = useState<null | "login" | "cadastro">(
     null,
   );
+  const [modo, setModo] = useState<"auth" | "recuperar">("auth");
 
   async function entrar(e: React.FormEvent) {
     e.preventDefault();
@@ -91,50 +92,76 @@ function AuthPage() {
 
         <Card className="shadow-xl">
           <CardHeader>
-            <CardTitle className="text-xl">Acesse sua conta</CardTitle>
-            <CardDescription>
-              Entre para visualizar seu painel financeiro.
-            </CardDescription>
+            {modo === "recuperar" ? (
+              <>
+                <CardTitle className="text-xl">Recuperar senha</CardTitle>
+                <CardDescription>
+                  Informe seu e-mail para receber um link de redefinição.
+                </CardDescription>
+              </>
+            ) : (
+              <>
+                <CardTitle className="text-xl">Acesse sua conta</CardTitle>
+                <CardDescription>
+                  Entre para visualizar seu painel financeiro.
+                </CardDescription>
+              </>
+            )}
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="entrar">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="entrar">Entrar</TabsTrigger>
-                <TabsTrigger value="criar">Criar conta</TabsTrigger>
-              </TabsList>
-              <TabsContent value="entrar">
-                <form onSubmit={entrar} className="space-y-4">
-                  <CampoEmail email={email} setEmail={setEmail} />
-                  <CampoSenha senha={senha} setSenha={setSenha} />
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={carregando !== null}
-                  >
-                    {carregando === "login" && (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    )}
-                    Entrar
-                  </Button>
-                </form>
-              </TabsContent>
-              <TabsContent value="criar">
-                <form onSubmit={cadastrar} className="space-y-4">
-                  <CampoEmail email={email} setEmail={setEmail} />
-                  <CampoSenha senha={senha} setSenha={setSenha} />
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={carregando !== null}
-                  >
-                    {carregando === "cadastro" && (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    )}
-                    Criar conta
-                  </Button>
-                </form>
-              </TabsContent>
-            </Tabs>
+            {modo === "recuperar" ? (
+              <FormularioRecuperacao
+                email={email}
+                setEmail={setEmail}
+                onVoltar={() => setModo("auth")}
+              />
+            ) : (
+              <Tabs defaultValue="entrar">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="entrar">Entrar</TabsTrigger>
+                  <TabsTrigger value="criar">Criar conta</TabsTrigger>
+                </TabsList>
+                <TabsContent value="entrar">
+                  <form onSubmit={entrar} className="space-y-4">
+                    <CampoEmail email={email} setEmail={setEmail} />
+                    <CampoSenha senha={senha} setSenha={setSenha} />
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      disabled={carregando !== null}
+                    >
+                      {carregando === "login" && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      Entrar
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={() => setModo("recuperar")}
+                      className="w-full text-center text-sm text-muted-foreground transition-colors hover:text-foreground hover:underline"
+                    >
+                      Esqueci minha senha
+                    </button>
+                  </form>
+                </TabsContent>
+                <TabsContent value="criar">
+                  <form onSubmit={cadastrar} className="space-y-4">
+                    <CampoEmail email={email} setEmail={setEmail} />
+                    <CampoSenha senha={senha} setSenha={setSenha} />
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      disabled={carregando !== null}
+                    >
+                      {carregando === "cadastro" && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      Criar conta
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -184,6 +211,75 @@ function CampoSenha({
         minLength={6}
       />
     </div>
+  );
+}
+
+function FormularioRecuperacao({
+  email,
+  setEmail,
+  onVoltar,
+}: {
+  email: string;
+  setEmail: (v: string) => void;
+  onVoltar: () => void;
+}) {
+  const [enviando, setEnviando] = useState(false);
+  const [enviado, setEnviado] = useState(false);
+
+  async function enviar(e: React.FormEvent) {
+    e.preventDefault();
+    setEnviando(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setEnviando(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setEnviado(true);
+    toast.success("Link de recuperação enviado! Verifique seu e-mail.");
+  }
+
+  if (enviado) {
+    return (
+      <div className="space-y-4 text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+          <MailCheck className="h-6 w-6 text-primary" />
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Enviamos um link de recuperação para{" "}
+          <span className="font-medium text-foreground">{email}</span>. Verifique
+          sua caixa de entrada e o spam.
+        </p>
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={onVoltar}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Voltar para o login
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={enviar} className="space-y-4">
+      <CampoEmail email={email} setEmail={setEmail} />
+      <Button type="submit" className="w-full" disabled={enviando}>
+        {enviando && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        Enviar link de recuperação
+      </Button>
+      <button
+        type="button"
+        onClick={onVoltar}
+        className="flex w-full items-center justify-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground hover:underline"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
+        Voltar para o login
+      </button>
+    </form>
   );
 }
 
