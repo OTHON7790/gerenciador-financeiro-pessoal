@@ -44,6 +44,45 @@ export type Database = {
         }
         Relationships: []
       }
+      metas: {
+        Row: {
+          atualizado_em: string
+          cor: string
+          criado_em: string
+          icone: string
+          id: string
+          nome: string
+          prazo: string | null
+          user_id: string
+          valor_acumulado: number
+          valor_alvo: number
+        }
+        Insert: {
+          atualizado_em?: string
+          cor?: string
+          criado_em?: string
+          icone?: string
+          id?: string
+          nome: string
+          prazo?: string | null
+          user_id: string
+          valor_acumulado?: number
+          valor_alvo: number
+        }
+        Update: {
+          atualizado_em?: string
+          cor?: string
+          criado_em?: string
+          icone?: string
+          id?: string
+          nome?: string
+          prazo?: string | null
+          user_id?: string
+          valor_acumulado?: number
+          valor_alvo?: number
+        }
+        Relationships: []
+      }
       orcamentos: {
         Row: {
           categoria_id: string
