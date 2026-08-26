@@ -48,8 +48,8 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
               ativo
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "text-muted-foreground hover:bg-accent hover:text-foreground",
+                ? "bg-primary text-primary-foreground shadow-soft"
+                : "text-muted-foreground hover:bg-primary-soft hover:text-accent-foreground",
             )}
           >
             <Icon className="h-4 w-4" />
@@ -64,7 +64,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 function Brand() {
   return (
     <div className="flex items-center gap-2.5">
-      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/70 text-primary-foreground shadow-soft">
         <Wallet className="h-5 w-5" />
       </div>
       <div className="leading-tight">
@@ -88,9 +88,9 @@ export function AppShell() {
   }
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="min-h-screen bg-background">
       {/* Sidebar desktop */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r bg-card px-4 py-5 lg:flex">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-border/70 bg-sidebar px-4 py-5 lg:flex">
         <Brand />
         <div className="mt-8 flex-1">
           <NavLinks />
@@ -108,7 +108,7 @@ export function AppShell() {
       {/* Conteúdo */}
       <div className="lg:pl-64">
         {/* Topbar mobile */}
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-card/80 px-4 backdrop-blur lg:hidden">
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/70 bg-sidebar/80 px-4 backdrop-blur lg:hidden">
           <Brand />
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>

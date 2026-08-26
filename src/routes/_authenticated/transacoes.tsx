@@ -201,7 +201,7 @@ function TransacoesPage() {
         <Card>
           <CardContent className="p-4">
             <p className="text-xs text-muted-foreground">Receitas</p>
-            <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+            <p className="text-xl font-bold text-success">
               {formatarMoeda(totalReceitas)}
             </p>
           </CardContent>
@@ -209,7 +209,7 @@ function TransacoesPage() {
         <Card>
           <CardContent className="p-4">
             <p className="text-xs text-muted-foreground">Despesas</p>
-            <p className="text-xl font-bold text-red-600 dark:text-red-400">
+            <p className="text-xl font-bold text-danger">
               {formatarMoeda(totalDespesas)}
             </p>
           </CardContent>
@@ -252,10 +252,10 @@ function TransacoesPage() {
                 return (
                   <li
                     key={t.id}
-                    className="group flex items-center gap-3 px-4 py-3 sm:px-6"
+                    className="group flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/50 sm:px-6"
                   >
                     <div
-                      className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg"
+                      className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl ring-1 ring-border/60"
                       style={{
                         backgroundColor: (cat?.cor ?? "#64748b") + "22",
                         color: cat?.cor ?? "#64748b",
@@ -272,8 +272,8 @@ function TransacoesPage() {
                     <span
                       className={`flex-shrink-0 text-sm font-semibold ${
                         t.tipo === "receita"
-                          ? "text-emerald-600 dark:text-emerald-400"
-                          : "text-red-600 dark:text-red-400"
+                          ? "text-success"
+                          : "text-danger"
                       }`}
                     >
                       {t.tipo === "receita" ? "+" : "−"}

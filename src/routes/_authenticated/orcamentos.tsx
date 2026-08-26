@@ -216,7 +216,24 @@ function OrcamentosPage() {
             const gasto = gastoPorCategoria.get(o.categoria_id) ?? 0;
             const percentual =
               o.limite > 0 ? Math.min(100, (gasto / o.limite) * 100) : 0;
+            const percentualReal = o.limite > 0 ? (gasto / o.limite) * 100 : 0;
             const estourou = gasto > o.limite;
+            const nivel =
+              percentualReal >= 100
+                ? "danger"
+                : percentualReal >= 70
+                  ? "warning"
+                  : "success";
+            const barra = {
+              success: "[&>div]:bg-success bg-success/15",
+              warning: "[&>div]:bg-warning bg-warning/15",
+              danger: "[&>div]:bg-danger bg-danger/15",
+            }[nivel];
+            const textoNivel = {
+              success: "text-success",
+              warning: "text-warning",
+              danger: "text-danger",
+            }[nivel];
             const Icon = cat ? iconeCategoria(cat.icone) : Target;
 
             return (
@@ -225,7 +242,7 @@ function OrcamentosPage() {
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <div
-                        className="flex h-10 w-10 items-center justify-center rounded-lg"
+                        className="flex h-10 w-10 items-center justify-center rounded-lg ring-1 ring-border/60"
                         style={{
                           backgroundColor: (cat?.cor ?? "#64748b") + "22",
                           color: cat?.cor ?? "#64748b",
@@ -266,18 +283,15 @@ function OrcamentosPage() {
                     </div>
                   </div>
                   <div className="mt-3">
-                    <Progress
-                      value={percentual}
-                      className={`h-2 ${estourou ? "[&>div]:bg-red-500" : ""}`}
-                    />
-                    <div className="mt-1 flex justify-between text-xs">
-                      <span className="text-muted-foreground">
+                    <Progress value={percentual} className={`h-2.5 ${barra}`} />
+                    <div className="mt-1.5 flex justify-between text-xs">
+                      <span className={`font-medium ${textoNivel}`}>
                         {percentual.toFixed(0)}% usado
                       </span>
                       <span
                         className={
                           estourou
-                            ? "font-medium text-red-600 dark:text-red-400"
+                            ? "font-medium text-danger"
                             : "text-muted-foreground"
                         }
                       >
@@ -291,6 +305,7 @@ function OrcamentosPage() {
               </Card>
             );
           })}
+
         </div>
       )}
 

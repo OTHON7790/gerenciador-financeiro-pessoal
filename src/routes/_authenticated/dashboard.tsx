@@ -120,13 +120,13 @@ function DashboardPage() {
           titulo="Receitas"
           valor={resumo.receitas}
           icon={<TrendingUp className="h-5 w-5" />}
-          cor="text-emerald-600 dark:text-emerald-400"
+          cor="text-success"
         />
         <CardResumo
           titulo="Despesas"
           valor={resumo.despesas}
           icon={<TrendingDown className="h-5 w-5" />}
-          cor="text-red-600 dark:text-red-400"
+          cor="text-danger"
         />
       </div>
 
@@ -221,10 +221,10 @@ function DashboardPage() {
                 return (
                   <li
                     key={t.id}
-                    className="flex items-center gap-3 px-6 py-3"
+                    className="flex items-center gap-3 px-6 py-3 transition-colors hover:bg-muted/50"
                   >
                     <div
-                      className="flex h-9 w-9 items-center justify-center rounded-lg"
+                      className="flex h-9 w-9 items-center justify-center rounded-xl ring-1 ring-border/60"
                       style={{
                         backgroundColor: (cat?.cor ?? "#64748b") + "22",
                         color: cat?.cor ?? "#64748b",
@@ -241,8 +241,8 @@ function DashboardPage() {
                     <span
                       className={`text-sm font-semibold ${
                         t.tipo === "receita"
-                          ? "text-emerald-600 dark:text-emerald-400"
-                          : "text-red-600 dark:text-red-400"
+                          ? "text-success"
+                          : "text-danger"
                       }`}
                     >
                       {t.tipo === "receita" ? "+" : "−"}
@@ -276,16 +276,25 @@ function CardResumo({
   icon: React.ReactNode;
   cor: string;
 }) {
+  const fundo = cor.includes("success")
+    ? "bg-success-soft"
+    : cor.includes("danger")
+      ? "bg-danger-soft"
+      : "bg-primary-soft";
   return (
-    <Card>
+    <Card className="overflow-hidden hover:shadow-card">
       <CardContent className="p-5">
         <div className="flex items-center justify-between">
           <p className="text-sm font-medium text-muted-foreground">{titulo}</p>
-          <span className={cor}>{icon}</span>
+          <span
+            className={`flex h-10 w-10 items-center justify-center rounded-xl ${fundo} ${cor}`}
+          >
+            {icon}
+          </span>
         </div>
         <p
-          className={`mt-2 text-2xl font-bold tracking-tight ${
-            valor < 0 ? "text-red-600 dark:text-red-400" : ""
+          className={`mt-3 text-2xl font-bold tracking-tight ${
+            valor < 0 ? "text-danger" : ""
           }`}
         >
           {formatarMoeda(valor)}
@@ -294,3 +303,4 @@ function CardResumo({
     </Card>
   );
 }
+
