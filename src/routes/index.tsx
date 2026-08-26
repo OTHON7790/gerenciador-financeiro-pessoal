@@ -45,7 +45,7 @@ function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary-soft/40">
       {/* Header */}
       <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5">
         <div className="flex items-center gap-2.5">
@@ -67,7 +67,7 @@ function LandingPage() {
       {/* Hero */}
       <section className="mx-auto max-w-6xl px-4 py-16 text-center sm:py-24">
         <div className="mb-5 inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm">
-          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+          <CheckCircle2 className="h-3.5 w-3.5 text-success" />
           100% gratuito · dados protegidos
         </div>
         <h1 className="mx-auto max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">

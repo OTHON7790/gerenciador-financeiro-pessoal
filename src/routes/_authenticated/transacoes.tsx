@@ -201,7 +201,7 @@ function TransacoesPage() {
         <Card>
           <CardContent className="p-4">
             <p className="text-xs text-muted-foreground">Receitas</p>
-            <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+            <p className="text-xl font-bold text-success">
               {formatarMoeda(totalReceitas)}
             </p>
           </CardContent>
@@ -209,7 +209,7 @@ function TransacoesPage() {
         <Card>
           <CardContent className="p-4">
             <p className="text-xs text-muted-foreground">Despesas</p>
-            <p className="text-xl font-bold text-red-600 dark:text-red-400">
+            <p className="text-xl font-bold text-danger">
               {formatarMoeda(totalDespesas)}
             </p>
           </CardContent>
@@ -272,8 +272,8 @@ function TransacoesPage() {
                     <span
                       className={`flex-shrink-0 text-sm font-semibold ${
                         t.tipo === "receita"
-                          ? "text-emerald-600 dark:text-emerald-400"
-                          : "text-red-600 dark:text-red-400"
+                          ? "text-success"
+                          : "text-danger"
                       }`}
                     >
                       {t.tipo === "receita" ? "+" : "−"}

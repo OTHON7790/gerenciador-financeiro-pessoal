@@ -120,13 +120,13 @@ function DashboardPage() {
           titulo="Receitas"
           valor={resumo.receitas}
           icon={<TrendingUp className="h-5 w-5" />}
-          cor="text-emerald-600 dark:text-emerald-400"
+          cor="text-success"
         />
         <CardResumo
           titulo="Despesas"
           valor={resumo.despesas}
           icon={<TrendingDown className="h-5 w-5" />}
-          cor="text-red-600 dark:text-red-400"
+          cor="text-danger"
         />
       </div>
 
@@ -241,8 +241,8 @@ function DashboardPage() {
                     <span
                       className={`text-sm font-semibold ${
                         t.tipo === "receita"
-                          ? "text-emerald-600 dark:text-emerald-400"
-                          : "text-red-600 dark:text-red-400"
+                          ? "text-success"
+                          : "text-danger"
                       }`}
                     >
                       {t.tipo === "receita" ? "+" : "−"}
@@ -285,7 +285,7 @@ function CardResumo({
         </div>
         <p
           className={`mt-2 text-2xl font-bold tracking-tight ${
-            valor < 0 ? "text-red-600 dark:text-red-400" : ""
+            valor < 0 ? "text-danger" : ""
           }`}
         >
           {formatarMoeda(valor)}

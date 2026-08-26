@@ -116,7 +116,7 @@ function RelatoriosPage() {
         <Card>
           <CardContent className="p-4">
             <p className="text-xs text-muted-foreground">Receitas do mês</p>
-            <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+            <p className="text-xl font-bold text-success">
               {formatarMoeda(resumo.receitas)}
             </p>
           </CardContent>
@@ -124,7 +124,7 @@ function RelatoriosPage() {
         <Card>
           <CardContent className="p-4">
             <p className="text-xs text-muted-foreground">Despesas do mês</p>
-            <p className="text-xl font-bold text-red-600 dark:text-red-400">
+            <p className="text-xl font-bold text-danger">
               {formatarMoeda(resumo.despesas)}
             </p>
           </CardContent>

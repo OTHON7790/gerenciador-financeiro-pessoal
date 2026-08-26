@@ -277,7 +277,7 @@ function OrcamentosPage() {
                       <span
                         className={
                           estourou
-                            ? "font-medium text-red-600 dark:text-red-400"
+                            ? "font-medium text-danger"
                             : "text-muted-foreground"
                         }
                       >
