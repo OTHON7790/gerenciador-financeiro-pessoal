@@ -276,15 +276,24 @@ function CardResumo({
   icon: React.ReactNode;
   cor: string;
 }) {
+  const fundo = cor.includes("success")
+    ? "bg-success-soft"
+    : cor.includes("danger")
+      ? "bg-danger-soft"
+      : "bg-primary-soft";
   return (
-    <Card>
+    <Card className="overflow-hidden hover:shadow-card">
       <CardContent className="p-5">
         <div className="flex items-center justify-between">
           <p className="text-sm font-medium text-muted-foreground">{titulo}</p>
-          <span className={cor}>{icon}</span>
+          <span
+            className={`flex h-10 w-10 items-center justify-center rounded-xl ${fundo} ${cor}`}
+          >
+            {icon}
+          </span>
         </div>
         <p
-          className={`mt-2 text-2xl font-bold tracking-tight ${
+          className={`mt-3 text-2xl font-bold tracking-tight ${
             valor < 0 ? "text-danger" : ""
           }`}
         >
@@ -294,3 +303,4 @@ function CardResumo({
     </Card>
   );
 }
+
