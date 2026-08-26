@@ -256,6 +256,8 @@ function DashboardPage() {
         </CardContent>
       </Card>
 
+      <CardMetas />
+
       <TransacaoDialog
         open={dialogoAberto}
         onOpenChange={setDialogoAberto}
