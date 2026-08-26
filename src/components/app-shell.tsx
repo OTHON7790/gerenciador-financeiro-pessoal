@@ -7,6 +7,7 @@ import {
   Tags,
   Target,
   PieChart,
+  Trophy,
   Menu,
   LogOut,
   Wallet,
