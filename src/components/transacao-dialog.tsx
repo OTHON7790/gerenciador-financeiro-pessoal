@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import { ArrowLeftRight } from "lucide-react";
 import { criarTransacao, atualizarTransacao } from "@/lib/transacoes.functions";
 import { type Categoria, type Transacao, type TipoTransacao } from "@/lib/schemas";
 import { paraFloat, formatarMoeda } from "@/lib/format";
@@ -98,7 +99,10 @@ export function TransacaoDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-soft text-primary">
+              <ArrowLeftRight className="h-4 w-4" />
+            </span>
             {transacao ? "Editar transação" : "Nova transação"}
           </DialogTitle>
           <DialogDescription>

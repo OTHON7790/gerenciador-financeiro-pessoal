@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import { Target } from "lucide-react";
 import { salvarMeta } from "@/lib/metas.functions";
 import { type Meta } from "@/lib/schemas";
 import { paraFloat } from "@/lib/format";
@@ -75,7 +76,12 @@ export function MetaDialog({ open, onOpenChange, meta }: Props) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{meta ? "Editar meta" : "Nova meta"}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-soft text-primary">
+              <Target className="h-4 w-4" />
+            </span>
+            {meta ? "Editar meta" : "Nova meta"}
+          </DialogTitle>
           <DialogDescription>
             Defina um objetivo e acompanhe o progresso.
           </DialogDescription>

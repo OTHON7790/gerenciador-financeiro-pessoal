@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import { Tags } from "lucide-react";
 import { criarCategoria, atualizarCategoria } from "@/lib/categorias.functions";
 import { type Categoria, type TipoTransacao } from "@/lib/schemas";
 import { Button } from "@/components/ui/button";
@@ -91,7 +92,10 @@ export function CategoriaDialog({ open, onOpenChange, categoria }: Props) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-soft text-primary">
+              <Tags className="h-4 w-4" />
+            </span>
             {categoria ? "Editar categoria" : "Nova categoria"}
           </DialogTitle>
           <DialogDescription>Organize suas transações.</DialogDescription>
