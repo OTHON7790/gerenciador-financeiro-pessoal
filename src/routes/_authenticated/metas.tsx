@@ -195,17 +195,20 @@ function CardMeta({
 
   const cores = {
     concluida: {
-      barra: "bg-success",
+      barra: "[&>div]:bg-success bg-success/15",
       texto: "text-success",
       selo: "bg-success/10 text-success",
     },
     atrasada: {
-      barra: "bg-danger",
+      barra: "[&>div]:bg-danger bg-danger/15",
       texto: "text-danger",
       selo: "bg-danger/10 text-danger",
     },
     andamento: {
-      barra: percentual >= 70 ? "bg-warning" : "bg-primary",
+      barra:
+        percentual >= 70
+          ? "[&>div]:bg-warning bg-warning/15"
+          : "[&>div]:bg-primary bg-primary/15",
       texto: percentual >= 70 ? "text-warning" : "text-primary",
       selo:
         percentual >= 70
@@ -271,7 +274,7 @@ function CardMeta({
           </div>
           <Progress
             value={Math.min(percentual, 100)}
-            indicatorClassName={cores.barra}
+            className={`h-2.5 ${cores.barra}`}
           />
           <div className="flex items-center justify-between text-xs">
             <span
