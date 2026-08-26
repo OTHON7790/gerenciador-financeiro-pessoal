@@ -28,6 +28,7 @@ const NAV = [
   { to: "/transacoes", label: "Transações", icon: ArrowLeftRight },
   { to: "/categorias", label: "Categorias", icon: Tags },
   { to: "/orcamentos", label: "Orçamentos", icon: Target },
+  { to: "/metas", label: "Metas", icon: Trophy },
   { to: "/relatorios", label: "Relatórios", icon: PieChart },
 ];
 
