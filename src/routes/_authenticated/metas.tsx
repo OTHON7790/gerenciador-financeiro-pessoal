@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Target, Plus, Trash2, Pencil, CheckCircle2 } from "lucide-react";
+import { Target, Plus, Trash2, Pencil, Trophy, AlertTriangle } from "lucide-react";
 import { metasQuery } from "@/lib/queries";
 import { adicionarValorMeta, excluirMeta } from "@/lib/metas.functions";
 import { progressoMeta, type Meta } from "@/lib/schemas";
@@ -222,9 +222,19 @@ function CardMeta({
       <CardContent className="space-y-4 p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
+            <div
+              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+                status === "concluida"
+                  ? "bg-success/10 text-success"
+                  : status === "atrasada"
+                    ? "bg-danger/10 text-danger"
+                    : "bg-primary-soft text-primary"
+              }`}
+            >
               {status === "concluida" ? (
-                <CheckCircle2 className="h-5 w-5 text-success" />
+                <Trophy className="h-5 w-5" />
+              ) : status === "atrasada" ? (
+                <AlertTriangle className="h-5 w-5" />
               ) : (
                 <Target className="h-5 w-5" />
               )}
