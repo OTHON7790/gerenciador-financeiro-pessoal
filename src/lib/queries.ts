@@ -10,6 +10,12 @@ import {
   evolucaoSaldo,
 } from "./transacoes.functions";
 import { listarOrcamentos } from "./orcamentos.functions";
+import { listarMetas } from "./metas.functions";
+
+export const metasQuery = queryOptions({
+  queryKey: ["metas"],
+  queryFn: () => listarMetas(),
+});
 
 export const categoriasQuery = queryOptions({
   queryKey: ["categorias"],

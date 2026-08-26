@@ -33,6 +33,9 @@ import {
   YAxis,
 } from "recharts";
 import { iconeCategoria } from "@/lib/icones";
+import { metasQuery } from "@/lib/queries";
+import { progressoMeta } from "@/lib/schemas";
+import { Progress } from "@/components/ui/progress";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -256,6 +259,8 @@ function DashboardPage() {
         </CardContent>
       </Card>
 
+      <CardMetas />
+
       <TransacaoDialog
         open={dialogoAberto}
         onOpenChange={setDialogoAberto}
@@ -304,3 +309,58 @@ function CardResumo({
   );
 }
 
+
+function CardMetas() {
+  const { data: metas } = useSuspenseQuery(metasQuery);
+  if (metas.length === 0) return null;
+
+  const emAndamento = metas
+    .filter((m) => progressoMeta(m).status !== "concluida")
+    .slice(0, 3);
+  const destaque = emAndamento.length > 0 ? emAndamento : metas.slice(0, 3);
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0">
+        <CardTitle className="text-base">Metas</CardTitle>
+        <Button variant="ghost" size="sm" asChild>
+          <Link to="/metas">
+            Ver todas <ArrowRight className="ml-1 h-4 w-4" />
+          </Link>
+        </Button>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {destaque.map((meta) => {
+          const { percentual, restante, status } = progressoMeta(meta);
+          const barra =
+            status === "concluida"
+              ? "[&>div]:bg-success bg-success/15"
+              : status === "atrasada"
+                ? "[&>div]:bg-danger bg-danger/15"
+                : percentual >= 70
+                  ? "[&>div]:bg-warning bg-warning/15"
+                  : "[&>div]:bg-primary bg-primary/15";
+          return (
+            <div key={meta.id} className="space-y-1.5">
+              <div className="flex items-center justify-between text-sm">
+                <span className="truncate font-medium">{meta.nome}</span>
+                <span className="text-muted-foreground">
+                  {percentual.toFixed(0)}%
+                </span>
+              </div>
+              <Progress
+                value={Math.min(percentual, 100)}
+                className={`h-2 ${barra}`}
+              />
+              <p className="text-xs text-muted-foreground">
+                {restante > 0
+                  ? `Faltam ${formatarMoeda(restante)} de ${formatarMoeda(meta.valor_alvo)}`
+                  : "Objetivo alcançado"}
+              </p>
+            </div>
+          );
+        })}
+      </CardContent>
+    </Card>
+  );
+}
