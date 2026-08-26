@@ -221,10 +221,10 @@ function DashboardPage() {
                 return (
                   <li
                     key={t.id}
-                    className="flex items-center gap-3 px-6 py-3"
+                    className="flex items-center gap-3 px-6 py-3 transition-colors hover:bg-muted/50"
                   >
                     <div
-                      className="flex h-9 w-9 items-center justify-center rounded-lg"
+                      className="flex h-9 w-9 items-center justify-center rounded-xl ring-1 ring-border/60"
                       style={{
                         backgroundColor: (cat?.cor ?? "#64748b") + "22",
                         color: cat?.cor ?? "#64748b",

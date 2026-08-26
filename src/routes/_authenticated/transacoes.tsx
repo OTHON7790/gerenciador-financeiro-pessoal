@@ -252,10 +252,10 @@ function TransacoesPage() {
                 return (
                   <li
                     key={t.id}
-                    className="group flex items-center gap-3 px-4 py-3 sm:px-6"
+                    className="group flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/50 sm:px-6"
                   >
                     <div
-                      className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg"
+                      className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl ring-1 ring-border/60"
                       style={{
                         backgroundColor: (cat?.cor ?? "#64748b") + "22",
                         color: cat?.cor ?? "#64748b",
