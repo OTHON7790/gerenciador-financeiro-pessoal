@@ -268,7 +268,7 @@ function DashboardPage() {
 
 
       {/* Transações recentes */}
-      <Card>
+      <Card className="shadow-card">
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <CardTitle className="text-base">Transações recentes</CardTitle>
           <Link to="/transacoes">
@@ -283,40 +283,43 @@ function DashboardPage() {
               Nenhuma transação ainda. Clique em “Nova transação” para começar.
             </div>
           ) : (
-            <ul className="divide-y">
+            <ul className="divide-y divide-border/60">
               {transacoes.map((t) => {
                 const cat = t.categoria_id
                   ? mapaCategorias.get(t.categoria_id)
                   : null;
                 const Icon = cat ? iconeCategoria(cat.icone) : Wallet;
+                const receita = t.tipo === "receita";
                 return (
                   <li
                     key={t.id}
-                    className="flex items-center gap-3 px-6 py-3 transition-colors hover:bg-muted/50"
+                    className="flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-muted/60"
                   >
                     <div
-                      className="flex h-9 w-9 items-center justify-center rounded-xl ring-1 ring-border/60"
+                      className="flex h-10 w-10 items-center justify-center rounded-xl ring-1 ring-inset"
                       style={{
-                        backgroundColor: (cat?.cor ?? "#64748b") + "22",
+                        backgroundColor: (cat?.cor ?? "#64748b") + "1f",
                         color: cat?.cor ?? "#64748b",
+                        borderColor: "transparent",
+                        boxShadow: `inset 0 0 0 1px ${(cat?.cor ?? "#64748b")}33`,
                       }}
                     >
-                      <Icon className="h-4 w-4" />
+                      <Icon className="h-4.5 w-4.5" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{t.descricao}</p>
+                      <p className="truncate text-sm font-semibold">{t.descricao}</p>
                       <p className="text-xs text-muted-foreground">
                         {cat?.nome ?? "Sem categoria"} · {formatarData(t.data)}
                       </p>
                     </div>
                     <span
-                      className={`text-sm font-semibold ${
-                        t.tipo === "receita"
-                          ? "text-success"
-                          : "text-danger"
+                      className={`rounded-lg px-2.5 py-1 text-sm font-bold tabular-nums ${
+                        receita
+                          ? "bg-success/10 text-success"
+                          : "bg-danger/10 text-danger"
                       }`}
                     >
-                      {t.tipo === "receita" ? "+" : "−"}
+                      {receita ? "+" : "−"}
                       {formatarMoeda(t.valor)}
                     </span>
                   </li>
@@ -326,6 +329,7 @@ function DashboardPage() {
           )}
         </CardContent>
       </Card>
+
 
       <CardMetas />
 
