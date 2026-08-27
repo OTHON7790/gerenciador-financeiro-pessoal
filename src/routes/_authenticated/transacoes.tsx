@@ -103,6 +103,7 @@ function TransacoesPage() {
       queryClient.invalidateQueries({ queryKey: ["resumo"] });
       queryClient.invalidateQueries({ queryKey: ["serie-mensal"] });
       queryClient.invalidateQueries({ queryKey: ["evolucao-saldo"] });
+      queryClient.invalidateQueries({ queryKey: ["orcamentos"] });
       toast.success("Transação excluída.");
       setExcluindo(null);
     },
