@@ -35,6 +35,11 @@ export const metaSchema = z.object({
   nome: z.string().trim().min(1, "Informe o nome da meta").max(60),
   valor_alvo: z.number().positive("O valor-alvo deve ser maior que zero"),
   valor_acumulado: z.number().min(0, "O valor não pode ser negativo").default(0),
+  data_inicio: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida")
+    .nullable()
+    .optional(),
   prazo: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida")
