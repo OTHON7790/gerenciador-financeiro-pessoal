@@ -72,6 +72,10 @@ export function MetaDialog({ open, onOpenChange, meta }: Props) {
       toast.error("Informe o nome e um valor-alvo válido.");
       return;
     }
+    if (dataInicio && prazo && dataInicio > prazo) {
+      toast.error("A data de início não pode ser depois do prazo final.");
+      return;
+    }
     mutation.mutate();
   }
 
