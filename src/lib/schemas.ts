@@ -192,7 +192,8 @@ export function planejarMeta(meta: Meta): {
   const prazoVencido = limite < hoje;
   const mesesRestantes = Math.max(mesesEntre(hoje, limite), 0);
 
-  const inicio = parseDataLocal(meta.criado_em) ?? hoje;
+  const inicio =
+    parseDataLocal(meta.data_inicio) ?? parseDataLocal(meta.criado_em) ?? hoje;
   const totalMeses = Math.max(mesesEntre(inicio, limite), 1);
   const mesesPassados = Math.min(Math.max(mesesEntre(inicio, hoje), 0), totalMeses);
 
