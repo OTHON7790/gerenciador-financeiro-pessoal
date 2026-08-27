@@ -452,6 +452,14 @@ function OrcamentosPage() {
                     <Progress value={percentual} className={`h-2.5 ${barra}`} />
                   </div>
 
+                  {nivel === "warning" && !estourou && (
+                    <div className="mt-3 flex items-center gap-2 rounded-lg bg-warning/10 px-3 py-2 text-sm font-medium text-warning ring-1 ring-warning/20">
+                      <AlertTriangle className="h-4 w-4 shrink-0" />
+                      Atenção: você já utilizou{" "}
+                      {percentualReal.toFixed(0)}% do orçamento desta categoria.
+                    </div>
+                  )}
+
                   {estourou && (
                     <div className="mt-3 flex items-center gap-2 rounded-lg bg-danger/10 px-3 py-2 text-sm font-medium text-danger ring-1 ring-danger/20">
                       <AlertTriangle className="h-4 w-4 shrink-0" />
