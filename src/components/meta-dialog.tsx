@@ -52,6 +52,7 @@ export function MetaDialog({ open, onOpenChange, meta }: Props) {
         nome: nome.trim(),
         valor_alvo: paraFloat(valorAlvo),
         valor_acumulado: valorAcumulado ? paraFloat(valorAcumulado) : 0,
+        data_inicio: dataInicio ? dataInicio : null,
         prazo: prazo ? prazo : null,
         ...(meta ? { id: meta.id } : {}),
       };
