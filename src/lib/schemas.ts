@@ -35,6 +35,11 @@ export const metaSchema = z.object({
   nome: z.string().trim().min(1, "Informe o nome da meta").max(60),
   valor_alvo: z.number().positive("O valor-alvo deve ser maior que zero"),
   valor_acumulado: z.number().min(0, "O valor não pode ser negativo").default(0),
+  data_inicio: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida")
+    .nullable()
+    .optional(),
   prazo: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida")
@@ -55,6 +60,7 @@ export type Meta = {
   nome: string;
   valor_alvo: number;
   valor_acumulado: number;
+  data_inicio: string | null;
   prazo: string | null;
   cor: string;
   icone: string;
@@ -186,7 +192,8 @@ export function planejarMeta(meta: Meta): {
   const prazoVencido = limite < hoje;
   const mesesRestantes = Math.max(mesesEntre(hoje, limite), 0);
 
-  const inicio = parseDataLocal(meta.criado_em) ?? hoje;
+  const inicio =
+    parseDataLocal(meta.data_inicio) ?? parseDataLocal(meta.criado_em) ?? hoje;
   const totalMeses = Math.max(mesesEntre(inicio, limite), 1);
   const mesesPassados = Math.min(Math.max(mesesEntre(inicio, hoje), 0), totalMeses);
 

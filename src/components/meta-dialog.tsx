@@ -31,6 +31,7 @@ export function MetaDialog({ open, onOpenChange, meta }: Props) {
   const [nome, setNome] = useState("");
   const [valorAlvo, setValorAlvo] = useState("");
   const [valorAcumulado, setValorAcumulado] = useState("");
+  const [dataInicio, setDataInicio] = useState("");
   const [prazo, setPrazo] = useState("");
 
   useEffect(() => {
@@ -40,6 +41,7 @@ export function MetaDialog({ open, onOpenChange, meta }: Props) {
       setValorAcumulado(
         meta ? String(meta.valor_acumulado).replace(".", ",") : "",
       );
+      setDataInicio(meta?.data_inicio ?? "");
       setPrazo(meta?.prazo ?? "");
     }
   }, [open, meta]);
@@ -50,6 +52,7 @@ export function MetaDialog({ open, onOpenChange, meta }: Props) {
         nome: nome.trim(),
         valor_alvo: paraFloat(valorAlvo),
         valor_acumulado: valorAcumulado ? paraFloat(valorAcumulado) : 0,
+        data_inicio: dataInicio ? dataInicio : null,
         prazo: prazo ? prazo : null,
         ...(meta ? { id: meta.id } : {}),
       };
@@ -67,6 +70,10 @@ export function MetaDialog({ open, onOpenChange, meta }: Props) {
     e.preventDefault();
     if (!nome.trim() || paraFloat(valorAlvo) <= 0) {
       toast.error("Informe o nome e um valor-alvo válido.");
+      return;
+    }
+    if (dataInicio && prazo && dataInicio > prazo) {
+      toast.error("A data de início não pode ser depois do prazo final.");
       return;
     }
     mutation.mutate();
@@ -121,14 +128,25 @@ export function MetaDialog({ open, onOpenChange, meta }: Props) {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="prazo">Prazo (opcional)</Label>
-            <Input
-              id="prazo"
-              type="date"
-              value={prazo}
-              onChange={(e) => setPrazo(e.target.value)}
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="data-inicio">Data de início</Label>
+              <Input
+                id="data-inicio"
+                type="date"
+                value={dataInicio}
+                onChange={(e) => setDataInicio(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="prazo">Prazo final</Label>
+              <Input
+                id="prazo"
+                type="date"
+                value={prazo}
+                onChange={(e) => setPrazo(e.target.value)}
+              />
+            </div>
           </div>
 
           <DialogFooter>
