@@ -194,71 +194,8 @@ function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-card">
-          <CardHeader>
-            <CardTitle className="text-base">Evolução do saldo</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={configGrafico} className="h-[280px] w-full">
-              <AreaChart data={dadosEvolucao}>
-                <defs>
-                  <linearGradient id="saldoFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--color-saldo)" stopOpacity={0.55} />
-                    <stop offset="95%" stopColor="var(--color-saldo)" stopOpacity={0.02} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid
-                  vertical={false}
-                  strokeDasharray="4 4"
-                  stroke="var(--border)"
-                />
-                <XAxis
-                  dataKey="mes"
-                  tickLine={false}
-                  axisLine={false}
-                  fontSize={12}
-                  stroke="var(--muted-foreground)"
-                  tickMargin={8}
-                />
-                <YAxis
-                  tickFormatter={(v) =>
-                    v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
-                  }
-                  tickLine={false}
-                  axisLine={false}
-                  fontSize={12}
-                  stroke="var(--muted-foreground)"
-                  width={52}
-                />
-                <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      formatter={(value, name) => (
-                        <span className="flex w-full justify-between gap-4">
-                          <span className="capitalize text-muted-foreground">
-                            {name}
-                          </span>
-                          <span className="font-semibold tabular-nums">
-                            {formatarMoeda(Number(value))}
-                          </span>
-                        </span>
-                      )}
-                    />
-                  }
-                />
-                <Area
-                  type="monotone"
-                  dataKey="saldo"
-                  stroke="var(--color-saldo)"
-                  fill="url(#saldoFill)"
-                  strokeWidth={2.5}
-                  dot={{ r: 3, strokeWidth: 0, fill: "var(--color-saldo)" }}
-                  activeDot={{ r: 5 }}
-                />
-              </AreaChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
+        <CardEvolucaoFinanceira />
+
       </div>
 
 
