@@ -310,6 +310,16 @@ function CardMeta({
             <p className="text-base text-muted-foreground">
               Defina um prazo para calcular o valor mensal necessário.
             </p>
+          ) : plano.situacao === "concluida" ? (
+            <div className="space-y-3">
+              <p className="flex items-center gap-2 text-lg font-semibold text-success">
+                <Trophy className="h-5 w-5" />
+                Meta alcançada!
+              </p>
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                <span>Total guardado: {formatarMoeda(meta.valor_acumulado)}</span>
+              </div>
+            </div>
           ) : (
             <div className="space-y-3">
               <p className="text-base font-medium text-foreground">
@@ -327,18 +337,14 @@ function CardMeta({
               <div className="flex flex-wrap items-center gap-2">
                 <span
                   className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                    plano.situacao === "concluida"
+                    plano.situacao === "boa"
                       ? "bg-success/10 text-success"
-                      : plano.situacao === "boa"
-                        ? "bg-success/10 text-success"
-                        : plano.situacao === "atencao"
-                          ? "bg-warning/10 text-warning"
-                          : "bg-danger/10 text-danger"
+                      : plano.situacao === "atencao"
+                        ? "bg-warning/10 text-warning"
+                        : "bg-danger/10 text-danger"
                   }`}
                 >
-                  {plano.situacao === "concluida" ? (
-                    <Trophy className="h-3.5 w-3.5" />
-                  ) : plano.situacao === "boa" ? (
+                  {plano.situacao === "boa" ? (
                     <CheckCircle2 className="h-3.5 w-3.5" />
                   ) : (
                     <AlertTriangle className="h-3.5 w-3.5" />
