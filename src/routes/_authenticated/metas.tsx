@@ -7,10 +7,10 @@ import {
 } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Target, Plus, Trash2, Pencil, Trophy, AlertTriangle } from "lucide-react";
+import { Target, Plus, Trash2, Pencil, Trophy, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { metasQuery } from "@/lib/queries";
 import { adicionarValorMeta, excluirMeta } from "@/lib/metas.functions";
-import { progressoMeta, type Meta } from "@/lib/schemas";
+import { progressoMeta, planejarMeta, type Meta } from "@/lib/schemas";
 import { formatarMoeda, formatarData, paraFloat } from "@/lib/format";
 import { MetaDialog } from "@/components/meta-dialog";
 import { Button } from "@/components/ui/button";
