@@ -169,6 +169,76 @@ function OrcamentosPage() {
         </Select>
       </div>
 
+      {/* Resumo do mês */}
+      {orcamentos.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">
+              Resumo de {formatarMes(mes).replace(/^./, (c) => c.toUpperCase())}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <div>
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  Total orçado
+                </p>
+                <p className="text-lg font-semibold">
+                  {formatarMoeda(totais.orcado)}
+                </p>
+              </div>
+              <div>
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  Total gasto
+                </p>
+                <p className="text-lg font-semibold">
+                  {formatarMoeda(totais.gasto)}
+                </p>
+              </div>
+              <div>
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  {totais.gasto > totais.orcado ? "Total excedido" : "Restante"}
+                </p>
+                <p
+                  className={`text-lg font-semibold ${
+                    totais.gasto > totais.orcado ? "text-danger" : "text-success"
+                  }`}
+                >
+                  {formatarMoeda(Math.abs(totais.orcado - totais.gasto))}
+                </p>
+              </div>
+              <div>
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  Utilizado
+                </p>
+                <p
+                  className={`text-lg font-semibold ${
+                    {
+                      success: "text-success",
+                      warning: "text-warning",
+                      danger: "text-danger",
+                    }[totais.nivel]
+                  }`}
+                >
+                  {totais.percentualReal.toFixed(0)}%
+                </p>
+              </div>
+            </div>
+            <Progress
+              value={Math.min(100, totais.percentualReal)}
+              className={`mt-4 h-2.5 ${
+                {
+                  success: "[&>div]:bg-success bg-success/15",
+                  warning: "[&>div]:bg-warning bg-warning/15",
+                  danger: "[&>div]:bg-danger bg-danger/15",
+                }[totais.nivel]
+              }`}
+            />
+          </CardContent>
+        </Card>
+      )}
+
+
       {/* Novo orçamento */}
       <Card>
         <CardHeader>
