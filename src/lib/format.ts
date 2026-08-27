@@ -14,6 +14,34 @@ export function formatarMoedaCompacta(valor: number): string {
   }).format(valor);
 }
 
+export function formatarMoedaEixo(valor: number): string {
+  const abs = Math.abs(valor);
+  const sinal = valor < 0 ? "-" : "";
+  const num = (v: number) =>
+    new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 1 }).format(v);
+  if (abs >= 1_000_000) return `${sinal}R$ ${num(abs / 1_000_000)} mi`;
+  if (abs >= 1000) return `${sinal}R$ ${num(abs / 1000)} mil`;
+  return `${sinal}R$ ${num(abs)}`;
+}
+
+export function mesesEntre(inicio: string, fim: string, limite = 24): string[] {
+  const [a1, m1] = inicio.split("-").map(Number);
+  const [a2, m2] = fim.split("-").map(Number);
+  if (!a1 || !m1 || !a2 || !m2) return [];
+  let d1 = new Date(a1, m1 - 1, 1);
+  let d2 = new Date(a2, m2 - 1, 1);
+  if (d1 > d2) [d1, d2] = [d2, d1];
+  const meses: string[] = [];
+  const cursor = new Date(d1);
+  while (cursor <= d2 && meses.length < limite) {
+    meses.push(
+      `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, "0")}`,
+    );
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
+  return meses;
+}
+
 export function formatarData(data: string | Date): string {
   let d: Date;
   if (typeof data === "string") {
