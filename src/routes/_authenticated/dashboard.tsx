@@ -275,18 +275,28 @@ function DashboardPage() {
 }
 
 const PERIODOS = [3, 6, 12] as const;
-type Periodo = (typeof PERIODOS)[number];
+type Periodo = (typeof PERIODOS)[number] | "custom";
 
 const SERIES = [
-  { chave: "receitas", rotulo: "Receitas", cor: "var(--chart-1)" },
-  { chave: "despesas", rotulo: "Despesas", cor: "var(--chart-2)" },
-  { chave: "saldo", rotulo: "Saldo", cor: "var(--chart-3)" },
+  { chave: "receitas", rotulo: "Receitas", cor: "var(--chart-1)", largura: 2.5 },
+  { chave: "despesas", rotulo: "Despesas", cor: "var(--chart-2)", largura: 2.5 },
+  { chave: "saldo", rotulo: "Saldo", cor: "var(--chart-3)", largura: 3.25 },
 ] as const;
 
 function CardEvolucaoFinanceira() {
   const [periodo, setPeriodo] = useState<Periodo>(6);
   const [ocultas, setOcultas] = useState<string[]>([]);
-  const meses = useMemo(() => mesesAnteriores(periodo), [periodo]);
+  const padrao = useMemo(() => mesesAnteriores(6), []);
+  const [inicio, setInicio] = useState(padrao[0]!);
+  const [fim, setFim] = useState(padrao[padrao.length - 1]!);
+
+  const meses = useMemo(
+    () =>
+      periodo === "custom"
+        ? mesesEntre(inicio, fim)
+        : mesesAnteriores(periodo),
+    [periodo, inicio, fim],
+  );
 
   const { data: serie = [] } = useQuery({
     ...serieMensalQuery(meses),
@@ -313,28 +323,62 @@ function CardEvolucaoFinanceira() {
         : [...atual, chave],
     );
 
+  const botao = (ativo: boolean) =>
+    `shrink-0 rounded-md px-3 py-1 text-xs font-semibold transition-colors ${
+      ativo
+        ? "bg-background text-foreground shadow-soft"
+        : "text-muted-foreground hover:text-foreground"
+    }`;
+
   return (
     <Card className="shadow-card">
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
         <CardTitle className="text-base">Evolução financeira</CardTitle>
-        <div className="inline-flex rounded-lg bg-muted p-1">
-          {PERIODOS.map((p) => (
+        <div className="-mx-1 flex overflow-x-auto px-1">
+          <div className="inline-flex rounded-lg bg-muted p-1">
+            {PERIODOS.map((p) => (
+              <button
+                key={p}
+                type="button"
+                onClick={() => setPeriodo(p)}
+                className={botao(periodo === p)}
+              >
+                {p} meses
+              </button>
+            ))}
             <button
-              key={p}
               type="button"
-              onClick={() => setPeriodo(p)}
-              className={`rounded-md px-3 py-1 text-xs font-semibold transition-colors ${
-                periodo === p
-                  ? "bg-background text-foreground shadow-soft"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+              onClick={() => setPeriodo("custom")}
+              className={botao(periodo === "custom")}
             >
-              {p} meses
+              Personalizado
             </button>
-          ))}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
+        {periodo === "custom" && (
+          <div className="flex flex-col gap-2 rounded-xl border border-border/70 bg-muted/30 p-3 sm:flex-row sm:items-end">
+            <label className="flex flex-1 flex-col gap-1 text-xs font-medium text-muted-foreground">
+              Mês inicial
+              <input
+                type="month"
+                value={inicio}
+                onChange={(e) => setInicio(e.target.value)}
+                className="rounded-lg border border-border bg-background px-3 py-1.5 text-sm text-foreground"
+              />
+            </label>
+            <label className="flex flex-1 flex-col gap-1 text-xs font-medium text-muted-foreground">
+              Mês final
+              <input
+                type="month"
+                value={fim}
+                onChange={(e) => setFim(e.target.value)}
+                className="rounded-lg border border-border bg-background px-3 py-1.5 text-sm text-foreground"
+              />
+            </label>
+          </div>
+        )}
         <div className="flex flex-wrap gap-2">
           {SERIES.map((s) => {
             const ativa = !ocultas.includes(s.chave);
@@ -344,20 +388,25 @@ function CardEvolucaoFinanceira() {
                 type="button"
                 onClick={() => alternar(s.chave)}
                 aria-pressed={ativa}
-                className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-opacity ${
-                  ativa ? "opacity-100" : "opacity-40"
+                className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-all ${
+                  ativa
+                    ? "border-border bg-background text-foreground"
+                    : "border-dashed border-border/60 text-muted-foreground line-through opacity-60"
                 }`}
               >
                 <span
-                  className="h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: s.cor }}
+                  className="h-2.5 w-2.5 rounded-full border-2"
+                  style={{
+                    borderColor: s.cor,
+                    backgroundColor: ativa ? s.cor : "transparent",
+                  }}
                 />
                 {s.rotulo}
               </button>
             );
           })}
         </div>
-        <ChartContainer config={config} className="h-[260px] w-full sm:h-[280px]">
+        <ChartContainer config={config} className="h-[260px] w-full sm:h-[300px]">
           <LineChart data={dados} margin={{ left: 4, right: 8, top: 8 }}>
             <CartesianGrid
               vertical={false}
@@ -372,19 +421,23 @@ function CardEvolucaoFinanceira() {
               stroke="var(--muted-foreground)"
               tickMargin={8}
               interval="preserveStartEnd"
-              minTickGap={8}
+              minTickGap={16}
             />
             <YAxis
-              tickFormatter={(v) =>
-                Math.abs(v) >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
-              }
+              tickFormatter={(v) => formatarMoedaEixo(Number(v))}
               tickLine={false}
               axisLine={false}
-              fontSize={12}
+              fontSize={11}
               stroke="var(--muted-foreground)"
-              width={48}
+              width={72}
             />
             <ChartTooltip
+              cursor={{
+                stroke: "var(--muted-foreground)",
+                strokeWidth: 1,
+                strokeDasharray: "4 4",
+                strokeOpacity: 0.6,
+              }}
               content={
                 <ChartTooltipContent
                   formatter={(value, name) => (
@@ -407,9 +460,12 @@ function CardEvolucaoFinanceira() {
                 dataKey={s.chave}
                 name={s.rotulo}
                 stroke={s.cor}
-                strokeWidth={2.5}
-                dot={{ r: 3.5, strokeWidth: 0, fill: s.cor }}
-                activeDot={{ r: 5.5 }}
+                strokeWidth={s.largura}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                dot={{ r: 3.5, strokeWidth: 2, stroke: "var(--card)", fill: s.cor }}
+                activeDot={{ r: 6.5, strokeWidth: 2.5, stroke: "var(--card)" }}
+                isAnimationActive={false}
               />
             ))}
           </LineChart>
