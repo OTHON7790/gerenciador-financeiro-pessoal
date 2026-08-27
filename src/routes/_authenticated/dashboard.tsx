@@ -117,87 +117,155 @@ function DashboardPage() {
           titulo="Saldo do mês"
           valor={resumo.saldo}
           icon={<Wallet className="h-5 w-5" />}
-          cor="text-primary"
+          tom="primary"
         />
         <CardResumo
           titulo="Receitas"
           valor={resumo.receitas}
           icon={<TrendingUp className="h-5 w-5" />}
-          cor="text-success"
+          tom="success"
         />
         <CardResumo
           titulo="Despesas"
           valor={resumo.despesas}
           icon={<TrendingDown className="h-5 w-5" />}
-          cor="text-danger"
+          tom="danger"
         />
       </div>
 
       {/* Gráficos */}
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
+        <Card className="shadow-card">
           <CardHeader>
             <CardTitle className="text-base">Receitas x Despesas</CardTitle>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={configGrafico} className="h-[240px] w-full">
-              <BarChart data={dadosSerie}>
-                <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={11} />
+            <ChartContainer config={configGrafico} className="h-[280px] w-full">
+              <BarChart data={dadosSerie} barGap={6}>
+                <CartesianGrid
+                  vertical={false}
+                  strokeDasharray="4 4"
+                  stroke="var(--border)"
+                />
+                <XAxis
+                  dataKey="mes"
+                  tickLine={false}
+                  axisLine={false}
+                  fontSize={12}
+                  stroke="var(--muted-foreground)"
+                  tickMargin={8}
+                />
                 <YAxis
                   tickFormatter={(v) =>
                     v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
                   }
                   tickLine={false}
                   axisLine={false}
-                  fontSize={11}
-                  width={40}
+                  fontSize={12}
+                  stroke="var(--muted-foreground)"
+                  width={44}
                 />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="receitas" fill="var(--color-receitas)" radius={4} />
-                <Bar dataKey="despesas" fill="var(--color-despesas)" radius={4} />
+                <ChartTooltip
+                  cursor={{ fill: "var(--muted)", opacity: 0.5 }}
+                  content={
+                    <ChartTooltipContent
+                      formatter={(value, name) => (
+                        <span className="flex w-full justify-between gap-4">
+                          <span className="capitalize text-muted-foreground">
+                            {name}
+                          </span>
+                          <span className="font-semibold tabular-nums">
+                            {formatarMoeda(Number(value))}
+                          </span>
+                        </span>
+                      )}
+                    />
+                  }
+                />
+                <Bar
+                  dataKey="receitas"
+                  fill="var(--color-receitas)"
+                  radius={[6, 6, 0, 0]}
+                  maxBarSize={38}
+                />
+                <Bar
+                  dataKey="despesas"
+                  fill="var(--color-despesas)"
+                  radius={[6, 6, 0, 0]}
+                  maxBarSize={38}
+                />
               </BarChart>
             </ChartContainer>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="shadow-card">
           <CardHeader>
             <CardTitle className="text-base">Evolução do saldo</CardTitle>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={configGrafico} className="h-[240px] w-full">
+            <ChartContainer config={configGrafico} className="h-[280px] w-full">
               <AreaChart data={dadosEvolucao}>
                 <defs>
                   <linearGradient id="saldoFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--color-saldo)" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="var(--color-saldo)" stopOpacity={0} />
+                    <stop offset="5%" stopColor="var(--color-saldo)" stopOpacity={0.55} />
+                    <stop offset="95%" stopColor="var(--color-saldo)" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={11} />
+                <CartesianGrid
+                  vertical={false}
+                  strokeDasharray="4 4"
+                  stroke="var(--border)"
+                />
+                <XAxis
+                  dataKey="mes"
+                  tickLine={false}
+                  axisLine={false}
+                  fontSize={12}
+                  stroke="var(--muted-foreground)"
+                  tickMargin={8}
+                />
                 <YAxis
                   tickFormatter={(v) =>
                     v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
                   }
                   tickLine={false}
                   axisLine={false}
-                  fontSize={11}
-                  width={50}
+                  fontSize={12}
+                  stroke="var(--muted-foreground)"
+                  width={52}
                 />
-                <ChartTooltip content={<ChartTooltipContent />} />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      formatter={(value, name) => (
+                        <span className="flex w-full justify-between gap-4">
+                          <span className="capitalize text-muted-foreground">
+                            {name}
+                          </span>
+                          <span className="font-semibold tabular-nums">
+                            {formatarMoeda(Number(value))}
+                          </span>
+                        </span>
+                      )}
+                    />
+                  }
+                />
                 <Area
                   type="monotone"
                   dataKey="saldo"
                   stroke="var(--color-saldo)"
                   fill="url(#saldoFill)"
-                  strokeWidth={2}
+                  strokeWidth={2.5}
+                  dot={{ r: 3, strokeWidth: 0, fill: "var(--color-saldo)" }}
+                  activeDot={{ r: 5 }}
                 />
               </AreaChart>
             </ChartContainer>
           </CardContent>
         </Card>
       </div>
+
 
       {/* Transações recentes */}
       <Card>
