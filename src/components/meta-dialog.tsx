@@ -41,6 +41,7 @@ export function MetaDialog({ open, onOpenChange, meta }: Props) {
       setValorAcumulado(
         meta ? String(meta.valor_acumulado).replace(".", ",") : "",
       );
+      setDataInicio(meta?.data_inicio ?? "");
       setPrazo(meta?.prazo ?? "");
     }
   }, [open, meta]);
