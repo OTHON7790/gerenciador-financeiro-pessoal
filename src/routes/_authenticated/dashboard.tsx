@@ -338,36 +338,59 @@ function DashboardPage() {
   );
 }
 
+const TONS = {
+  primary: {
+    barra: "bg-primary",
+    chip: "bg-primary text-primary-foreground",
+    valor: "text-foreground",
+    brilho: "bg-primary/10",
+  },
+  success: {
+    barra: "bg-success",
+    chip: "bg-success text-success-foreground",
+    valor: "text-success",
+    brilho: "bg-success/10",
+  },
+  danger: {
+    barra: "bg-danger",
+    chip: "bg-danger text-danger-foreground",
+    valor: "text-danger",
+    brilho: "bg-danger/10",
+  },
+} as const;
+
 function CardResumo({
   titulo,
   valor,
   icon,
-  cor,
+  tom,
 }: {
   titulo: string;
   valor: number;
   icon: React.ReactNode;
-  cor: string;
+  tom: keyof typeof TONS;
 }) {
-  const fundo = cor.includes("success")
-    ? "bg-success-soft"
-    : cor.includes("danger")
-      ? "bg-danger-soft"
-      : "bg-primary-soft";
+  const t = TONS[tom];
   return (
-    <Card className="overflow-hidden hover:shadow-card">
-      <CardContent className="p-5">
+    <Card className="relative overflow-hidden shadow-card transition-shadow hover:shadow-lg">
+      <span className={`absolute inset-x-0 top-0 h-1 ${t.barra}`} />
+      <span
+        className={`pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full blur-2xl ${t.brilho}`}
+      />
+      <CardContent className="relative p-5">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-medium text-muted-foreground">{titulo}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {titulo}
+          </p>
           <span
-            className={`flex h-10 w-10 items-center justify-center rounded-xl ${fundo} ${cor}`}
+            className={`flex h-11 w-11 items-center justify-center rounded-2xl shadow-soft ${t.chip}`}
           >
             {icon}
           </span>
         </div>
         <p
-          className={`mt-3 text-2xl font-bold tracking-tight ${
-            valor < 0 ? "text-danger" : ""
+          className={`mt-4 text-3xl font-bold tracking-tight tabular-nums sm:text-4xl ${
+            tom === "primary" && valor < 0 ? "text-danger" : t.valor
           }`}
         >
           {formatarMoeda(valor)}
@@ -376,6 +399,7 @@ function CardResumo({
     </Card>
   );
 }
+
 
 
 function CardMetas() {
