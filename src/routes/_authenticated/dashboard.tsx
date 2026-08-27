@@ -117,81 +117,148 @@ function DashboardPage() {
           titulo="Saldo do mês"
           valor={resumo.saldo}
           icon={<Wallet className="h-5 w-5" />}
-          cor="text-primary"
+          tom="primary"
         />
         <CardResumo
           titulo="Receitas"
           valor={resumo.receitas}
           icon={<TrendingUp className="h-5 w-5" />}
-          cor="text-success"
+          tom="success"
         />
         <CardResumo
           titulo="Despesas"
           valor={resumo.despesas}
           icon={<TrendingDown className="h-5 w-5" />}
-          cor="text-danger"
+          tom="danger"
         />
       </div>
 
       {/* Gráficos */}
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
+        <Card className="shadow-card">
           <CardHeader>
             <CardTitle className="text-base">Receitas x Despesas</CardTitle>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={configGrafico} className="h-[240px] w-full">
-              <BarChart data={dadosSerie}>
-                <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={11} />
+            <ChartContainer config={configGrafico} className="h-[280px] w-full">
+              <BarChart data={dadosSerie} barGap={6}>
+                <CartesianGrid
+                  vertical={false}
+                  strokeDasharray="4 4"
+                  stroke="var(--border)"
+                />
+                <XAxis
+                  dataKey="mes"
+                  tickLine={false}
+                  axisLine={false}
+                  fontSize={12}
+                  stroke="var(--muted-foreground)"
+                  tickMargin={8}
+                />
                 <YAxis
                   tickFormatter={(v) =>
                     v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
                   }
                   tickLine={false}
                   axisLine={false}
-                  fontSize={11}
-                  width={40}
+                  fontSize={12}
+                  stroke="var(--muted-foreground)"
+                  width={44}
                 />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="receitas" fill="var(--color-receitas)" radius={4} />
-                <Bar dataKey="despesas" fill="var(--color-despesas)" radius={4} />
+                <ChartTooltip
+                  cursor={{ fill: "var(--muted)", opacity: 0.5 }}
+                  content={
+                    <ChartTooltipContent
+                      formatter={(value, name) => (
+                        <span className="flex w-full justify-between gap-4">
+                          <span className="capitalize text-muted-foreground">
+                            {name}
+                          </span>
+                          <span className="font-semibold tabular-nums">
+                            {formatarMoeda(Number(value))}
+                          </span>
+                        </span>
+                      )}
+                    />
+                  }
+                />
+                <Bar
+                  dataKey="receitas"
+                  fill="var(--color-receitas)"
+                  radius={[6, 6, 0, 0]}
+                  maxBarSize={38}
+                />
+                <Bar
+                  dataKey="despesas"
+                  fill="var(--color-despesas)"
+                  radius={[6, 6, 0, 0]}
+                  maxBarSize={38}
+                />
               </BarChart>
             </ChartContainer>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="shadow-card">
           <CardHeader>
             <CardTitle className="text-base">Evolução do saldo</CardTitle>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={configGrafico} className="h-[240px] w-full">
+            <ChartContainer config={configGrafico} className="h-[280px] w-full">
               <AreaChart data={dadosEvolucao}>
                 <defs>
                   <linearGradient id="saldoFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--color-saldo)" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="var(--color-saldo)" stopOpacity={0} />
+                    <stop offset="5%" stopColor="var(--color-saldo)" stopOpacity={0.55} />
+                    <stop offset="95%" stopColor="var(--color-saldo)" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={11} />
+                <CartesianGrid
+                  vertical={false}
+                  strokeDasharray="4 4"
+                  stroke="var(--border)"
+                />
+                <XAxis
+                  dataKey="mes"
+                  tickLine={false}
+                  axisLine={false}
+                  fontSize={12}
+                  stroke="var(--muted-foreground)"
+                  tickMargin={8}
+                />
                 <YAxis
                   tickFormatter={(v) =>
                     v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
                   }
                   tickLine={false}
                   axisLine={false}
-                  fontSize={11}
-                  width={50}
+                  fontSize={12}
+                  stroke="var(--muted-foreground)"
+                  width={52}
                 />
-                <ChartTooltip content={<ChartTooltipContent />} />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      formatter={(value, name) => (
+                        <span className="flex w-full justify-between gap-4">
+                          <span className="capitalize text-muted-foreground">
+                            {name}
+                          </span>
+                          <span className="font-semibold tabular-nums">
+                            {formatarMoeda(Number(value))}
+                          </span>
+                        </span>
+                      )}
+                    />
+                  }
+                />
                 <Area
                   type="monotone"
                   dataKey="saldo"
                   stroke="var(--color-saldo)"
                   fill="url(#saldoFill)"
-                  strokeWidth={2}
+                  strokeWidth={2.5}
+                  dot={{ r: 3, strokeWidth: 0, fill: "var(--color-saldo)" }}
+                  activeDot={{ r: 5 }}
                 />
               </AreaChart>
             </ChartContainer>
@@ -199,8 +266,9 @@ function DashboardPage() {
         </Card>
       </div>
 
+
       {/* Transações recentes */}
-      <Card>
+      <Card className="shadow-card">
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <CardTitle className="text-base">Transações recentes</CardTitle>
           <Link to="/transacoes">
@@ -215,40 +283,43 @@ function DashboardPage() {
               Nenhuma transação ainda. Clique em “Nova transação” para começar.
             </div>
           ) : (
-            <ul className="divide-y">
+            <ul className="divide-y divide-border/60">
               {transacoes.map((t) => {
                 const cat = t.categoria_id
                   ? mapaCategorias.get(t.categoria_id)
                   : null;
                 const Icon = cat ? iconeCategoria(cat.icone) : Wallet;
+                const receita = t.tipo === "receita";
                 return (
                   <li
                     key={t.id}
-                    className="flex items-center gap-3 px-6 py-3 transition-colors hover:bg-muted/50"
+                    className="flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-muted/60"
                   >
                     <div
-                      className="flex h-9 w-9 items-center justify-center rounded-xl ring-1 ring-border/60"
+                      className="flex h-10 w-10 items-center justify-center rounded-xl ring-1 ring-inset"
                       style={{
-                        backgroundColor: (cat?.cor ?? "#64748b") + "22",
+                        backgroundColor: (cat?.cor ?? "#64748b") + "1f",
                         color: cat?.cor ?? "#64748b",
+                        borderColor: "transparent",
+                        boxShadow: `inset 0 0 0 1px ${(cat?.cor ?? "#64748b")}33`,
                       }}
                     >
-                      <Icon className="h-4 w-4" />
+                      <Icon className="h-4.5 w-4.5" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{t.descricao}</p>
+                      <p className="truncate text-sm font-semibold">{t.descricao}</p>
                       <p className="text-xs text-muted-foreground">
                         {cat?.nome ?? "Sem categoria"} · {formatarData(t.data)}
                       </p>
                     </div>
                     <span
-                      className={`text-sm font-semibold ${
-                        t.tipo === "receita"
-                          ? "text-success"
-                          : "text-danger"
+                      className={`rounded-lg px-2.5 py-1 text-sm font-bold tabular-nums ${
+                        receita
+                          ? "bg-success/10 text-success"
+                          : "bg-danger/10 text-danger"
                       }`}
                     >
-                      {t.tipo === "receita" ? "+" : "−"}
+                      {receita ? "+" : "−"}
                       {formatarMoeda(t.valor)}
                     </span>
                   </li>
@@ -258,6 +329,7 @@ function DashboardPage() {
           )}
         </CardContent>
       </Card>
+
 
       <CardMetas />
 
@@ -270,36 +342,59 @@ function DashboardPage() {
   );
 }
 
+const TONS = {
+  primary: {
+    barra: "bg-primary",
+    chip: "bg-primary text-primary-foreground",
+    valor: "text-foreground",
+    brilho: "bg-primary/10",
+  },
+  success: {
+    barra: "bg-success",
+    chip: "bg-success text-success-foreground",
+    valor: "text-success",
+    brilho: "bg-success/10",
+  },
+  danger: {
+    barra: "bg-danger",
+    chip: "bg-danger text-danger-foreground",
+    valor: "text-danger",
+    brilho: "bg-danger/10",
+  },
+} as const;
+
 function CardResumo({
   titulo,
   valor,
   icon,
-  cor,
+  tom,
 }: {
   titulo: string;
   valor: number;
   icon: React.ReactNode;
-  cor: string;
+  tom: keyof typeof TONS;
 }) {
-  const fundo = cor.includes("success")
-    ? "bg-success-soft"
-    : cor.includes("danger")
-      ? "bg-danger-soft"
-      : "bg-primary-soft";
+  const t = TONS[tom];
   return (
-    <Card className="overflow-hidden hover:shadow-card">
-      <CardContent className="p-5">
+    <Card className="relative overflow-hidden shadow-card transition-shadow hover:shadow-lg">
+      <span className={`absolute inset-x-0 top-0 h-1 ${t.barra}`} />
+      <span
+        className={`pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full blur-2xl ${t.brilho}`}
+      />
+      <CardContent className="relative p-5">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-medium text-muted-foreground">{titulo}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {titulo}
+          </p>
           <span
-            className={`flex h-10 w-10 items-center justify-center rounded-xl ${fundo} ${cor}`}
+            className={`flex h-11 w-11 items-center justify-center rounded-2xl shadow-soft ${t.chip}`}
           >
             {icon}
           </span>
         </div>
         <p
-          className={`mt-3 text-2xl font-bold tracking-tight ${
-            valor < 0 ? "text-danger" : ""
+          className={`mt-4 text-3xl font-bold tracking-tight tabular-nums sm:text-4xl ${
+            tom === "primary" && valor < 0 ? "text-danger" : t.valor
           }`}
         >
           {formatarMoeda(valor)}
@@ -308,6 +403,7 @@ function CardResumo({
     </Card>
   );
 }
+
 
 
 function CardMetas() {
@@ -320,7 +416,7 @@ function CardMetas() {
   const destaque = emAndamento.length > 0 ? emAndamento : metas.slice(0, 3);
 
   return (
-    <Card>
+    <Card className="shadow-card">
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle className="text-base">Metas</CardTitle>
         <Button variant="ghost" size="sm" asChild>
@@ -329,28 +425,39 @@ function CardMetas() {
           </Link>
         </Button>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {destaque.map((meta) => {
           const { percentual, restante, status } = progressoMeta(meta);
           const barra =
             status === "concluida"
-              ? "[&>div]:bg-success bg-success/15"
+              ? "[&>div]:bg-success bg-success/20"
               : status === "atrasada"
-                ? "[&>div]:bg-danger bg-danger/15"
+                ? "[&>div]:bg-danger bg-danger/20"
                 : percentual >= 70
-                  ? "[&>div]:bg-warning bg-warning/15"
-                  : "[&>div]:bg-primary bg-primary/15";
+                  ? "[&>div]:bg-warning bg-warning/20"
+                  : "[&>div]:bg-primary bg-primary/20";
+          const corTexto =
+            status === "concluida"
+              ? "text-success"
+              : status === "atrasada"
+                ? "text-danger"
+                : percentual >= 70
+                  ? "text-warning"
+                  : "text-primary";
           return (
-            <div key={meta.id} className="space-y-1.5">
-              <div className="flex items-center justify-between text-sm">
-                <span className="truncate font-medium">{meta.nome}</span>
-                <span className="text-muted-foreground">
+            <div
+              key={meta.id}
+              className="space-y-2 rounded-xl border border-border/70 bg-muted/30 p-4"
+            >
+              <div className="flex items-baseline justify-between gap-2 text-sm">
+                <span className="truncate font-semibold">{meta.nome}</span>
+                <span className={`text-base font-bold tabular-nums ${corTexto}`}>
                   {percentual.toFixed(0)}%
                 </span>
               </div>
               <Progress
                 value={Math.min(percentual, 100)}
-                className={`h-2 ${barra}`}
+                className={`h-2.5 ${barra}`}
               />
               <p className="text-xs text-muted-foreground">
                 {restante > 0
@@ -360,6 +467,7 @@ function CardMetas() {
             </div>
           );
         })}
+
       </CardContent>
     </Card>
   );
