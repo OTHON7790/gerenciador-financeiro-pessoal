@@ -80,6 +80,29 @@ function OrcamentosPage() {
 
   const despesaCategorias = categorias.filter((c) => c.tipo === "despesa");
 
+  const semOrcamento = useMemo(
+    () =>
+      despesaCategorias.filter(
+        (c) =>
+          !orcamentosPorCategoria.has(c.id) &&
+          (gastoPorCategoria.get(c.id) ?? 0) > 0,
+      ),
+    [despesaCategorias, orcamentosPorCategoria, gastoPorCategoria],
+  );
+
+  const totais = useMemo(() => {
+    const orcado = orcamentos.reduce((s, o) => s + o.limite, 0);
+    const gasto = orcamentos.reduce(
+      (s, o) => s + (gastoPorCategoria.get(o.categoria_id) ?? 0),
+      0,
+    );
+    const percentualReal = orcado > 0 ? (gasto / orcado) * 100 : 0;
+    const nivel =
+      percentualReal >= 100 ? "danger" : percentualReal >= 80 ? "warning" : "success";
+    return { orcado, gasto, percentualReal, nivel } as const;
+  }, [orcamentos, gastoPorCategoria]);
+
+
   // formulário de novo orçamento
   const [novaCategoria, setNovaCategoria] = useState<string>("");
   const [novoLimite, setNovoLimite] = useState("");
