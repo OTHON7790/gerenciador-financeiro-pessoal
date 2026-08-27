@@ -126,8 +126,15 @@ function OrcamentosPage() {
   });
 
   const atualizarMutation = useMutation({
-    mutationFn: (args: { id: string; limite: number }) =>
-      salvar({ data: { id: args.id, limite: args.limite, categoria_id: "", mes } }),
+    mutationFn: (args: { id: string; limite: number; categoria_id: string }) =>
+      salvar({
+        data: {
+          id: args.id,
+          limite: args.limite,
+          categoria_id: args.categoria_id,
+          mes,
+        },
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orcamentos"] });
     },
@@ -386,7 +393,7 @@ function OrcamentosPage() {
                         onBlur={(e) => {
                           const v = paraFloat(e.target.value);
                           if (v !== o.limite && v >= 0) {
-                            atualizarMutation.mutate({ id: o.id, limite: v });
+                            atualizarMutation.mutate({ id: o.id, limite: v, categoria_id: o.categoria_id });
                           }
                         }}
                       />
