@@ -26,6 +26,7 @@ export const salvarMeta = createServerFn({ method: "POST" })
       nome: data.nome,
       valor_alvo: data.valor_alvo,
       valor_acumulado: data.valor_acumulado,
+      data_inicio: data.data_inicio ?? null,
       prazo: data.prazo ?? null,
     };
     if (data.id) {
