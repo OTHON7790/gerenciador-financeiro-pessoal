@@ -23,11 +23,11 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import {
-  Area,
-  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
+  Line,
+  LineChart,
   XAxis,
   YAxis,
 } from "recharts";
@@ -70,7 +70,7 @@ function DashboardPage() {
   const { data: transacoes } = useSuspenseQuery(transacoesQuery({ limite: 6 }));
   const { data: resumo } = useSuspenseQuery(resumoMesQuery(mes));
   const { data: serie } = useSuspenseQuery(serieMensalQuery(meses));
-  const { data: evolucao } = useSuspenseQuery(evolucaoSaldoQuery(meses));
+  
 
   const mapaCategorias = useMemo(() => {
     const m = new Map<string, Categoria>();
@@ -84,10 +84,6 @@ function DashboardPage() {
     despesas: s.despesas,
   }));
 
-  const dadosEvolucao = evolucao.map((e) => ({
-    mes: formatarMes(e.mes).replace(/^./, (c) => c.toUpperCase()),
-    saldo: e.saldo,
-  }));
 
   const configGrafico: ChartConfig = {
     receitas: { label: "Receitas", color: "var(--chart-1)" },
