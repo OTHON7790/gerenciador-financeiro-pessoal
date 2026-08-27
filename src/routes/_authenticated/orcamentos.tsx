@@ -393,7 +393,7 @@ function OrcamentosPage() {
                         onBlur={(e) => {
                           const v = paraFloat(e.target.value);
                           if (v !== o.limite && v >= 0) {
-                            atualizarMutation.mutate({ id: o.id, limite: v });
+                            atualizarMutation.mutate({ id: o.id, limite: v, categoria_id: o.categoria_id });
                           }
                         }}
                       />
