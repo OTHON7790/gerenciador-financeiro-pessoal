@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
+import { useSuspenseQuery, useQueryClient, useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Plus, TrendingUp, TrendingDown, Wallet, ArrowRight } from "lucide-react";
@@ -9,7 +9,6 @@ import {
   transacoesQuery,
   resumoMesQuery,
   serieMensalQuery,
-  evolucaoSaldoQuery,
   garantirCategoriasPadrao,
 } from "@/lib/queries";
 import { mesesAnteriores, mesAtual, formatarMoeda, formatarData, formatarMes } from "@/lib/format";
