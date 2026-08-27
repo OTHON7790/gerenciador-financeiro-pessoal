@@ -3,7 +3,14 @@ import { useMemo, useState } from "react";
 import { useSuspenseQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Target, Plus, Trash2 } from "lucide-react";
+import {
+  Target,
+  Plus,
+  Trash2,
+  AlertTriangle,
+  CheckCircle2,
+  Wallet,
+} from "lucide-react";
 import { categoriasQuery, orcamentosQuery, resumoMesQuery } from "@/lib/queries";
 import { salvarOrcamento, excluirOrcamento } from "@/lib/orcamentos.functions";
 import { type Categoria, type Orcamento } from "@/lib/schemas";
