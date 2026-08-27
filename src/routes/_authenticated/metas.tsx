@@ -178,6 +178,7 @@ function CardMeta({
   onExcluir: () => void;
 }) {
   const { percentual, restante, status, rotulo } = progressoMeta(meta);
+  const plano = planejarMeta(meta);
   const [valor, setValor] = useState("");
 
   const queryClient = useQueryClient();
