@@ -31,6 +31,7 @@ export function MetaDialog({ open, onOpenChange, meta }: Props) {
   const [nome, setNome] = useState("");
   const [valorAlvo, setValorAlvo] = useState("");
   const [valorAcumulado, setValorAcumulado] = useState("");
+  const [dataInicio, setDataInicio] = useState("");
   const [prazo, setPrazo] = useState("");
 
   useEffect(() => {
