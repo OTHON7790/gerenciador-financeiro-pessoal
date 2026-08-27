@@ -97,7 +97,12 @@ export function progressoMeta(meta: Meta): {
   return { percentual, restante, status, rotulo };
 }
 
-export type SituacaoMeta = "concluida" | "boa" | "atencao" | "risco" | "sem_prazo";
+export type SituacaoMeta =
+  | "concluida"
+  | "dentro"
+  | "atencao"
+  | "fora"
+  | "sem_prazo";
 
 function parseDataLocal(valor: string | null | undefined): Date | null {
   if (!valor) return null;
@@ -113,60 +118,115 @@ function mesesEntre(inicio: Date, fim: Date): number {
 }
 
 export function planejarMeta(meta: Meta): {
+  metaMensal: number;
+  esperadoHoje: number;
+  acumulado: number;
+  diferenca: number;
   restante: number;
   mesesRestantes: number;
-  valorMensal: number;
+  valorMensalNovo: number;
   situacao: SituacaoMeta;
   rotulo: string;
+  atrasado: boolean;
 } {
-  const restante = Math.max(meta.valor_alvo - meta.valor_acumulado, 0);
+  const acumulado = meta.valor_acumulado;
+  const restante = Math.max(meta.valor_alvo - acumulado, 0);
   const percentual =
-    meta.valor_alvo > 0 ? (meta.valor_acumulado / meta.valor_alvo) * 100 : 0;
+    meta.valor_alvo > 0 ? (acumulado / meta.valor_alvo) * 100 : 0;
 
   if (percentual >= 100) {
-    return { restante: 0, mesesRestantes: 0, valorMensal: 0, situacao: "concluida", rotulo: "Meta alcançada" };
+    return {
+      metaMensal: 0,
+      esperadoHoje: meta.valor_alvo,
+      acumulado,
+      diferenca: acumulado - meta.valor_alvo,
+      restante: 0,
+      mesesRestantes: 0,
+      valorMensalNovo: 0,
+      situacao: "concluida",
+      rotulo: "Meta alcançada",
+      atrasado: false,
+    };
   }
 
   if (!meta.prazo) {
-    return { restante, mesesRestantes: 0, valorMensal: 0, situacao: "sem_prazo", rotulo: "Sem prazo" };
+    return {
+      metaMensal: 0,
+      esperadoHoje: 0,
+      acumulado,
+      diferenca: 0,
+      restante,
+      mesesRestantes: 0,
+      valorMensalNovo: 0,
+      situacao: "sem_prazo",
+      rotulo: "Sem prazo",
+      atrasado: false,
+    };
   }
 
   const limite = parseDataLocal(meta.prazo);
   if (!limite) {
-    return { restante, mesesRestantes: 0, valorMensal: 0, situacao: "sem_prazo", rotulo: "Sem prazo" };
+    return {
+      metaMensal: 0,
+      esperadoHoje: 0,
+      acumulado,
+      diferenca: 0,
+      restante,
+      mesesRestantes: 0,
+      valorMensalNovo: 0,
+      situacao: "sem_prazo",
+      rotulo: "Sem prazo",
+      atrasado: false,
+    };
   }
 
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
 
-  const mesesRestantesRaw = mesesEntre(hoje, limite);
   const prazoVencido = limite < hoje;
-  const mesesRestantes = Math.max(mesesRestantesRaw, 0);
-  const valorMensal = mesesRestantes > 0 ? restante / mesesRestantes : restante;
-
-  if (prazoVencido) {
-    return { restante, mesesRestantes: 0, valorMensal, situacao: "risco", rotulo: "Risco" };
-  }
+  const mesesRestantes = Math.max(mesesEntre(hoje, limite), 0);
 
   const inicio = parseDataLocal(meta.criado_em) ?? hoje;
   const totalMeses = Math.max(mesesEntre(inicio, limite), 1);
   const mesesPassados = Math.min(Math.max(mesesEntre(inicio, hoje), 0), totalMeses);
-  const esperadoAgora = meta.valor_alvo * (mesesPassados / totalMeses);
+
+  const metaMensal = meta.valor_alvo / totalMeses;
+  const esperadoHoje = Math.min(
+    Math.max(metaMensal * mesesPassados, 0),
+    meta.valor_alvo,
+  );
+  const diferenca = acumulado - esperadoHoje;
+  const valorMensalNovo =
+    mesesRestantes > 0 ? restante / mesesRestantes : restante;
 
   let situacao: SituacaoMeta;
   let rotulo: string;
-  if (mesesPassados === 0 || (esperadoAgora > 0 && meta.valor_acumulado >= esperadoAgora)) {
-    situacao = "boa";
-    rotulo = "Bom andamento";
-  } else if (esperadoAgora > 0 && meta.valor_acumulado / esperadoAgora >= 0.7) {
+  if (prazoVencido) {
+    situacao = "fora";
+    rotulo = "Fora da meta";
+  } else if (acumulado >= esperadoHoje) {
+    situacao = "dentro";
+    rotulo = "Dentro da meta";
+  } else if (esperadoHoje > 0 && acumulado >= esperadoHoje * 0.9) {
     situacao = "atencao";
     rotulo = "Atenção";
   } else {
-    situacao = "risco";
-    rotulo = "Risco";
+    situacao = "fora";
+    rotulo = "Fora da meta";
   }
 
-  return { restante, mesesRestantes, valorMensal, situacao, rotulo };
+  return {
+    metaMensal,
+    esperadoHoje,
+    acumulado,
+    diferenca,
+    restante,
+    mesesRestantes,
+    valorMensalNovo,
+    situacao,
+    rotulo,
+    atrasado: diferenca < 0,
+  };
 }
 
 // Tipos de domínio (espelham as linhas do banco)
