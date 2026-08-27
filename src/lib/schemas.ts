@@ -60,6 +60,7 @@ export type Meta = {
   nome: string;
   valor_alvo: number;
   valor_acumulado: number;
+  data_inicio: string | null;
   prazo: string | null;
   cor: string;
   icone: string;
