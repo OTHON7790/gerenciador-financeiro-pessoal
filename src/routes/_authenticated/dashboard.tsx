@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
+import { useSuspenseQuery, useQueryClient, useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Plus, TrendingUp, TrendingDown, Wallet, ArrowRight } from "lucide-react";
@@ -9,7 +9,6 @@ import {
   transacoesQuery,
   resumoMesQuery,
   serieMensalQuery,
-  evolucaoSaldoQuery,
   garantirCategoriasPadrao,
 } from "@/lib/queries";
 import { mesesAnteriores, mesAtual, formatarMoeda, formatarData, formatarMes } from "@/lib/format";
@@ -24,11 +23,11 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import {
-  Area,
-  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
+  Line,
+  LineChart,
   XAxis,
   YAxis,
 } from "recharts";
@@ -71,7 +70,7 @@ function DashboardPage() {
   const { data: transacoes } = useSuspenseQuery(transacoesQuery({ limite: 6 }));
   const { data: resumo } = useSuspenseQuery(resumoMesQuery(mes));
   const { data: serie } = useSuspenseQuery(serieMensalQuery(meses));
-  const { data: evolucao } = useSuspenseQuery(evolucaoSaldoQuery(meses));
+  
 
   const mapaCategorias = useMemo(() => {
     const m = new Map<string, Categoria>();
@@ -85,10 +84,6 @@ function DashboardPage() {
     despesas: s.despesas,
   }));
 
-  const dadosEvolucao = evolucao.map((e) => ({
-    mes: formatarMes(e.mes).replace(/^./, (c) => c.toUpperCase()),
-    saldo: e.saldo,
-  }));
 
   const configGrafico: ChartConfig = {
     receitas: { label: "Receitas", color: "var(--chart-1)" },
@@ -199,71 +194,8 @@ function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-card">
-          <CardHeader>
-            <CardTitle className="text-base">Evolução do saldo</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={configGrafico} className="h-[280px] w-full">
-              <AreaChart data={dadosEvolucao}>
-                <defs>
-                  <linearGradient id="saldoFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--color-saldo)" stopOpacity={0.55} />
-                    <stop offset="95%" stopColor="var(--color-saldo)" stopOpacity={0.02} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid
-                  vertical={false}
-                  strokeDasharray="4 4"
-                  stroke="var(--border)"
-                />
-                <XAxis
-                  dataKey="mes"
-                  tickLine={false}
-                  axisLine={false}
-                  fontSize={12}
-                  stroke="var(--muted-foreground)"
-                  tickMargin={8}
-                />
-                <YAxis
-                  tickFormatter={(v) =>
-                    v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
-                  }
-                  tickLine={false}
-                  axisLine={false}
-                  fontSize={12}
-                  stroke="var(--muted-foreground)"
-                  width={52}
-                />
-                <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      formatter={(value, name) => (
-                        <span className="flex w-full justify-between gap-4">
-                          <span className="capitalize text-muted-foreground">
-                            {name}
-                          </span>
-                          <span className="font-semibold tabular-nums">
-                            {formatarMoeda(Number(value))}
-                          </span>
-                        </span>
-                      )}
-                    />
-                  }
-                />
-                <Area
-                  type="monotone"
-                  dataKey="saldo"
-                  stroke="var(--color-saldo)"
-                  fill="url(#saldoFill)"
-                  strokeWidth={2.5}
-                  dot={{ r: 3, strokeWidth: 0, fill: "var(--color-saldo)" }}
-                  activeDot={{ r: 5 }}
-                />
-              </AreaChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
+        <CardEvolucaoFinanceira />
+
       </div>
 
 
@@ -339,6 +271,151 @@ function DashboardPage() {
         categorias={categorias}
       />
     </div>
+  );
+}
+
+const PERIODOS = [3, 6, 12] as const;
+type Periodo = (typeof PERIODOS)[number];
+
+const SERIES = [
+  { chave: "receitas", rotulo: "Receitas", cor: "var(--chart-1)" },
+  { chave: "despesas", rotulo: "Despesas", cor: "var(--chart-2)" },
+  { chave: "saldo", rotulo: "Saldo", cor: "var(--chart-3)" },
+] as const;
+
+function CardEvolucaoFinanceira() {
+  const [periodo, setPeriodo] = useState<Periodo>(6);
+  const [ocultas, setOcultas] = useState<string[]>([]);
+  const meses = useMemo(() => mesesAnteriores(periodo), [periodo]);
+
+  const { data: serie = [] } = useQuery({
+    ...serieMensalQuery(meses),
+    placeholderData: keepPreviousData,
+  });
+
+  const dados = serie.map((s) => ({
+    mes: formatarMes(s.mes).replace(/^./, (c) => c.toUpperCase()),
+    receitas: s.receitas,
+    despesas: s.despesas,
+    saldo: s.receitas - s.despesas,
+  }));
+
+  const config: ChartConfig = {
+    receitas: { label: "Receitas", color: "var(--chart-1)" },
+    despesas: { label: "Despesas", color: "var(--chart-2)" },
+    saldo: { label: "Saldo", color: "var(--chart-3)" },
+  };
+
+  const alternar = (chave: string) =>
+    setOcultas((atual) =>
+      atual.includes(chave)
+        ? atual.filter((c) => c !== chave)
+        : [...atual, chave],
+    );
+
+  return (
+    <Card className="shadow-card">
+      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+        <CardTitle className="text-base">Evolução financeira</CardTitle>
+        <div className="inline-flex rounded-lg bg-muted p-1">
+          {PERIODOS.map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => setPeriodo(p)}
+              className={`rounded-md px-3 py-1 text-xs font-semibold transition-colors ${
+                periodo === p
+                  ? "bg-background text-foreground shadow-soft"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {p} meses
+            </button>
+          ))}
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="flex flex-wrap gap-2">
+          {SERIES.map((s) => {
+            const ativa = !ocultas.includes(s.chave);
+            return (
+              <button
+                key={s.chave}
+                type="button"
+                onClick={() => alternar(s.chave)}
+                aria-pressed={ativa}
+                className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-opacity ${
+                  ativa ? "opacity-100" : "opacity-40"
+                }`}
+              >
+                <span
+                  className="h-2.5 w-2.5 rounded-full"
+                  style={{ backgroundColor: s.cor }}
+                />
+                {s.rotulo}
+              </button>
+            );
+          })}
+        </div>
+        <ChartContainer config={config} className="h-[260px] w-full sm:h-[280px]">
+          <LineChart data={dados} margin={{ left: 4, right: 8, top: 8 }}>
+            <CartesianGrid
+              vertical={false}
+              strokeDasharray="4 4"
+              stroke="var(--border)"
+            />
+            <XAxis
+              dataKey="mes"
+              tickLine={false}
+              axisLine={false}
+              fontSize={12}
+              stroke="var(--muted-foreground)"
+              tickMargin={8}
+              interval="preserveStartEnd"
+              minTickGap={8}
+            />
+            <YAxis
+              tickFormatter={(v) =>
+                Math.abs(v) >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
+              }
+              tickLine={false}
+              axisLine={false}
+              fontSize={12}
+              stroke="var(--muted-foreground)"
+              width={48}
+            />
+            <ChartTooltip
+              content={
+                <ChartTooltipContent
+                  formatter={(value, name) => (
+                    <span className="flex w-full justify-between gap-4">
+                      <span className="capitalize text-muted-foreground">
+                        {name}
+                      </span>
+                      <span className="font-semibold tabular-nums">
+                        {formatarMoeda(Number(value))}
+                      </span>
+                    </span>
+                  )}
+                />
+              }
+            />
+            {SERIES.filter((s) => !ocultas.includes(s.chave)).map((s) => (
+              <Line
+                key={s.chave}
+                type="monotone"
+                dataKey={s.chave}
+                name={s.rotulo}
+                stroke={s.cor}
+                strokeWidth={2.5}
+                dot={{ r: 3.5, strokeWidth: 0, fill: s.cor }}
+                activeDot={{ r: 5.5 }}
+              />
+            ))}
+          </LineChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
   );
 }
 
