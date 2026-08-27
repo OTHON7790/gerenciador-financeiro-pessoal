@@ -49,6 +49,7 @@ export type Database = {
           atualizado_em: string
           cor: string
           criado_em: string
+          data_inicio: string | null
           icone: string
           id: string
           nome: string
@@ -61,6 +62,7 @@ export type Database = {
           atualizado_em?: string
           cor?: string
           criado_em?: string
+          data_inicio?: string | null
           icone?: string
           id?: string
           nome: string
@@ -73,6 +75,7 @@ export type Database = {
           atualizado_em?: string
           cor?: string
           criado_em?: string
+          data_inicio?: string | null
           icone?: string
           id?: string
           nome?: string

@@ -1,0 +1,1 @@
+ALTER TABLE public.metas ADD COLUMN IF NOT EXISTS data_inicio date;
