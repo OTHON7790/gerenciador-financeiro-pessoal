@@ -7,10 +7,10 @@ import {
 } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Target, Plus, Trash2, Pencil, Trophy, AlertTriangle } from "lucide-react";
+import { Target, Plus, Trash2, Pencil, Trophy, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { metasQuery } from "@/lib/queries";
 import { adicionarValorMeta, excluirMeta } from "@/lib/metas.functions";
-import { progressoMeta, type Meta } from "@/lib/schemas";
+import { progressoMeta, planejarMeta, type Meta } from "@/lib/schemas";
 import { formatarMoeda, formatarData, paraFloat } from "@/lib/format";
 import { MetaDialog } from "@/components/meta-dialog";
 import { Button } from "@/components/ui/button";
@@ -178,6 +178,7 @@ function CardMeta({
   onExcluir: () => void;
 }) {
   const { percentual, restante, status, rotulo } = progressoMeta(meta);
+  const plano = planejarMeta(meta);
   const [valor, setValor] = useState("");
 
   const queryClient = useQueryClient();
@@ -298,6 +299,71 @@ function CardMeta({
                 : "Objetivo alcançado"}
             </span>
           </div>
+        </div>
+
+        <div className="border-t pt-4">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Planejamento da meta
+          </p>
+
+          {plano.situacao === "sem_prazo" ? (
+            <p className="text-base text-muted-foreground">
+              Defina um prazo para calcular o valor mensal necessário.
+            </p>
+          ) : plano.situacao === "concluida" ? (
+            <div className="space-y-3">
+              <p className="flex items-center gap-2 text-lg font-semibold text-success">
+                <Trophy className="h-5 w-5" />
+                Meta alcançada!
+              </p>
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                <span>Total guardado: {formatarMoeda(meta.valor_acumulado)}</span>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-base font-medium text-foreground">
+                Para alcançar sua meta até{" "}
+                <span className="font-semibold text-primary">
+                  {formatarData(meta.prazo!)}
+                </span>
+                , guarde aproximadamente{" "}
+                <span className="font-semibold text-success">
+                  {formatarMoeda(plano.valorMensal)}
+                </span>{" "}
+                por mês.
+              </p>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <span
+                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                    plano.situacao === "boa"
+                      ? "bg-success/10 text-success"
+                      : plano.situacao === "atencao"
+                        ? "bg-warning/10 text-warning"
+                        : "bg-danger/10 text-danger"
+                  }`}
+                >
+                  {plano.situacao === "boa" ? (
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                  ) : (
+                    <AlertTriangle className="h-3.5 w-3.5" />
+                  )}
+                  {plano.rotulo}
+                </span>
+              </div>
+
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                <span>Faltam {formatarMoeda(plano.restante)}</span>
+                <span>
+                  {plano.mesesRestantes <= 0
+                    ? "Prazo vencido"
+                    : `${plano.mesesRestantes} ${plano.mesesRestantes === 1 ? "mês" : "meses"} restante(s)`}
+                </span>
+                <span>{formatarMoeda(plano.valorMensal)}/mês</span>
+              </div>
+            </div>
+          )}
         </div>
 
         <form

@@ -97,6 +97,78 @@ export function progressoMeta(meta: Meta): {
   return { percentual, restante, status, rotulo };
 }
 
+export type SituacaoMeta = "concluida" | "boa" | "atencao" | "risco" | "sem_prazo";
+
+function parseDataLocal(valor: string | null | undefined): Date | null {
+  if (!valor) return null;
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(valor.trim());
+  if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  const d = new Date(valor);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function mesesEntre(inicio: Date, fim: Date): number {
+  return (fim.getFullYear() - inicio.getFullYear()) * 12 +
+    (fim.getMonth() - inicio.getMonth());
+}
+
+export function planejarMeta(meta: Meta): {
+  restante: number;
+  mesesRestantes: number;
+  valorMensal: number;
+  situacao: SituacaoMeta;
+  rotulo: string;
+} {
+  const restante = Math.max(meta.valor_alvo - meta.valor_acumulado, 0);
+  const percentual =
+    meta.valor_alvo > 0 ? (meta.valor_acumulado / meta.valor_alvo) * 100 : 0;
+
+  if (percentual >= 100) {
+    return { restante: 0, mesesRestantes: 0, valorMensal: 0, situacao: "concluida", rotulo: "Meta alcançada" };
+  }
+
+  if (!meta.prazo) {
+    return { restante, mesesRestantes: 0, valorMensal: 0, situacao: "sem_prazo", rotulo: "Sem prazo" };
+  }
+
+  const limite = parseDataLocal(meta.prazo);
+  if (!limite) {
+    return { restante, mesesRestantes: 0, valorMensal: 0, situacao: "sem_prazo", rotulo: "Sem prazo" };
+  }
+
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+
+  const mesesRestantesRaw = mesesEntre(hoje, limite);
+  const prazoVencido = limite < hoje;
+  const mesesRestantes = Math.max(mesesRestantesRaw, 0);
+  const valorMensal = mesesRestantes > 0 ? restante / mesesRestantes : restante;
+
+  if (prazoVencido) {
+    return { restante, mesesRestantes: 0, valorMensal, situacao: "risco", rotulo: "Risco" };
+  }
+
+  const inicio = parseDataLocal(meta.criado_em) ?? hoje;
+  const totalMeses = Math.max(mesesEntre(inicio, limite), 1);
+  const mesesPassados = Math.min(Math.max(mesesEntre(inicio, hoje), 0), totalMeses);
+  const esperadoAgora = meta.valor_alvo * (mesesPassados / totalMeses);
+
+  let situacao: SituacaoMeta;
+  let rotulo: string;
+  if (mesesPassados === 0 || (esperadoAgora > 0 && meta.valor_acumulado >= esperadoAgora)) {
+    situacao = "boa";
+    rotulo = "Bom andamento";
+  } else if (esperadoAgora > 0 && meta.valor_acumulado / esperadoAgora >= 0.7) {
+    situacao = "atencao";
+    rotulo = "Atenção";
+  } else {
+    situacao = "risco";
+    rotulo = "Risco";
+  }
+
+  return { restante, mesesRestantes, valorMensal, situacao, rotulo };
+}
+
 // Tipos de domínio (espelham as linhas do banco)
 export type Categoria = {
   id: string;
