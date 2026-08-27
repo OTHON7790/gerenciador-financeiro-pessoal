@@ -416,7 +416,7 @@ function CardMetas() {
   const destaque = emAndamento.length > 0 ? emAndamento : metas.slice(0, 3);
 
   return (
-    <Card>
+    <Card className="shadow-card">
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle className="text-base">Metas</CardTitle>
         <Button variant="ghost" size="sm" asChild>
@@ -425,28 +425,39 @@ function CardMetas() {
           </Link>
         </Button>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {destaque.map((meta) => {
           const { percentual, restante, status } = progressoMeta(meta);
           const barra =
             status === "concluida"
-              ? "[&>div]:bg-success bg-success/15"
+              ? "[&>div]:bg-success bg-success/20"
               : status === "atrasada"
-                ? "[&>div]:bg-danger bg-danger/15"
+                ? "[&>div]:bg-danger bg-danger/20"
                 : percentual >= 70
-                  ? "[&>div]:bg-warning bg-warning/15"
-                  : "[&>div]:bg-primary bg-primary/15";
+                  ? "[&>div]:bg-warning bg-warning/20"
+                  : "[&>div]:bg-primary bg-primary/20";
+          const corTexto =
+            status === "concluida"
+              ? "text-success"
+              : status === "atrasada"
+                ? "text-danger"
+                : percentual >= 70
+                  ? "text-warning"
+                  : "text-primary";
           return (
-            <div key={meta.id} className="space-y-1.5">
-              <div className="flex items-center justify-between text-sm">
-                <span className="truncate font-medium">{meta.nome}</span>
-                <span className="text-muted-foreground">
+            <div
+              key={meta.id}
+              className="space-y-2 rounded-xl border border-border/70 bg-muted/30 p-4"
+            >
+              <div className="flex items-baseline justify-between gap-2 text-sm">
+                <span className="truncate font-semibold">{meta.nome}</span>
+                <span className={`text-base font-bold tabular-nums ${corTexto}`}>
                   {percentual.toFixed(0)}%
                 </span>
               </div>
               <Progress
                 value={Math.min(percentual, 100)}
-                className={`h-2 ${barra}`}
+                className={`h-2.5 ${barra}`}
               />
               <p className="text-xs text-muted-foreground">
                 {restante > 0
@@ -456,6 +467,7 @@ function CardMetas() {
             </div>
           );
         })}
+
       </CardContent>
     </Card>
   );
