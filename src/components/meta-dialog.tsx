@@ -128,14 +128,25 @@ export function MetaDialog({ open, onOpenChange, meta }: Props) {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="prazo">Prazo (opcional)</Label>
-            <Input
-              id="prazo"
-              type="date"
-              value={prazo}
-              onChange={(e) => setPrazo(e.target.value)}
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="data-inicio">Data de início</Label>
+              <Input
+                id="data-inicio"
+                type="date"
+                value={dataInicio}
+                onChange={(e) => setDataInicio(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="prazo">Prazo final</Label>
+              <Input
+                id="prazo"
+                type="date"
+                value={prazo}
+                onChange={(e) => setPrazo(e.target.value)}
+              />
+            </div>
           </div>
 
           <DialogFooter>
