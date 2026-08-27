@@ -228,7 +228,7 @@ function OrcamentosPage() {
             const nivel =
               percentualReal >= 100
                 ? "danger"
-                : percentualReal >= 70
+                : percentualReal >= 80
                   ? "warning"
                   : "success";
             const barra = {
@@ -241,12 +241,28 @@ function OrcamentosPage() {
               warning: "text-warning",
               danger: "text-danger",
             }[nivel];
+            const selo = {
+              success: "bg-success/10 text-success ring-success/20",
+              warning: "bg-warning/10 text-warning ring-warning/20",
+              danger: "bg-danger/10 text-danger ring-danger/20",
+            }[nivel];
+            const rotulo = {
+              success: "Dentro do orçamento",
+              warning: "Perto do limite",
+              danger: "Orçamento estourado",
+            }[nivel];
+            const SeloIcon =
+              nivel === "success"
+                ? CheckCircle2
+                : nivel === "warning"
+                  ? AlertTriangle
+                  : AlertTriangle;
             const Icon = cat ? iconeCategoria(cat.icone) : Target;
 
             return (
               <Card key={o.id}>
                 <CardContent className="p-4">
-                  <div className="flex items-center justify-between gap-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <div
                         className="flex h-10 w-10 items-center justify-center rounded-lg ring-1 ring-border/60"
@@ -261,9 +277,12 @@ function OrcamentosPage() {
                         <p className="text-sm font-medium">
                           {cat?.nome ?? "Categoria"}
                         </p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatarMoeda(gasto)} de {formatarMoeda(o.limite)}
-                        </p>
+                        <span
+                          className={`mt-0.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ${selo}`}
+                        >
+                          <SeloIcon className="h-3 w-3" />
+                          {rotulo}
+                        </span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -289,32 +308,112 @@ function OrcamentosPage() {
                       </Button>
                     </div>
                   </div>
-                  <div className="mt-3">
-                    <Progress value={percentual} className={`h-2.5 ${barra}`} />
-                    <div className="mt-1.5 flex justify-between text-xs">
-                      <span className={`font-medium ${textoNivel}`}>
-                        {percentual.toFixed(0)}% usado
-                      </span>
-                      <span
-                        className={
-                          estourou
-                            ? "font-medium text-danger"
-                            : "text-muted-foreground"
-                        }
+
+                  <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    <div>
+                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                        Orçamento
+                      </p>
+                      <p className="text-sm font-semibold">
+                        {formatarMoeda(o.limite)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                        Gasto no mês
+                      </p>
+                      <p className="text-sm font-semibold">
+                        {formatarMoeda(gasto)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                        {estourou ? "Excedido" : "Restante"}
+                      </p>
+                      <p
+                        className={`text-sm font-semibold ${
+                          estourou ? "text-danger" : "text-success"
+                        }`}
                       >
-                        {estourou
-                          ? `Estourou ${formatarMoeda(gasto - o.limite)}`
-                          : `Resta ${formatarMoeda(o.limite - gasto)}`}
-                      </span>
+                        {formatarMoeda(Math.abs(o.limite - gasto))}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                        Utilizado
+                      </p>
+                      <p className={`text-sm font-semibold ${textoNivel}`}>
+                        {percentualReal.toFixed(0)}%
+                      </p>
                     </div>
                   </div>
+
+                  <div className="mt-3">
+                    <Progress value={percentual} className={`h-2.5 ${barra}`} />
+                  </div>
+
+                  {estourou && (
+                    <div className="mt-3 flex items-center gap-2 rounded-lg bg-danger/10 px-3 py-2 text-sm font-medium text-danger ring-1 ring-danger/20">
+                      <AlertTriangle className="h-4 w-4 shrink-0" />
+                      Você excedeu o orçamento em{" "}
+                      {formatarMoeda(gasto - o.limite)}.
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             );
           })}
-
         </div>
       )}
+
+      {/* Categorias de despesa sem orçamento definido */}
+      {semOrcamento.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Wallet className="h-4 w-4" /> Sem orçamento definido
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {semOrcamento.map((c) => {
+              const Icon = iconeCategoria(c.icone);
+              const gasto = gastoPorCategoria.get(c.id) ?? 0;
+              return (
+                <div
+                  key={c.id}
+                  className="flex items-center justify-between gap-3 rounded-lg border border-border/60 px-3 py-2"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div
+                      className="flex h-8 w-8 items-center justify-center rounded-lg"
+                      style={{
+                        backgroundColor: c.cor + "22",
+                        color: c.cor,
+                      }}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">{c.nome}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatarMoeda(gasto)} gastos neste mês
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setNovaCategoria(c.id)}
+                  >
+                    Definir limite
+                  </Button>
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+      )}
+
 
       <AlertDialog open={!!excluindo} onOpenChange={(v) => !v && setExcluindo(null)}>
         <AlertDialogContent>
