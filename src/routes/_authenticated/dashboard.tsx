@@ -11,7 +11,15 @@ import {
   serieMensalQuery,
   garantirCategoriasPadrao,
 } from "@/lib/queries";
-import { mesesAnteriores, mesAtual, formatarMoeda, formatarData, formatarMes } from "@/lib/format";
+import {
+  mesesAnteriores,
+  mesesEntre,
+  mesAtual,
+  formatarMoeda,
+  formatarMoedaEixo,
+  formatarData,
+  formatarMes,
+} from "@/lib/format";
 import { type Categoria } from "@/lib/schemas";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
