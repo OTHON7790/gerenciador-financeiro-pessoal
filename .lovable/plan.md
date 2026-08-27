@@ -114,6 +114,28 @@ Para os demais estados, reorganiza em:
    - Meses restantes: `{mesesRestantes} mês(es)`
    - Novo valor/mês: `{formatarMoeda(valorMensalNovo)}/mês`
 
+## Metas independentes
+
+Cada meta funciona de forma totalmente autônoma — nenhuma interfere nos
+cálculos das outras. Isso já é o comportamento atual (cada `CardMeta` chama
+`planejarMeta(meta)` isoladamente, sem somar ou compartilhar estado entre
+metas) e **permanece assim**. O usuário pode criar quantas metas quiser, em
+paralelo, e cada uma terá seu próprio conjunto de valores derivados:
+
+- valor-alvo, prazo, valor guardado (próprios, do banco);
+- meta mensal planejada;
+- valor que deveria estar acumulado até o momento;
+- diferença entre planejado e realizado;
+- meses restantes;
+- valor mensal necessário para alcançar o objetivo;
+- status (Dentro da meta, Atenção ou Fora da meta).
+
+A página `/metas` apenas itera `metas.map(...)` renderizando um `CardMeta`
+por meta; não há agregação nem dependência cruzada. A adição de novas metas
+não muda — continua via `MetaDialog` ("Nova meta"), e o cálculo de cada uma é
+recalculado automaticamente quando seu próprio valor guardado, valor-alvo ou
+prazo muda.
+
 ## Regras de não-regressão
 
 - `progressoMeta` (barra de progresso, `%`, selo de status e cores do
