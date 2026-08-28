@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { PieChart as PieChartIcon, Wallet } from "lucide-react";
+import { PieChart as PieChartIcon, TrendingUp, Wallet } from "lucide-react";
 import { categoriasQuery, serieMensalQuery, evolucaoSaldoQuery, resumoMesQuery } from "@/lib/queries";
 import {
   mesesAnteriores,
