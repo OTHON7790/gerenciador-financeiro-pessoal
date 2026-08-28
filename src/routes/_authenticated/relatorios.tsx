@@ -172,6 +172,85 @@ function RelatoriosPage() {
         </CardContent>
       </Card>
 
+      {/* Evolução financeira */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <TrendingUp className="h-4 w-4" /> Evolução financeira
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="overflow-hidden">
+          <ChartContainer
+            config={config}
+            className="h-[280px] w-full sm:h-[340px]"
+          >
+            <LineChart
+              data={dadosSerie}
+              margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+              <XAxis
+                dataKey="mes"
+                tickLine={false}
+                axisLine={false}
+                fontSize={12}
+                interval="preserveStartEnd"
+                minTickGap={8}
+              />
+              <YAxis
+                tickFormatter={(v) => formatarMoedaEixo(Number(v))}
+                tickLine={false}
+                axisLine={false}
+                fontSize={11}
+                width={72}
+              />
+              <ChartTooltip
+                cursor={{ strokeDasharray: "4 4", strokeOpacity: 0.5 }}
+                content={
+                  <ChartTooltipContent
+                    formatter={(value, name) => (
+                      <div className="flex w-full items-center justify-between gap-4">
+                        <span className="text-muted-foreground">
+                          {config[name as keyof typeof config]?.label ?? name}
+                        </span>
+                        <span className="font-mono font-medium tabular-nums">
+                          {formatarMoeda(Number(value))}
+                        </span>
+                      </div>
+                    )}
+                  />
+                }
+              />
+              <ChartLegend content={<ChartLegendContent />} />
+              <Line
+                type="monotone"
+                dataKey="receitas"
+                stroke="var(--color-receitas)"
+                strokeWidth={2.5}
+                dot={{ r: 3, strokeWidth: 0, fill: "var(--color-receitas)" }}
+                activeDot={{ r: 6 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="despesas"
+                stroke="var(--color-despesas)"
+                strokeWidth={2.5}
+                dot={{ r: 3, strokeWidth: 0, fill: "var(--color-despesas)" }}
+                activeDot={{ r: 6 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="saldo"
+                stroke="var(--color-saldo)"
+                strokeWidth={2.5}
+                dot={{ r: 3, strokeWidth: 0, fill: "var(--color-saldo)" }}
+                activeDot={{ r: 6 }}
+              />
+            </LineChart>
+          </ChartContainer>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Despesas por categoria */}
         <Card>
