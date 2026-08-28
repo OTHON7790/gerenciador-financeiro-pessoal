@@ -1,15 +1,23 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { PieChart as PieChartIcon, Wallet } from "lucide-react";
+import { PieChart as PieChartIcon, TrendingUp, Wallet } from "lucide-react";
 import { categoriasQuery, serieMensalQuery, evolucaoSaldoQuery, resumoMesQuery } from "@/lib/queries";
-import { mesesAnteriores, mesAtual, formatarMoeda, formatarMes } from "@/lib/format";
+import {
+  mesesAnteriores,
+  mesAtual,
+  formatarMoeda,
+  formatarMoedaEixo,
+  formatarMes,
+} from "@/lib/format";
 import { type Categoria } from "@/lib/schemas";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
   type ChartConfig,
 } from "@/components/ui/chart";
 import {
@@ -20,6 +28,8 @@ import {
   CartesianGrid,
   Cell,
   Legend,
+  Line,
+  LineChart,
   Pie,
   PieChart,
   XAxis,
@@ -158,6 +168,85 @@ function RelatoriosPage() {
               <Bar dataKey="receitas" fill="var(--color-receitas)" radius={4} />
               <Bar dataKey="despesas" fill="var(--color-despesas)" radius={4} />
             </BarChart>
+          </ChartContainer>
+        </CardContent>
+      </Card>
+
+      {/* Evolução financeira */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <TrendingUp className="h-4 w-4" /> Evolução financeira
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="overflow-hidden">
+          <ChartContainer
+            config={config}
+            className="h-[280px] w-full sm:h-[340px]"
+          >
+            <LineChart
+              data={dadosSerie}
+              margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+              <XAxis
+                dataKey="mes"
+                tickLine={false}
+                axisLine={false}
+                fontSize={12}
+                interval="preserveStartEnd"
+                minTickGap={8}
+              />
+              <YAxis
+                tickFormatter={(v) => formatarMoedaEixo(Number(v))}
+                tickLine={false}
+                axisLine={false}
+                fontSize={11}
+                width={72}
+              />
+              <ChartTooltip
+                cursor={{ strokeDasharray: "4 4", strokeOpacity: 0.5 }}
+                content={
+                  <ChartTooltipContent
+                    formatter={(value, name) => (
+                      <div className="flex w-full items-center justify-between gap-4">
+                        <span className="text-muted-foreground">
+                          {config[name as keyof typeof config]?.label ?? name}
+                        </span>
+                        <span className="font-mono font-medium tabular-nums">
+                          {formatarMoeda(Number(value))}
+                        </span>
+                      </div>
+                    )}
+                  />
+                }
+              />
+              <ChartLegend content={<ChartLegendContent />} />
+              <Line
+                type="monotone"
+                dataKey="receitas"
+                stroke="var(--color-receitas)"
+                strokeWidth={2.5}
+                dot={{ r: 3, strokeWidth: 0, fill: "var(--color-receitas)" }}
+                activeDot={{ r: 6 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="despesas"
+                stroke="var(--color-despesas)"
+                strokeWidth={2.5}
+                dot={{ r: 3, strokeWidth: 0, fill: "var(--color-despesas)" }}
+                activeDot={{ r: 6 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="saldo"
+                stroke="var(--color-saldo)"
+                strokeWidth={2.5}
+                dot={{ r: 3, strokeWidth: 0, fill: "var(--color-saldo)" }}
+                activeDot={{ r: 6 }}
+              />
+            </LineChart>
           </ChartContainer>
         </CardContent>
       </Card>
