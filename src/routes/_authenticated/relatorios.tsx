@@ -24,9 +24,9 @@ import {
   Area,
   AreaChart,
   Bar,
-  BarChart,
   CartesianGrid,
   Cell,
+  ComposedChart,
   Legend,
   Line,
   LineChart,
@@ -153,21 +153,76 @@ function RelatoriosPage() {
           <CardTitle className="text-base">Receitas x Despesas por mês</CardTitle>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={config} className="h-[300px] w-full">
-            <BarChart data={dadosSerie}>
+          <ChartContainer
+            config={config}
+            className="h-[300px] w-full sm:h-[340px]"
+          >
+            <ComposedChart
+              data={dadosSerie}
+              barGap={4}
+              barCategoryGap="30%"
+              margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+            >
               <CartesianGrid vertical={false} strokeDasharray="3 3" />
-              <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={12} />
-              <YAxis
-                tickFormatter={(v) => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v))}
+              <XAxis
+                dataKey="mes"
                 tickLine={false}
                 axisLine={false}
                 fontSize={12}
-                width={45}
+                interval="preserveStartEnd"
+                minTickGap={8}
               />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Bar dataKey="receitas" fill="var(--color-receitas)" radius={4} />
-              <Bar dataKey="despesas" fill="var(--color-despesas)" radius={4} />
-            </BarChart>
+              <YAxis
+                tickFormatter={(v) => formatarMoedaEixo(Number(v))}
+                tickLine={false}
+                axisLine={false}
+                fontSize={11}
+                width={72}
+              />
+              <ChartTooltip
+                cursor={{ fillOpacity: 0.06 }}
+                content={
+                  <ChartTooltipContent
+                    formatter={(value, name) => (
+                      <div className="flex w-full items-center justify-between gap-4">
+                        <span className="text-muted-foreground">
+                          {config[name as keyof typeof config]?.label ?? name}
+                        </span>
+                        <span className="font-mono font-medium tabular-nums">
+                          {formatarMoeda(Number(value))}
+                        </span>
+                      </div>
+                    )}
+                  />
+                }
+              />
+              <ChartLegend content={<ChartLegendContent />} />
+              <Bar
+                dataKey="receitas"
+                fill="var(--color-receitas)"
+                radius={4}
+                barSize={14}
+              />
+              <Bar
+                dataKey="despesas"
+                fill="var(--color-despesas)"
+                radius={4}
+                barSize={14}
+              />
+              <Line
+                type="linear"
+                dataKey="saldo"
+                stroke="var(--color-saldo)"
+                strokeWidth={3}
+                dot={{
+                  r: 3.5,
+                  strokeWidth: 2,
+                  stroke: "var(--card)",
+                  fill: "var(--color-saldo)",
+                }}
+                activeDot={{ r: 6, strokeWidth: 2, stroke: "var(--card)" }}
+              />
+            </ComposedChart>
           </ChartContainer>
         </CardContent>
       </Card>
@@ -223,28 +278,28 @@ function RelatoriosPage() {
               />
               <ChartLegend content={<ChartLegendContent />} />
               <Line
-                type="monotone"
+                type="linear"
                 dataKey="receitas"
                 stroke="var(--color-receitas)"
-                strokeWidth={2.5}
-                dot={{ r: 3, strokeWidth: 0, fill: "var(--color-receitas)" }}
-                activeDot={{ r: 6 }}
+                strokeWidth={3}
+                dot={{ r: 3.5, strokeWidth: 2, stroke: "var(--card)", fill: "var(--color-receitas)" }}
+                activeDot={{ r: 6, strokeWidth: 2, stroke: "var(--card)" }}
               />
               <Line
-                type="monotone"
+                type="linear"
                 dataKey="despesas"
                 stroke="var(--color-despesas)"
-                strokeWidth={2.5}
-                dot={{ r: 3, strokeWidth: 0, fill: "var(--color-despesas)" }}
-                activeDot={{ r: 6 }}
+                strokeWidth={3}
+                dot={{ r: 3.5, strokeWidth: 2, stroke: "var(--card)", fill: "var(--color-despesas)" }}
+                activeDot={{ r: 6, strokeWidth: 2, stroke: "var(--card)" }}
               />
               <Line
-                type="monotone"
+                type="linear"
                 dataKey="saldo"
                 stroke="var(--color-saldo)"
-                strokeWidth={2.5}
-                dot={{ r: 3, strokeWidth: 0, fill: "var(--color-saldo)" }}
-                activeDot={{ r: 6 }}
+                strokeWidth={3}
+                dot={{ r: 3.5, strokeWidth: 2, stroke: "var(--card)", fill: "var(--color-saldo)" }}
+                activeDot={{ r: 6, strokeWidth: 2, stroke: "var(--card)" }}
               />
             </LineChart>
           </ChartContainer>
