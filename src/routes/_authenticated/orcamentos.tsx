@@ -98,7 +98,10 @@ function OrcamentosPage() {
     );
     const percentualReal = orcado > 0 ? (gasto / orcado) * 100 : 0;
     const nivel =
-      percentualReal >= 100 ? "danger" : percentualReal >= 80 ? "warning" : "success";
+      percentualReal >= 100 ? "danger"
+      : percentualReal >= 90 ? "alert"
+      : percentualReal >= 70 ? "warning"
+      : "success";
     return { orcado, gasto, percentualReal, nivel } as const;
   }, [orcamentos, gastoPorCategoria]);
 
@@ -223,6 +226,7 @@ function OrcamentosPage() {
                     {
                       success: "text-success",
                       warning: "text-warning",
+                      alert: "text-danger",
                       danger: "text-danger",
                     }[totais.nivel]
                   }`}
@@ -237,6 +241,7 @@ function OrcamentosPage() {
                 {
                   success: "[&>div]:bg-success bg-success/15",
                   warning: "[&>div]:bg-warning bg-warning/15",
+                  alert: "[&>div]:bg-danger bg-danger/15",
                   danger: "[&>div]:bg-danger bg-danger/15",
                 }[totais.nivel]
               }`}
@@ -328,35 +333,37 @@ function OrcamentosPage() {
             const nivel =
               percentualReal >= 100
                 ? "danger"
-                : percentualReal >= 80
-                  ? "warning"
-                  : "success";
+                : percentualReal >= 90
+                  ? "alert"
+                  : percentualReal >= 70
+                    ? "warning"
+                    : "success";
             const barra = {
               success: "[&>div]:bg-success bg-success/15",
               warning: "[&>div]:bg-warning bg-warning/15",
+              alert: "[&>div]:bg-danger bg-danger/15",
               danger: "[&>div]:bg-danger bg-danger/15",
             }[nivel];
             const textoNivel = {
               success: "text-success",
               warning: "text-warning",
+              alert: "text-danger",
               danger: "text-danger",
             }[nivel];
             const selo = {
               success: "bg-success/10 text-success ring-success/20",
               warning: "bg-warning/10 text-warning ring-warning/20",
+              alert: "bg-danger/10 text-danger ring-danger/20",
               danger: "bg-danger/10 text-danger ring-danger/20",
             }[nivel];
             const rotulo = {
               success: "Dentro do orçamento",
-              warning: "Perto do limite",
-              danger: "Orçamento estourado",
+              warning: "Atenção: orçamento próximo do limite",
+              alert: "Alerta: orçamento quase esgotado",
+              danger: "Orçamento excedido",
             }[nivel];
             const SeloIcon =
-              nivel === "success"
-                ? CheckCircle2
-                : nivel === "warning"
-                  ? AlertTriangle
-                  : AlertTriangle;
+              nivel === "success" ? CheckCircle2 : AlertTriangle;
             const Icon = cat ? iconeCategoria(cat.icone) : Target;
 
             return (
@@ -455,16 +462,23 @@ function OrcamentosPage() {
                   {nivel === "warning" && !estourou && (
                     <div className="mt-3 flex items-center gap-2 rounded-lg bg-warning/10 px-3 py-2 text-sm font-medium text-warning ring-1 ring-warning/20">
                       <AlertTriangle className="h-4 w-4 shrink-0" />
-                      Atenção: você já utilizou{" "}
-                      {percentualReal.toFixed(0)}% do orçamento desta categoria.
+                      Atenção: orçamento próximo do limite (
+                      {percentualReal.toFixed(0)}% utilizado).
+                    </div>
+                  )}
+
+                  {nivel === "alert" && !estourou && (
+                    <div className="mt-3 flex items-center gap-2 rounded-lg bg-danger/10 px-3 py-2 text-sm font-medium text-danger ring-1 ring-danger/20">
+                      <AlertTriangle className="h-4 w-4 shrink-0" />
+                      Alerta: orçamento quase esgotado (
+                      {percentualReal.toFixed(0)}% utilizado).
                     </div>
                   )}
 
                   {estourou && (
-                    <div className="mt-3 flex items-center gap-2 rounded-lg bg-danger/10 px-3 py-2 text-sm font-medium text-danger ring-1 ring-danger/20">
+                    <div className="mt-3 flex items-center gap-2 rounded-lg bg-danger/15 px-3 py-2 text-sm font-semibold text-danger ring-1 ring-danger/40">
                       <AlertTriangle className="h-4 w-4 shrink-0" />
-                      Você excedeu o orçamento em{" "}
-                      {formatarMoeda(gasto - o.limite)}.
+                      Orçamento excedido em {formatarMoeda(gasto - o.limite)}.
                     </div>
                   )}
                 </CardContent>
