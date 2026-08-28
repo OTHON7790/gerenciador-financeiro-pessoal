@@ -145,8 +145,8 @@ function DashboardPage() {
       </div>
 
       {/* Gráficos */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="shadow-card">
+      <div className="grid min-w-0 gap-4 lg:grid-cols-2">
+        <Card className="min-w-0 overflow-hidden shadow-card">
           <CardHeader>
             <CardTitle className="text-base">Receitas x Despesas</CardTitle>
             {demoBarras && (
@@ -156,9 +156,17 @@ function DashboardPage() {
             )}
           </CardHeader>
 
-          <CardContent>
-            <ChartContainer config={configGrafico} className="h-[280px] w-full">
-              <BarChart data={dadosSerie} barGap={6}>
+          <CardContent className="min-w-0 overflow-hidden">
+            <ChartContainer
+              config={configGrafico}
+              className="h-[260px] w-full min-w-0 sm:h-[300px]"
+            >
+              <BarChart
+                data={dadosSerie}
+                barGap={4}
+                barCategoryGap="20%"
+                margin={{ left: 4, right: 8, top: 8 }}
+              >
                 <CartesianGrid
                   vertical={false}
                   strokeDasharray="4 4"
