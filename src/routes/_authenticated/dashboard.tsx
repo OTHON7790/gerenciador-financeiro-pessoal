@@ -30,12 +30,14 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
   type ChartConfig,
 } from "@/components/ui/chart";
 import {
   Bar,
-  BarChart,
   CartesianGrid,
+  ComposedChart,
   Line,
   LineChart,
   XAxis,
@@ -97,6 +99,7 @@ function DashboardPage() {
     mes: formatarMes(s.mes).replace(/^./, (c) => c.toUpperCase()),
     receitas: s.receitas,
     despesas: s.despesas,
+    saldo: s.receitas - s.despesas,
   }));
 
 
@@ -161,10 +164,10 @@ function DashboardPage() {
               config={configGrafico}
               className="h-[260px] w-full min-w-0 sm:h-[300px]"
             >
-              <BarChart
+              <ComposedChart
                 data={dadosSerie}
                 barGap={4}
-                barCategoryGap="20%"
+                barCategoryGap="30%"
                 margin={{ left: 4, right: 8, top: 8 }}
               >
                 <CartesianGrid
@@ -210,19 +213,36 @@ function DashboardPage() {
                     />
                   }
                 />
+                <ChartLegend content={<ChartLegendContent />} />
                 <Bar
                   dataKey="receitas"
                   fill="var(--chart-1)"
-                  radius={[6, 6, 0, 0]}
-                  maxBarSize={38}
+                  radius={[4, 4, 0, 0]}
+                  barSize={14}
                 />
                 <Bar
                   dataKey="despesas"
                   fill="var(--chart-2)"
-                  radius={[6, 6, 0, 0]}
-                  maxBarSize={38}
+                  radius={[4, 4, 0, 0]}
+                  barSize={14}
                 />
-              </BarChart>
+                <Line
+                  type="linear"
+                  dataKey="saldo"
+                  name="Saldo"
+                  stroke="var(--chart-3)"
+                  strokeWidth={3}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  dot={{
+                    r: 3.5,
+                    strokeWidth: 2,
+                    stroke: "var(--card)",
+                    fill: "var(--chart-3)",
+                  }}
+                  activeDot={{ r: 6.5, strokeWidth: 2.5, stroke: "var(--card)" }}
+                />
+              </ComposedChart>
             </ChartContainer>
           </CardContent>
         </Card>
