@@ -460,7 +460,7 @@ function CardEvolucaoFinanceira() {
         </div>
         <ChartContainer
           config={config}
-          className={`h-[260px] w-full transition-opacity sm:h-[300px] ${
+          className={`h-[260px] w-full min-w-0 transition-opacity sm:h-[300px] ${
             isFetching ? "opacity-70" : "opacity-100"
           }`}
         >
@@ -474,11 +474,11 @@ function CardEvolucaoFinanceira() {
               dataKey="mes"
               tickLine={false}
               axisLine={false}
-              fontSize={12}
+              fontSize={11}
               stroke="var(--muted-foreground)"
               tickMargin={8}
               interval="preserveStartEnd"
-              minTickGap={16}
+              minTickGap={8}
             />
             <YAxis
               tickFormatter={(v) => formatarMoedaEixo(Number(v))}
@@ -486,8 +486,10 @@ function CardEvolucaoFinanceira() {
               axisLine={false}
               fontSize={11}
               stroke="var(--muted-foreground)"
-              width={72}
+              width={56}
+              tickMargin={4}
             />
+
             <ChartTooltip
               cursor={{
                 stroke: "var(--muted-foreground)",
