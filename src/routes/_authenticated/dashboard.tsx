@@ -377,9 +377,9 @@ function CardEvolucaoFinanceira() {
     }`;
 
   return (
-    <Card className="shadow-card">
+    <Card className="min-w-0 overflow-hidden shadow-card">
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-        <div className="space-y-0.5">
+        <div className="min-w-0 space-y-0.5">
           <CardTitle className="text-base">Evolução financeira</CardTitle>
           {demo && (
             <p className="text-xs text-muted-foreground">
@@ -388,29 +388,27 @@ function CardEvolucaoFinanceira() {
           )}
         </div>
 
-        <div className="-mx-1 flex overflow-x-auto px-1">
-          <div className="inline-flex rounded-lg bg-muted p-1">
-            {PERIODOS.map((p) => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => setPeriodo(p)}
-                className={botao(periodo === p)}
-              >
-                {p} meses
-              </button>
-            ))}
+        <div className="flex min-w-0 flex-wrap gap-1 rounded-lg bg-muted p-1">
+          {PERIODOS.map((p) => (
             <button
+              key={p}
               type="button"
-              onClick={() => setPeriodo("custom")}
-              className={botao(periodo === "custom")}
+              onClick={() => setPeriodo(p)}
+              className={botao(periodo === p)}
             >
-              Personalizado
+              {p} meses
             </button>
-          </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => setPeriodo("custom")}
+            className={botao(periodo === "custom")}
+          >
+            Personalizado
+          </button>
         </div>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="min-w-0 space-y-3 overflow-hidden">
         {periodo === "custom" && (
           <div className="flex flex-col gap-2 rounded-xl border border-border/70 bg-muted/30 p-3 sm:flex-row sm:items-end">
             <label className="flex flex-1 flex-col gap-1 text-xs font-medium text-muted-foreground">
