@@ -176,9 +176,11 @@ function DashboardPage() {
                   dataKey="mes"
                   tickLine={false}
                   axisLine={false}
-                  fontSize={12}
+                  fontSize={11}
                   stroke="var(--muted-foreground)"
                   tickMargin={8}
+                  interval="preserveStartEnd"
+                  minTickGap={8}
                 />
                 <YAxis
                   tickFormatter={(v) => formatarMoedaEixo(Number(v))}
@@ -186,8 +188,10 @@ function DashboardPage() {
                   axisLine={false}
                   fontSize={11}
                   stroke="var(--muted-foreground)"
-                  width={72}
+                  width={56}
+                  tickMargin={4}
                 />
+
 
                 <ChartTooltip
                   cursor={{ fill: "var(--muted)", opacity: 0.5 }}
