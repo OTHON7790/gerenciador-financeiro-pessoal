@@ -17,12 +17,14 @@ export function formatarMoedaCompacta(valor: number): string {
 export function formatarMoedaEixo(valor: number): string {
   const abs = Math.abs(valor);
   const sinal = valor < 0 ? "-" : "";
-  const num = (v: number) =>
-    new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 1 }).format(v);
+  const num = (v: number, casas = 1) =>
+    new Intl.NumberFormat("pt-BR", { maximumFractionDigits: casas }).format(v);
+  // Só abrevia quando o número ficaria longo demais para o eixo.
   if (abs >= 1_000_000) return `${sinal}R$ ${num(abs / 1_000_000)} mi`;
-  if (abs >= 1000) return `${sinal}R$ ${num(abs / 1000)} mil`;
-  return `${sinal}R$ ${num(abs)}`;
+  if (abs >= 100_000) return `${sinal}R$ ${num(abs / 1000)} mil`;
+  return `${sinal}R$ ${num(abs, 0)}`;
 }
+
 
 export function mesesEntre(inicio: string, fim: string, limite = 24): string[] {
   const [a1, m1] = inicio.split("-").map(Number);
