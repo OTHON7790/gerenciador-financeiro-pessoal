@@ -367,7 +367,15 @@ function CardEvolucaoFinanceira() {
   return (
     <Card className="shadow-card">
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-        <CardTitle className="text-base">Evolução financeira</CardTitle>
+        <div className="space-y-0.5">
+          <CardTitle className="text-base">Evolução financeira</CardTitle>
+          {demo && (
+            <p className="text-xs text-muted-foreground">
+              Dados de demonstração em meses sem transações
+            </p>
+          )}
+        </div>
+
         <div className="-mx-1 flex overflow-x-auto px-1">
           <div className="inline-flex rounded-lg bg-muted p-1">
             {PERIODOS.map((p) => (
