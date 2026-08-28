@@ -145,8 +145,8 @@ function DashboardPage() {
       </div>
 
       {/* Gráficos */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="shadow-card">
+      <div className="grid min-w-0 gap-4 lg:grid-cols-2">
+        <Card className="min-w-0 overflow-hidden shadow-card">
           <CardHeader>
             <CardTitle className="text-base">Receitas x Despesas</CardTitle>
             {demoBarras && (
@@ -156,9 +156,17 @@ function DashboardPage() {
             )}
           </CardHeader>
 
-          <CardContent>
-            <ChartContainer config={configGrafico} className="h-[280px] w-full">
-              <BarChart data={dadosSerie} barGap={6}>
+          <CardContent className="min-w-0 overflow-hidden">
+            <ChartContainer
+              config={configGrafico}
+              className="h-[260px] w-full min-w-0 sm:h-[300px]"
+            >
+              <BarChart
+                data={dadosSerie}
+                barGap={4}
+                barCategoryGap="20%"
+                margin={{ left: 4, right: 8, top: 8 }}
+              >
                 <CartesianGrid
                   vertical={false}
                   strokeDasharray="4 4"
@@ -168,9 +176,11 @@ function DashboardPage() {
                   dataKey="mes"
                   tickLine={false}
                   axisLine={false}
-                  fontSize={12}
+                  fontSize={11}
                   stroke="var(--muted-foreground)"
                   tickMargin={8}
+                  interval="preserveStartEnd"
+                  minTickGap={8}
                 />
                 <YAxis
                   tickFormatter={(v) => formatarMoedaEixo(Number(v))}
@@ -178,8 +188,10 @@ function DashboardPage() {
                   axisLine={false}
                   fontSize={11}
                   stroke="var(--muted-foreground)"
-                  width={72}
+                  width={56}
+                  tickMargin={4}
                 />
+
 
                 <ChartTooltip
                   cursor={{ fill: "var(--muted)", opacity: 0.5 }}
@@ -365,9 +377,9 @@ function CardEvolucaoFinanceira() {
     }`;
 
   return (
-    <Card className="shadow-card">
+    <Card className="min-w-0 overflow-hidden shadow-card">
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-        <div className="space-y-0.5">
+        <div className="min-w-0 space-y-0.5">
           <CardTitle className="text-base">Evolução financeira</CardTitle>
           {demo && (
             <p className="text-xs text-muted-foreground">
@@ -376,29 +388,27 @@ function CardEvolucaoFinanceira() {
           )}
         </div>
 
-        <div className="-mx-1 flex overflow-x-auto px-1">
-          <div className="inline-flex rounded-lg bg-muted p-1">
-            {PERIODOS.map((p) => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => setPeriodo(p)}
-                className={botao(periodo === p)}
-              >
-                {p} meses
-              </button>
-            ))}
+        <div className="flex min-w-0 flex-wrap gap-1 rounded-lg bg-muted p-1">
+          {PERIODOS.map((p) => (
             <button
+              key={p}
               type="button"
-              onClick={() => setPeriodo("custom")}
-              className={botao(periodo === "custom")}
+              onClick={() => setPeriodo(p)}
+              className={botao(periodo === p)}
             >
-              Personalizado
+              {p} meses
             </button>
-          </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => setPeriodo("custom")}
+            className={botao(periodo === "custom")}
+          >
+            Personalizado
+          </button>
         </div>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="min-w-0 space-y-3 overflow-hidden">
         {periodo === "custom" && (
           <div className="flex flex-col gap-2 rounded-xl border border-border/70 bg-muted/30 p-3 sm:flex-row sm:items-end">
             <label className="flex flex-1 flex-col gap-1 text-xs font-medium text-muted-foreground">
@@ -450,7 +460,7 @@ function CardEvolucaoFinanceira() {
         </div>
         <ChartContainer
           config={config}
-          className={`h-[260px] w-full transition-opacity sm:h-[300px] ${
+          className={`h-[260px] w-full min-w-0 transition-opacity sm:h-[300px] ${
             isFetching ? "opacity-70" : "opacity-100"
           }`}
         >
@@ -464,11 +474,11 @@ function CardEvolucaoFinanceira() {
               dataKey="mes"
               tickLine={false}
               axisLine={false}
-              fontSize={12}
+              fontSize={11}
               stroke="var(--muted-foreground)"
               tickMargin={8}
               interval="preserveStartEnd"
-              minTickGap={16}
+              minTickGap={8}
             />
             <YAxis
               tickFormatter={(v) => formatarMoedaEixo(Number(v))}
@@ -476,8 +486,10 @@ function CardEvolucaoFinanceira() {
               axisLine={false}
               fontSize={11}
               stroke="var(--muted-foreground)"
-              width={72}
+              width={56}
+              tickMargin={4}
             />
+
             <ChartTooltip
               cursor={{
                 stroke: "var(--muted-foreground)",
