@@ -319,17 +319,30 @@ function CardEvolucaoFinanceira() {
     [periodo, inicio, fim],
   );
 
-  const { data: serie = [] } = useQuery({
+  const { data: serie = [], isFetching } = useQuery({
     ...serieMensalQuery(meses),
     placeholderData: keepPreviousData,
   });
 
-  const dados = serie.map((s) => ({
+  // Mantém apenas os meses do período selecionado, mesmo enquanto
+  // a consulta do novo intervalo ainda está carregando.
+  const serieDoPeriodo = useMemo(
+    () => serie.filter((s) => meses.includes(s.mes)),
+    [serie, meses],
+  );
+
+  const { dados: serieFinal, demo } = useMemo(
+    () => aplicarDemo(serieDoPeriodo),
+    [serieDoPeriodo],
+  );
+
+  const dados = serieFinal.map((s) => ({
     mes: formatarMes(s.mes).replace(/^./, (c) => c.toUpperCase()),
     receitas: s.receitas,
     despesas: s.despesas,
     saldo: s.receitas - s.despesas,
   }));
+
 
   const config: ChartConfig = {
     receitas: { label: "Receitas", color: "var(--chart-1)" },
