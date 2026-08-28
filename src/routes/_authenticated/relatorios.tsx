@@ -3,13 +3,21 @@ import { useMemo } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { PieChart as PieChartIcon, Wallet } from "lucide-react";
 import { categoriasQuery, serieMensalQuery, evolucaoSaldoQuery, resumoMesQuery } from "@/lib/queries";
-import { mesesAnteriores, mesAtual, formatarMoeda, formatarMes } from "@/lib/format";
+import {
+  mesesAnteriores,
+  mesAtual,
+  formatarMoeda,
+  formatarMoedaEixo,
+  formatarMes,
+} from "@/lib/format";
 import { type Categoria } from "@/lib/schemas";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
   type ChartConfig,
 } from "@/components/ui/chart";
 import {
@@ -20,6 +28,8 @@ import {
   CartesianGrid,
   Cell,
   Legend,
+  Line,
+  LineChart,
   Pie,
   PieChart,
   XAxis,
