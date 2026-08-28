@@ -21,6 +21,8 @@ import {
   formatarMes,
 } from "@/lib/format";
 import { type Categoria } from "@/lib/schemas";
+import { aplicarDemo } from "@/lib/demo-serie";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TransacaoDialog } from "@/components/transacao-dialog";
@@ -86,11 +88,17 @@ function DashboardPage() {
     return m;
   }, [categorias]);
 
-  const dadosSerie = serie.map((s) => ({
+  const { dados: serieBase, demo: demoBarras } = useMemo(
+    () => aplicarDemo(serie),
+    [serie],
+  );
+
+  const dadosSerie = serieBase.map((s) => ({
     mes: formatarMes(s.mes).replace(/^./, (c) => c.toUpperCase()),
     receitas: s.receitas,
     despesas: s.despesas,
   }));
+
 
 
   const configGrafico: ChartConfig = {
