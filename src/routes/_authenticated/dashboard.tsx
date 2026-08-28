@@ -234,6 +234,7 @@ function DashboardPage() {
                   strokeWidth={4}
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  isAnimationActive={false}
                   dot={{
                     r: 4.5,
                     strokeWidth: 2.5,
