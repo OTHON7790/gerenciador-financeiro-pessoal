@@ -231,16 +231,16 @@ function DashboardPage() {
                   dataKey="saldo"
                   name="Saldo"
                   stroke="var(--chart-3)"
-                  strokeWidth={3}
+                  strokeWidth={4}
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   dot={{
-                    r: 3.5,
-                    strokeWidth: 2,
+                    r: 4.5,
+                    strokeWidth: 2.5,
                     stroke: "var(--card)",
                     fill: "var(--chart-3)",
                   }}
-                  activeDot={{ r: 6.5, strokeWidth: 2.5, stroke: "var(--card)" }}
+                  activeDot={{ r: 8, strokeWidth: 3, stroke: "var(--card)" }}
                 />
               </ComposedChart>
             </ChartContainer>
