@@ -200,13 +200,13 @@ function DashboardPage() {
                 />
                 <Bar
                   dataKey="receitas"
-                  fill="var(--color-receitas)"
+                  fill="var(--chart-1)"
                   radius={[6, 6, 0, 0]}
                   maxBarSize={38}
                 />
                 <Bar
                   dataKey="despesas"
-                  fill="var(--color-despesas)"
+                  fill="var(--chart-2)"
                   radius={[6, 6, 0, 0]}
                   maxBarSize={38}
                 />
