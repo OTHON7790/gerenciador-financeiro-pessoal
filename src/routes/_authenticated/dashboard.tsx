@@ -149,7 +149,13 @@ function DashboardPage() {
         <Card className="shadow-card">
           <CardHeader>
             <CardTitle className="text-base">Receitas x Despesas</CardTitle>
+            {demoBarras && (
+              <p className="text-xs text-muted-foreground">
+                Dados de demonstração em meses sem transações
+              </p>
+            )}
           </CardHeader>
+
           <CardContent>
             <ChartContainer config={configGrafico} className="h-[280px] w-full">
               <BarChart data={dadosSerie} barGap={6}>
@@ -167,15 +173,14 @@ function DashboardPage() {
                   tickMargin={8}
                 />
                 <YAxis
-                  tickFormatter={(v) =>
-                    v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
-                  }
+                  tickFormatter={(v) => formatarMoedaEixo(Number(v))}
                   tickLine={false}
                   axisLine={false}
-                  fontSize={12}
+                  fontSize={11}
                   stroke="var(--muted-foreground)"
-                  width={44}
+                  width={72}
                 />
+
                 <ChartTooltip
                   cursor={{ fill: "var(--muted)", opacity: 0.5 }}
                   content={
