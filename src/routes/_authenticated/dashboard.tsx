@@ -21,6 +21,8 @@ import {
   formatarMes,
 } from "@/lib/format";
 import { type Categoria } from "@/lib/schemas";
+import { aplicarDemo } from "@/lib/demo-serie";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TransacaoDialog } from "@/components/transacao-dialog";
@@ -86,11 +88,17 @@ function DashboardPage() {
     return m;
   }, [categorias]);
 
-  const dadosSerie = serie.map((s) => ({
+  const { dados: serieBase, demo: demoBarras } = useMemo(
+    () => aplicarDemo(serie),
+    [serie],
+  );
+
+  const dadosSerie = serieBase.map((s) => ({
     mes: formatarMes(s.mes).replace(/^./, (c) => c.toUpperCase()),
     receitas: s.receitas,
     despesas: s.despesas,
   }));
+
 
 
   const configGrafico: ChartConfig = {
@@ -141,7 +149,13 @@ function DashboardPage() {
         <Card className="shadow-card">
           <CardHeader>
             <CardTitle className="text-base">Receitas x Despesas</CardTitle>
+            {demoBarras && (
+              <p className="text-xs text-muted-foreground">
+                Dados de demonstração em meses sem transações
+              </p>
+            )}
           </CardHeader>
+
           <CardContent>
             <ChartContainer config={configGrafico} className="h-[280px] w-full">
               <BarChart data={dadosSerie} barGap={6}>
@@ -159,15 +173,14 @@ function DashboardPage() {
                   tickMargin={8}
                 />
                 <YAxis
-                  tickFormatter={(v) =>
-                    v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)
-                  }
+                  tickFormatter={(v) => formatarMoedaEixo(Number(v))}
                   tickLine={false}
                   axisLine={false}
-                  fontSize={12}
+                  fontSize={11}
                   stroke="var(--muted-foreground)"
-                  width={44}
+                  width={72}
                 />
+
                 <ChartTooltip
                   cursor={{ fill: "var(--muted)", opacity: 0.5 }}
                   content={
@@ -187,13 +200,13 @@ function DashboardPage() {
                 />
                 <Bar
                   dataKey="receitas"
-                  fill="var(--color-receitas)"
+                  fill="var(--chart-1)"
                   radius={[6, 6, 0, 0]}
                   maxBarSize={38}
                 />
                 <Bar
                   dataKey="despesas"
-                  fill="var(--color-despesas)"
+                  fill="var(--chart-2)"
                   radius={[6, 6, 0, 0]}
                   maxBarSize={38}
                 />
@@ -306,17 +319,30 @@ function CardEvolucaoFinanceira() {
     [periodo, inicio, fim],
   );
 
-  const { data: serie = [] } = useQuery({
+  const { data: serie = [], isFetching } = useQuery({
     ...serieMensalQuery(meses),
     placeholderData: keepPreviousData,
   });
 
-  const dados = serie.map((s) => ({
+  // Mantém apenas os meses do período selecionado, mesmo enquanto
+  // a consulta do novo intervalo ainda está carregando.
+  const serieDoPeriodo = useMemo(
+    () => serie.filter((s) => meses.includes(s.mes)),
+    [serie, meses],
+  );
+
+  const { dados: serieFinal, demo } = useMemo(
+    () => aplicarDemo(serieDoPeriodo),
+    [serieDoPeriodo],
+  );
+
+  const dados = serieFinal.map((s) => ({
     mes: formatarMes(s.mes).replace(/^./, (c) => c.toUpperCase()),
     receitas: s.receitas,
     despesas: s.despesas,
     saldo: s.receitas - s.despesas,
   }));
+
 
   const config: ChartConfig = {
     receitas: { label: "Receitas", color: "var(--chart-1)" },
@@ -341,7 +367,15 @@ function CardEvolucaoFinanceira() {
   return (
     <Card className="shadow-card">
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-        <CardTitle className="text-base">Evolução financeira</CardTitle>
+        <div className="space-y-0.5">
+          <CardTitle className="text-base">Evolução financeira</CardTitle>
+          {demo && (
+            <p className="text-xs text-muted-foreground">
+              Dados de demonstração em meses sem transações
+            </p>
+          )}
+        </div>
+
         <div className="-mx-1 flex overflow-x-auto px-1">
           <div className="inline-flex rounded-lg bg-muted p-1">
             {PERIODOS.map((p) => (
@@ -414,7 +448,12 @@ function CardEvolucaoFinanceira() {
             );
           })}
         </div>
-        <ChartContainer config={config} className="h-[260px] w-full sm:h-[300px]">
+        <ChartContainer
+          config={config}
+          className={`h-[260px] w-full transition-opacity sm:h-[300px] ${
+            isFetching ? "opacity-70" : "opacity-100"
+          }`}
+        >
           <LineChart data={dados} margin={{ left: 4, right: 8, top: 8 }}>
             <CartesianGrid
               vertical={false}
