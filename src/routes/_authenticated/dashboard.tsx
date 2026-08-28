@@ -448,7 +448,12 @@ function CardEvolucaoFinanceira() {
             );
           })}
         </div>
-        <ChartContainer config={config} className="h-[260px] w-full sm:h-[300px]">
+        <ChartContainer
+          config={config}
+          className={`h-[260px] w-full transition-opacity sm:h-[300px] ${
+            isFetching ? "opacity-70" : "opacity-100"
+          }`}
+        >
           <LineChart data={dados} margin={{ left: 4, right: 8, top: 8 }}>
             <CartesianGrid
               vertical={false}
