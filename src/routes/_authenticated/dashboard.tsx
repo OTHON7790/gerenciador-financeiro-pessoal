@@ -30,12 +30,14 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
   type ChartConfig,
 } from "@/components/ui/chart";
 import {
   Bar,
-  BarChart,
   CartesianGrid,
+  ComposedChart,
   Line,
   LineChart,
   XAxis,
@@ -97,6 +99,7 @@ function DashboardPage() {
     mes: formatarMes(s.mes).replace(/^./, (c) => c.toUpperCase()),
     receitas: s.receitas,
     despesas: s.despesas,
+    saldo: s.receitas - s.despesas,
   }));
 
 
