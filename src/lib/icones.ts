@@ -44,6 +44,7 @@ const MAPA: Record<string, LucideIcon> = {
   "credit-card": CreditCard,
   scissors: Scissors,
   scale: Scale,
+  "shield-check": ShieldCheck,
 };
 
 export function iconeCategoria(nome: string): LucideIcon {
