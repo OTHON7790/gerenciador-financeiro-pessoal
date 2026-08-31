@@ -73,14 +73,7 @@ function ocorrenciasPrevistas(rec: {
 
 // ---------- geração idempotente ----------
 
-type ClienteSupabase = Parameters<
-  Parameters<ReturnType<typeof criarRecorrenciaBuilder>["handler"]>[0]
->[0]["context"]["supabase"];
-
-// helper de tipo (evita repetir o tipo do client)
-function criarRecorrenciaBuilder() {
-  return createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]);
-}
+type ClienteSupabase = SupabaseClient<Database>;
 
 async function gerarOcorrencias(
   supabase: ClienteSupabase,
