@@ -59,18 +59,32 @@ function OrcamentosPage() {
   const [mes, setMes] = useState(mesAtual());
 
   const ano = Number(mes.slice(0, 4));
-  const meses = useMemo(
-    () =>
-      Array.from(
-        { length: 12 },
-        (_, i) => `${ano}-${String(i + 1).padStart(2, "0")}`,
-      ),
-    [ano],
-  );
-  const mudarAno = (delta: number) => {
-    const novoAno = ano + delta;
-    setMes(`${novoAno}-${mes.slice(5, 7)}`);
+  const mesNum = mes.slice(5, 7);
+  const ANOS = [2026, 2027, 2028, 2029, 2030];
+  const NOMES_MESES = [
+    "Janeiro",
+    "Fevereiro",
+    "Março",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro",
+  ];
+
+  // Mês "YYYY-MM" deslocado em delta meses, com virada automática de ano
+  const mesComOffset = (delta: number) => {
+    const y = Number(mes.slice(0, 4));
+    const m = Number(mes.slice(5, 7)) - 1 + delta;
+    const novoAno = y + Math.floor(m / 12);
+    const novoMes = (((m % 12) + 12) % 12) + 1;
+    return `${novoAno}-${String(novoMes).padStart(2, "0")}`;
   };
+  const mudarMes = (delta: number) => setMes(mesComOffset(delta));
 
   const { data: categorias } = useSuspenseQuery(categoriasQuery);
   const { data: orcamentos, isPending } = useSuspenseQuery(orcamentosQuery(mes));
@@ -206,36 +220,62 @@ function OrcamentosPage() {
         </p>
       </div>
 
-      <div className="flex items-center gap-3">
-        <label className="text-sm text-muted-foreground">Mês:</label>
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-muted-foreground">Ano:</label>
+          <Select
+            value={String(ano)}
+            onValueChange={(v) => setMes(`${v}-${mesNum}`)}
+          >
+            <SelectTrigger className="w-[110px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {ANOS.map((a) => (
+                <SelectItem key={a} value={String(a)}>
+                  {a}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-muted-foreground">Mês:</label>
+          <Select
+            value={mesNum}
+            onValueChange={(v) => setMes(`${ano}-${v}`)}
+          >
+            <SelectTrigger className="w-[150px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {NOMES_MESES.map((nome, i) => (
+                <SelectItem
+                  key={nome}
+                  value={String(i + 1).padStart(2, "0")}
+                >
+                  {nome}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         <div className="flex items-center gap-1">
           <Button
             variant="ghost"
             size="icon"
             className="h-9 w-9 flex-shrink-0"
-            onClick={() => mudarAno(-1)}
-            aria-label={`Ano anterior (${ano - 1})`}
+            onClick={() => mudarMes(-1)}
+            aria-label={`Mês anterior (${formatarMes(mesComOffset(-1))})`}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <Select value={mes} onValueChange={setMes}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {meses.map((m) => (
-                <SelectItem key={m} value={m}>
-                  {formatarMes(m).replace(/^./, (c) => c.toUpperCase())}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
           <Button
             variant="ghost"
             size="icon"
             className="h-9 w-9 flex-shrink-0"
-            onClick={() => mudarAno(1)}
-            aria-label={`Próximo ano (${ano + 1})`}
+            onClick={() => mudarMes(1)}
+            aria-label={`Próximo mês (${formatarMes(mesComOffset(1))})`}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
