@@ -42,6 +42,7 @@ const MAPA: Record<string, LucideIcon> = {
   wifi: Wifi,
   "credit-card": CreditCard,
   scissors: Scissors,
+  scale: Scale,
 };
 
 export function iconeCategoria(nome: string): LucideIcon {
