@@ -105,6 +105,34 @@ function OrcamentosPage() {
     return { orcado, gasto, percentualReal, nivel } as const;
   }, [orcamentos, gastoPorCategoria]);
 
+  // Indicador automático de situação das categorias (mês selecionado)
+  const situacao = useMemo(() => {
+    const excedidos: { nome: string; excesso: number }[] = [];
+    const atingidos: string[] = [];
+    const proximos: string[] = [];
+    for (const o of orcamentos) {
+      const gasto = gastoPorCategoria.get(o.categoria_id) ?? 0;
+      const nome =
+        despesaCategorias.find((c) => c.id === o.categoria_id)?.nome ??
+        "Categoria";
+      const percentual = o.limite > 0 ? (gasto / o.limite) * 100 : 0;
+      if (percentual > 100) {
+        excedidos.push({ nome, excesso: gasto - o.limite });
+      } else if (percentual >= 100) {
+        atingidos.push(nome);
+      } else if (percentual >= 80) {
+        proximos.push(nome);
+      }
+    }
+    const totalExcedido = excedidos.reduce((s, e) => s + e.excesso, 0);
+    const nivel =
+      excedidos.length > 0 ? "excedido"
+      : atingidos.length > 0 ? "atingido"
+      : proximos.length > 0 ? "proximo"
+      : "controle";
+    return { excedidos, atingidos, proximos, totalExcedido, nivel } as const;
+  }, [orcamentos, gastoPorCategoria, despesaCategorias]);
+
 
   // formulário de novo orçamento
   const [novaCategoria, setNovaCategoria] = useState<string>("");
@@ -246,6 +274,46 @@ function OrcamentosPage() {
                 }[totais.nivel]
               }`}
             />
+
+            {situacao.nivel === "controle" && (
+              <div className="mt-3 flex items-center gap-2 rounded-lg bg-success/10 px-3 py-2 text-sm font-medium text-success ring-1 ring-success/20">
+                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                Orçamentos sob controle.
+              </div>
+            )}
+
+            {situacao.nivel === "proximo" && (
+              <div className="mt-3 flex items-center gap-2 rounded-lg bg-warning/10 px-3 py-2 text-sm font-medium text-warning ring-1 ring-warning/20">
+                <AlertTriangle className="h-4 w-4 shrink-0" />
+                {situacao.proximos.length === 1
+                  ? `1 orçamento está próximo do limite: ${situacao.proximos[0] ?? ""}.`
+                  : `${situacao.proximos.length} orçamentos estão próximos do limite: ${situacao.proximos.join(", ")}.`}
+              </div>
+            )}
+
+            {situacao.nivel === "atingido" && (
+              <div className="mt-3 flex items-center gap-2 rounded-lg bg-danger/10 px-3 py-2 text-sm font-medium text-danger ring-1 ring-danger/20">
+                <AlertTriangle className="h-4 w-4 shrink-0" />
+                {situacao.atingidos.length === 1
+                  ? `Limite atingido em ${situacao.atingidos[0] ?? ""}.`
+                  : `Limite atingido em ${situacao.atingidos.length} orçamentos: ${situacao.atingidos.join(", ")}.`}
+              </div>
+            )}
+
+            {situacao.nivel === "excedido" && (
+              <div className="mt-3 flex items-center gap-2 rounded-lg bg-danger/15 px-3 py-2 text-sm font-semibold text-danger ring-1 ring-danger/40">
+                <AlertTriangle className="h-4 w-4 shrink-0" />
+                <span>
+                  {situacao.excedidos.length === 1
+                    ? `1 orçamento excedido em ${formatarMoeda(situacao.totalExcedido)}: ${situacao.excedidos[0]?.nome ?? ""}.`
+                    : `${situacao.excedidos.length} orçamentos excedidos em ${formatarMoeda(situacao.totalExcedido)}: ${situacao.excedidos.map((e) => e.nome).join(", ")}.`}
+                  {situacao.proximos.length > 0 &&
+                    (situacao.proximos.length === 1
+                      ? ` 1 orçamento está próximo do limite: ${situacao.proximos[0] ?? ""}.`
+                      : ` ${situacao.proximos.length} orçamentos estão próximos do limite: ${situacao.proximos.join(", ")}.`)}
+                </span>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
