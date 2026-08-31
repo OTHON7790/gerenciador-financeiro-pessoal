@@ -139,7 +139,7 @@ function PrevisoesPage() {
       titulo: "Receitas previstas",
       valor: mediaReceita === null ? null : atual.receitas,
       icone: TrendingUp,
-      classe: "text-emerald-600 dark:text-emerald-400",
+      classe: "text-success",
       nota:
         atual.receitaReal > 0
           ? "Receita real do mês"
@@ -149,7 +149,7 @@ function PrevisoesPage() {
       titulo: "Despesas previstas",
       valor: atual.temOrcamento ? atual.orcado : null,
       icone: Target,
-      classe: "text-orange-600 dark:text-orange-400",
+      classe: "text-warning",
       nota: atual.temOrcamento
         ? "Soma dos orçamentos do mês"
         : "Nenhum orçamento definido",
@@ -158,7 +158,7 @@ function PrevisoesPage() {
       titulo: "Gastos reais",
       valor: atual.temTransacoes ? atual.gastosReais : null,
       icone: TrendingDown,
-      classe: "text-red-600 dark:text-red-400",
+      classe: "text-danger",
       nota: atual.temTransacoes
         ? "Despesas lançadas no mês"
         : "Nenhuma transação no mês",
@@ -172,8 +172,8 @@ function PrevisoesPage() {
       icone: Wallet,
       classe:
         atual.saldoProjetado < 0
-          ? "text-red-600 dark:text-red-400"
-          : "text-blue-600 dark:text-blue-400",
+          ? "text-danger"
+          : "text-primary",
       nota: "Receitas previstas − despesas previstas",
     },
   ];
@@ -227,7 +227,7 @@ function PrevisoesPage() {
         altaDespesas > 0.3) && (
         <div className="space-y-2">
           {percentualAtual >= 100 && (
-            <div className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/50 dark:text-red-300">
+            <div className="flex items-start gap-2 rounded-xl border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
               <span>
                 Orçamento de {formatarMes(mes)} excedido: gastos de{" "}
@@ -237,7 +237,7 @@ function PrevisoesPage() {
             </div>
           )}
           {atual.saldoProjetado < 0 && (
-            <div className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/50 dark:text-red-300">
+            <div className="flex items-start gap-2 rounded-xl border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
               <span>
                 Saldo projetado negativo ({formatarMoeda(atual.saldoProjetado)})
@@ -246,7 +246,7 @@ function PrevisoesPage() {
             </div>
           )}
           {altaDespesas > 0.3 && (
-            <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/50 dark:text-amber-300">
+            <div className="flex items-start gap-2 rounded-xl border border-warning/30 bg-warning/10 p-3 text-sm text-warning">
               <TrendingUp className="mt-0.5 h-4 w-4 shrink-0" />
               <span>
                 Despesas {Math.round(altaDespesas * 100)}% acima do mês anterior.
@@ -403,8 +403,8 @@ function PrevisoesPage() {
                         "py-2 pr-3 text-right tabular-nums",
                         d.temOrcamento &&
                           (diferenca < 0
-                            ? "text-red-600 dark:text-red-400"
-                            : "text-emerald-600 dark:text-emerald-400"),
+                            ? "text-danger"
+                            : "text-success"),
                       )}
                     >
                       {d.temOrcamento ? (
