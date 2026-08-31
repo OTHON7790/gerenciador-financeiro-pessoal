@@ -46,7 +46,9 @@ export function mesesAte(mes: string, quantidade: number): string[] {
 export function mesInicialValido(mes: string): string {
   const ano = Number(mes.slice(0, 4));
   if (ANOS_PERIODO.includes(ano)) return mes;
-  const alvo = ano < ANOS_PERIODO[0] ? ANOS_PERIODO[0] : ANOS_PERIODO.at(-1)!;
+  const primeiro = ANOS_PERIODO[0]!;
+  const ultimo = ANOS_PERIODO[ANOS_PERIODO.length - 1]!;
+  const alvo = ano < primeiro ? primeiro : ultimo;
   return `${alvo}-${mes.slice(5, 7)}`;
 }
 
