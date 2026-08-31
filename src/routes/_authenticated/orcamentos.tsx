@@ -192,67 +192,7 @@ function OrcamentosPage() {
         </p>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-muted-foreground">Ano:</label>
-          <Select
-            value={String(ano)}
-            onValueChange={(v) => setMes(`${v}-${mesNum}`)}
-          >
-            <SelectTrigger className="w-[110px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {ANOS.map((a) => (
-                <SelectItem key={a} value={String(a)}>
-                  {a}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-muted-foreground">Mês:</label>
-          <Select
-            value={mesNum}
-            onValueChange={(v) => setMes(`${ano}-${v}`)}
-          >
-            <SelectTrigger className="w-[150px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {NOMES_MESES.map((nome, i) => (
-                <SelectItem
-                  key={nome}
-                  value={String(i + 1).padStart(2, "0")}
-                >
-                  {nome}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 flex-shrink-0"
-            onClick={() => mudarMes(-1)}
-            aria-label={`Mês anterior (${formatarMes(mesComOffset(-1))})`}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 flex-shrink-0"
-            onClick={() => mudarMes(1)}
-            aria-label={`Próximo mês (${formatarMes(mesComOffset(1))})`}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+      <PeriodoSelector mes={mes} onChange={setMes} />
 
       {/* Resumo do mês */}
       {orcamentos.length > 0 && (
