@@ -305,6 +305,9 @@ export type Transacao = {
   tipo: TipoTransacao;
   data: string;
   criado_em: string;
+  recorrencia_id?: string | null;
+  ocorrencia_ref?: string | null;
+  editada_manualmente?: boolean;
 };
 
 export type Orcamento = {
