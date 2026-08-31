@@ -208,18 +208,38 @@ function OrcamentosPage() {
 
       <div className="flex items-center gap-3">
         <label className="text-sm text-muted-foreground">Mês:</label>
-        <Select value={mes} onValueChange={setMes}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {meses.map((m) => (
-              <SelectItem key={m} value={m}>
-                {formatarMes(m).replace(/^./, (c) => c.toUpperCase())}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 flex-shrink-0"
+            onClick={() => mudarAno(-1)}
+            aria-label={`Ano anterior (${ano - 1})`}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Select value={mes} onValueChange={setMes}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {meses.map((m) => (
+                <SelectItem key={m} value={m}>
+                  {formatarMes(m).replace(/^./, (c) => c.toUpperCase())}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 flex-shrink-0"
+            onClick={() => mudarAno(1)}
+            aria-label={`Próximo ano (${ano + 1})`}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
       {/* Resumo do mês */}
