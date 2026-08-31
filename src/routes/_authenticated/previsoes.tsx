@@ -148,6 +148,7 @@ function PrevisoesPage() {
           temOrcamento: l.temOrcamento,
           temTransacoes: l.temTransacoes,
           orcado: l.orcado,
+          receitaReal: l.receitaReal,
         };
       }),
     [linhas, mediaReceita],
