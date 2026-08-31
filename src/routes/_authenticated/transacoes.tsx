@@ -3,9 +3,10 @@ import { useMemo, useState } from "react";
 import { useSuspenseQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Wallet, Filter } from "lucide-react";
+import { Plus, Pencil, Trash2, Wallet, Filter, Repeat } from "lucide-react";
 import { categoriasQuery, transacoesQuery } from "@/lib/queries";
 import { excluirTransacao } from "@/lib/transacoes.functions";
+import { excluirOcorrencia } from "@/lib/recorrencias.functions";
 import { type Categoria, type Transacao, type TipoTransacao } from "@/lib/schemas";
 import { formatarMoeda, formatarData, mesAtual } from "@/lib/format";
 import {
