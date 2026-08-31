@@ -19,6 +19,7 @@ import {
   CreditCard,
   Scissors,
   Scale,
+  ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
 
