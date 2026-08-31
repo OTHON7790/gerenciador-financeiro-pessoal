@@ -3,9 +3,10 @@ import { useMemo, useState } from "react";
 import { useSuspenseQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Wallet, Filter } from "lucide-react";
+import { Plus, Pencil, Trash2, Wallet, Filter, Repeat } from "lucide-react";
 import { categoriasQuery, transacoesQuery } from "@/lib/queries";
 import { excluirTransacao } from "@/lib/transacoes.functions";
+import { excluirOcorrencia } from "@/lib/recorrencias.functions";
 import { type Categoria, type Transacao, type TipoTransacao } from "@/lib/schemas";
 import { formatarMoeda, formatarData, mesAtual } from "@/lib/format";
 import {
@@ -74,6 +75,7 @@ function TransacoesPage() {
 
   const queryClient = useQueryClient();
   const excluir = useServerFn(excluirTransacao);
+  const excluirOcor = useServerFn(excluirOcorrencia);
 
   const [dialogoAberto, setDialogoAberto] = useState(false);
   const [editando, setEditando] = useState<Transacao | null>(null);
@@ -99,13 +101,27 @@ function TransacoesPage() {
     .reduce((s, t) => s + t.valor, 0);
 
   const excluirMutation = useMutation({
-    mutationFn: () => excluir({ data: { id: excluindo!.id } }),
+    mutationFn: (escopo?: "apenas_esta" | "esta_e_proximas") => {
+      const alvo = excluindo!;
+      if (alvo.recorrencia_id) {
+        return excluirOcor({
+          data: { id: alvo.id, escopo: escopo ?? "apenas_esta" },
+        });
+      }
+      return excluir({ data: { id: alvo.id } });
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transacoes"] });
-      queryClient.invalidateQueries({ queryKey: ["resumo"] });
-      queryClient.invalidateQueries({ queryKey: ["serie-mensal"] });
-      queryClient.invalidateQueries({ queryKey: ["evolucao-saldo"] });
-      queryClient.invalidateQueries({ queryKey: ["orcamentos"] });
+      for (const chave of [
+        "transacoes",
+        "resumo",
+        "serie-mensal",
+        "evolucao-saldo",
+        "orcamentos",
+        "previsoes",
+        "recorrencias",
+      ]) {
+        queryClient.invalidateQueries({ queryKey: [chave] });
+      }
       toast.success("Transação excluída.");
       setExcluindo(null);
     },
@@ -253,7 +269,18 @@ function TransacoesPage() {
                       <Icon className="h-4 w-4" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{t.descricao}</p>
+                      <p className="flex items-center gap-1.5 truncate text-sm font-medium">
+                        {t.descricao}
+                        {t.recorrencia_id ? (
+                          <span
+                            title="Despesa recorrente"
+                            className="inline-flex items-center gap-1 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground"
+                          >
+                            <Repeat className="h-3 w-3" />
+                            Recorrente
+                          </span>
+                        ) : null}
+                      </p>
                       <p className="text-xs text-muted-foreground">
                         {cat?.nome ?? "Sem categoria"} · {formatarData(t.data)}
                       </p>
@@ -311,17 +338,41 @@ function TransacoesPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Excluir transação?</AlertDialogTitle>
             <AlertDialogDescription>
-              “{excluindo?.descricao}” será removida permanentemente.
+              {excluindo?.recorrencia_id
+                ? `“${excluindo?.descricao}” é uma despesa recorrente. Escolha se quer remover somente este mês ou encerrar a recorrência daqui em diante.`
+                : `“${excluindo?.descricao}” será removida permanentemente.`}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
+          <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => excluirMutation.mutate()}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Excluir
-            </AlertDialogAction>
+            {excluindo?.recorrencia_id ? (
+              <>
+                <Button
+                  variant="outline"
+                  disabled={excluirMutation.isPending}
+                  onClick={() => excluirMutation.mutate("apenas_esta")}
+                >
+                  Somente esta
+                </Button>
+                <AlertDialogAction
+                  disabled={excluirMutation.isPending}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    excluirMutation.mutate("esta_e_proximas");
+                  }}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Esta e as próximas
+                </AlertDialogAction>
+              </>
+            ) : (
+              <AlertDialogAction
+                onClick={() => excluirMutation.mutate(undefined)}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Excluir
+              </AlertDialogAction>
+            )}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

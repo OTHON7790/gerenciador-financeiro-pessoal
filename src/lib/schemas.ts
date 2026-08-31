@@ -22,6 +22,55 @@ export const transacaoSchema = z.object({
 });
 export type TransacaoInput = z.infer<typeof transacaoSchema>;
 
+// Recorrências (despesas recorrentes)
+export const FREQUENCIAS = ["mensal", "anual"] as const;
+export type FrequenciaRecorrencia = (typeof FREQUENCIAS)[number];
+
+const dataIso = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida");
+
+export const recorrenciaSchema = z.object({
+  descricao: z.string().trim().min(1, "Informe a descrição").max(100),
+  valor: z.number().positive("O valor deve ser maior que zero"),
+  categoria_id: z.string().uuid().nullable().optional(),
+  frequencia: z.enum(FREQUENCIAS),
+  data_inicio: dataIso,
+  data_fim: dataIso.nullable().optional(),
+});
+export type RecorrenciaInput = z.infer<typeof recorrenciaSchema>;
+
+export const ESCOPOS_RECORRENCIA = ["apenas_esta", "esta_e_proximas"] as const;
+export type EscopoRecorrencia = (typeof ESCOPOS_RECORRENCIA)[number];
+
+export const atualizarOcorrenciaSchema = z.object({
+  id: z.string().uuid(),
+  descricao: z.string().trim().min(1).max(100),
+  valor: z.number().positive("O valor deve ser maior que zero"),
+  categoria_id: z.string().uuid().nullable().optional(),
+  data: dataIso,
+  data_fim: dataIso.nullable().optional(),
+  escopo: z.enum(ESCOPOS_RECORRENCIA),
+});
+
+export const excluirOcorrenciaSchema = z.object({
+  id: z.string().uuid(),
+  escopo: z.enum(ESCOPOS_RECORRENCIA),
+});
+
+export type Recorrencia = {
+  id: string;
+  user_id: string;
+  descricao: string;
+  valor: number;
+  categoria_id: string | null;
+  frequencia: FrequenciaRecorrencia;
+  dia_referencia: number;
+  data_inicio: string;
+  data_fim: string | null;
+  ativa: boolean;
+  criado_em: string;
+  atualizado_em: string;
+};
+
 // Orçamentos
 export const orcamentoSchema = z.object({
   categoria_id: z.string().uuid(),
@@ -256,6 +305,9 @@ export type Transacao = {
   tipo: TipoTransacao;
   data: string;
   criado_em: string;
+  recorrencia_id?: string | null;
+  ocorrencia_ref?: string | null;
+  editada_manualmente?: boolean;
 };
 
 export type Orcamento = {

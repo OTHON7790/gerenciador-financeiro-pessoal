@@ -121,13 +121,69 @@ export type Database = {
           },
         ]
       }
+      recorrencias: {
+        Row: {
+          ativa: boolean
+          atualizado_em: string
+          categoria_id: string | null
+          criado_em: string
+          data_fim: string | null
+          data_inicio: string
+          descricao: string
+          dia_referencia: number
+          frequencia: Database["public"]["Enums"]["frequencia_recorrencia"]
+          id: string
+          user_id: string
+          valor: number
+        }
+        Insert: {
+          ativa?: boolean
+          atualizado_em?: string
+          categoria_id?: string | null
+          criado_em?: string
+          data_fim?: string | null
+          data_inicio: string
+          descricao: string
+          dia_referencia?: number
+          frequencia?: Database["public"]["Enums"]["frequencia_recorrencia"]
+          id?: string
+          user_id: string
+          valor: number
+        }
+        Update: {
+          ativa?: boolean
+          atualizado_em?: string
+          categoria_id?: string | null
+          criado_em?: string
+          data_fim?: string | null
+          data_inicio?: string
+          descricao?: string
+          dia_referencia?: number
+          frequencia?: Database["public"]["Enums"]["frequencia_recorrencia"]
+          id?: string
+          user_id?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recorrencias_categoria_id_fkey"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "categorias"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transacoes: {
         Row: {
           categoria_id: string | null
           criado_em: string
           data: string
           descricao: string
+          editada_manualmente: boolean
           id: string
+          ocorrencia_ref: string | null
+          recorrencia_id: string | null
           tipo: Database["public"]["Enums"]["tipo_lancamento"]
           user_id: string
           valor: number
@@ -137,7 +193,10 @@ export type Database = {
           criado_em?: string
           data?: string
           descricao: string
+          editada_manualmente?: boolean
           id?: string
+          ocorrencia_ref?: string | null
+          recorrencia_id?: string | null
           tipo: Database["public"]["Enums"]["tipo_lancamento"]
           user_id: string
           valor: number
@@ -147,7 +206,10 @@ export type Database = {
           criado_em?: string
           data?: string
           descricao?: string
+          editada_manualmente?: boolean
           id?: string
+          ocorrencia_ref?: string | null
+          recorrencia_id?: string | null
           tipo?: Database["public"]["Enums"]["tipo_lancamento"]
           user_id?: string
           valor?: number
@@ -160,6 +222,13 @@ export type Database = {
             referencedRelation: "categorias"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "transacoes_recorrencia_id_fkey"
+            columns: ["recorrencia_id"]
+            isOneToOne: false
+            referencedRelation: "recorrencias"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
@@ -170,6 +239,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      frequencia_recorrencia: "mensal" | "anual"
       tipo_lancamento: "receita" | "despesa"
     }
     CompositeTypes: {
@@ -298,6 +368,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      frequencia_recorrencia: ["mensal", "anual"],
       tipo_lancamento: ["receita", "despesa"],
     },
   },
