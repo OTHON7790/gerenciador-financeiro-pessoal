@@ -10,8 +10,6 @@ import {
   AlertTriangle,
   CheckCircle2,
   Wallet,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import { categoriasQuery, orcamentosQuery, resumoMesQuery } from "@/lib/queries";
 import { salvarOrcamento, excluirOrcamento } from "@/lib/orcamentos.functions";

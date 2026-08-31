@@ -6,8 +6,6 @@ import {
   TrendingDown,
   Wallet,
   Target,
-  ChevronLeft,
-  ChevronRight,
   AlertTriangle,
   CheckCircle2,
 } from "lucide-react";
@@ -22,13 +20,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   ChartContainer,
   ChartTooltip,
@@ -47,7 +38,6 @@ import {
 } from "recharts";
 import {
   PeriodoSelector,
-  ANOS_PERIODO as ANOS,
   NOMES_MESES,
   mesInicialValido,
 } from "@/components/periodo-selector";
