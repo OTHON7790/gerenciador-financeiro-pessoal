@@ -27,14 +27,59 @@ import {
 } from "@/components/ui/sheet";
 
 const NAV = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/transacoes", label: "Transações", icon: ArrowLeftRight },
-  { to: "/categorias", label: "Categorias", icon: Tags },
-  { to: "/orcamentos", label: "Orçamentos", icon: Target },
-  { to: "/metas", label: "Metas", icon: Trophy },
-  { to: "/previsoes", label: "Previsões", icon: LineChart },
-  { to: "/relatorios", label: "Relatórios", icon: PieChart },
-];
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, cor: "azul" },
+  { to: "/transacoes", label: "Transações", icon: ArrowLeftRight, cor: "verde" },
+  { to: "/categorias", label: "Categorias", icon: Tags, cor: "roxo" },
+  { to: "/orcamentos", label: "Orçamentos", icon: Target, cor: "laranja" },
+  { to: "/metas", label: "Metas", icon: Trophy, cor: "rosa" },
+  { to: "/previsoes", label: "Previsões", icon: LineChart, cor: "ciano" },
+  { to: "/relatorios", label: "Relatórios", icon: PieChart, cor: "amarelo" },
+] as const;
+
+const CORES_NAV = {
+  azul: {
+    icone: "text-primary",
+    ativo: "bg-primary/15 text-primary",
+    barra: "bg-primary",
+    hover: "hover:bg-primary/10",
+  },
+  verde: {
+    icone: "text-success",
+    ativo: "bg-success/15 text-success",
+    barra: "bg-success",
+    hover: "hover:bg-success/10",
+  },
+  roxo: {
+    icone: "text-nav-purple",
+    ativo: "bg-nav-purple/15 text-nav-purple",
+    barra: "bg-nav-purple",
+    hover: "hover:bg-nav-purple/10",
+  },
+  laranja: {
+    icone: "text-warning",
+    ativo: "bg-warning/15 text-warning",
+    barra: "bg-warning",
+    hover: "hover:bg-warning/10",
+  },
+  rosa: {
+    icone: "text-nav-pink",
+    ativo: "bg-nav-pink/15 text-nav-pink",
+    barra: "bg-nav-pink",
+    hover: "hover:bg-nav-pink/10",
+  },
+  ciano: {
+    icone: "text-nav-cyan",
+    ativo: "bg-nav-cyan/15 text-nav-cyan",
+    barra: "bg-nav-cyan",
+    hover: "hover:bg-nav-cyan/10",
+  },
+  amarelo: {
+    icone: "text-nav-yellow",
+    ativo: "bg-nav-yellow/15 text-nav-yellow",
+    barra: "bg-nav-yellow",
+    hover: "hover:bg-nav-yellow/10",
+  },
+} as const;
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const location = useLocation();
@@ -45,6 +90,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
           location.pathname === item.to ||
           location.pathname.startsWith(item.to + "/");
         const Icon = item.icon;
+        const cor = CORES_NAV[item.cor];
         return (
           <Link
             key={item.to}
@@ -53,14 +99,28 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             className={cn(
               "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
               ativo
-                ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-soft"
-                : "text-sidebar-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground",
+                ? cor.ativo
+                : cn(
+                    "text-sidebar-muted-foreground hover:text-sidebar-foreground",
+                    cor.hover,
+                  ),
             )}
           >
             {ativo && (
-              <span className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-sidebar-primary-foreground/80" />
+              <span
+                className={cn(
+                  "absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full",
+                  cor.barra,
+                )}
+              />
             )}
-            <Icon className="h-4 w-4 shrink-0" />
+            <Icon
+              className={cn(
+                "h-4 w-4 shrink-0 transition-opacity",
+                cor.icone,
+                !ativo && "opacity-80",
+              )}
+            />
             {item.label}
           </Link>
         );
