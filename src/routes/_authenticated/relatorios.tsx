@@ -1,16 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { PieChart as PieChartIcon, TrendingUp, Wallet } from "lucide-react";
 import { categoriasQuery, serieMensalQuery, evolucaoSaldoQuery, resumoMesQuery } from "@/lib/queries";
 import {
-  mesesAnteriores,
   mesAtual,
   formatarMoeda,
   formatarMoedaEixo,
   formatarMes,
 } from "@/lib/format";
 import { type Categoria } from "@/lib/schemas";
+import {
+  PeriodoSelector,
+  mesesAte,
+  mesInicialValido,
+} from "@/components/periodo-selector";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartContainer,

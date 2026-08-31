@@ -12,7 +12,6 @@ import {
   garantirCategoriasPadrao,
 } from "@/lib/queries";
 import {
-  mesesAnteriores,
   mesesEntre,
   mesAtual,
   formatarMoeda,
