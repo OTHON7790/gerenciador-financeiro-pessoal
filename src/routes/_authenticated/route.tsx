@@ -2,6 +2,7 @@ import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
 import { useCategoriasSincronizadas } from "@/hooks/use-categorias-sincronizadas";
+import { useRecorrenciasSincronizadas } from "@/hooks/use-recorrencias-sincronizadas";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
