@@ -17,5 +17,7 @@ export const Route = createFileRoute("/_authenticated")({
 function LayoutAutenticado() {
   // Fonte única: sincroniza as categorias padrão em qualquer tela do app
   useCategoriasSincronizadas();
+  // Materializa as ocorrências das despesas recorrentes ativas
+  useRecorrenciasSincronizadas();
   return <AppShell />;
 }
