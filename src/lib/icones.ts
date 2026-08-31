@@ -18,6 +18,7 @@ import {
   Wifi,
   CreditCard,
   Scissors,
+  Scale,
   type LucideIcon,
 } from "lucide-react";
 
