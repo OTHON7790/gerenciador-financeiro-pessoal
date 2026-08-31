@@ -227,7 +227,7 @@ function PrevisoesPage() {
         altaDespesas > 0.3) && (
         <div className="space-y-2">
           {percentualAtual >= 100 && (
-            <div className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/50 dark:text-red-300">
+            <div className="flex items-start gap-2 rounded-xl border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
               <span>
                 Orçamento de {formatarMes(mes)} excedido: gastos de{" "}
@@ -237,7 +237,7 @@ function PrevisoesPage() {
             </div>
           )}
           {atual.saldoProjetado < 0 && (
-            <div className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/50 dark:text-red-300">
+            <div className="flex items-start gap-2 rounded-xl border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
               <span>
                 Saldo projetado negativo ({formatarMoeda(atual.saldoProjetado)})
@@ -246,7 +246,7 @@ function PrevisoesPage() {
             </div>
           )}
           {altaDespesas > 0.3 && (
-            <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/50 dark:text-amber-300">
+            <div className="flex items-start gap-2 rounded-xl border border-warning/30 bg-warning/10 p-3 text-sm text-warning">
               <TrendingUp className="mt-0.5 h-4 w-4 shrink-0" />
               <span>
                 Despesas {Math.round(altaDespesas * 100)}% acima do mês anterior.
