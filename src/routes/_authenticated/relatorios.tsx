@@ -67,8 +67,8 @@ const CORES_GRAFICO = [
 ];
 
 function RelatoriosPage() {
-  const mes = mesAtual();
-  const meses = useMemo(() => mesesAnteriores(6), []);
+  const [mes, setMes] = useState(() => mesInicialValido(mesAtual()));
+  const meses = useMemo(() => mesesAte(mes, 6), [mes]);
 
   const { data: categorias } = useSuspenseQuery(categoriasQuery);
   const { data: serie } = useSuspenseQuery(serieMensalQuery(meses));
@@ -114,11 +114,15 @@ function RelatoriosPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Relatórios</h1>
-        <p className="text-sm text-muted-foreground">
-          Análise dos últimos {meses.length} meses.
-        </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Relatórios</h1>
+          <p className="text-sm text-muted-foreground">
+            Análise dos últimos {meses.length} meses até{" "}
+            {formatarMes(mes).replace(/^./, (c) => c.toUpperCase())}.
+          </p>
+        </div>
+        <PeriodoSelector mes={mes} onChange={setMes} />
       </div>
 
       {/* Resumo do mês atual */}
