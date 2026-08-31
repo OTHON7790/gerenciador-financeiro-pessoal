@@ -3,11 +3,11 @@ import { useMemo, useState } from "react";
 import { useSuspenseQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Wallet, Filter } from "lucide-react";
+import { Plus, Pencil, Trash2, Wallet, Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { categoriasQuery, transacoesQuery } from "@/lib/queries";
 import { excluirTransacao } from "@/lib/transacoes.functions";
 import { type Categoria, type Transacao, type TipoTransacao } from "@/lib/schemas";
-import { formatarMoeda, formatarData, mesAtual, mesesAnteriores, formatarMes } from "@/lib/format";
+import { formatarMoeda, formatarData, mesAtual, formatarMes } from "@/lib/format";
 import { iconeCategoria } from "@/lib/icones";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -94,7 +94,19 @@ function TransacoesPage() {
     .filter((t) => t.tipo === "despesa")
     .reduce((s, t) => s + t.valor, 0);
 
-  const meses = useMemo(() => mesesAnteriores(12), []);
+  const ano = Number(mes.slice(0, 4));
+  const meses = useMemo(
+    () =>
+      Array.from(
+        { length: 12 },
+        (_, i) => `${ano}-${String(i + 1).padStart(2, "0")}`,
+      ),
+    [ano],
+  );
+  const mudarAno = (delta: number) => {
+    const novoAno = ano + delta;
+    setMes(`${novoAno}-${mes.slice(5, 7)}`);
+  };
 
   const excluirMutation = useMutation({
     mutationFn: () => excluir({ data: { id: excluindo!.id } }),
@@ -140,21 +152,38 @@ function TransacoesPage() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-1.5">
               <label className="text-xs text-muted-foreground">Mês</label>
-              <Select value={mes} onValueChange={setMes}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {meses
-                    .slice()
-                    .reverse()
-                    .map((m) => (
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 flex-shrink-0"
+                  onClick={() => mudarAno(-1)}
+                  aria-label={`Ano anterior (${ano - 1})`}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Select value={mes} onValueChange={setMes}>
+                  <SelectTrigger className="min-w-0 flex-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {meses.map((m) => (
                       <SelectItem key={m} value={m}>
                         {formatarMes(m).replace(/^./, (c) => c.toUpperCase())}
                       </SelectItem>
                     ))}
-                </SelectContent>
-              </Select>
+                  </SelectContent>
+                </Select>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 flex-shrink-0"
+                  onClick={() => mudarAno(1)}
+                  aria-label={`Próximo ano (${ano + 1})`}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
             <div className="space-y-1.5">
               <label className="text-xs text-muted-foreground">Tipo</label>
