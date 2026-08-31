@@ -75,6 +75,7 @@ function TransacoesPage() {
 
   const queryClient = useQueryClient();
   const excluir = useServerFn(excluirTransacao);
+  const excluirOcor = useServerFn(excluirOcorrencia);
 
   const [dialogoAberto, setDialogoAberto] = useState(false);
   const [editando, setEditando] = useState<Transacao | null>(null);
