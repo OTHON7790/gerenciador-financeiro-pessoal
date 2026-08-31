@@ -269,7 +269,18 @@ function TransacoesPage() {
                       <Icon className="h-4 w-4" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{t.descricao}</p>
+                      <p className="flex items-center gap-1.5 truncate text-sm font-medium">
+                        {t.descricao}
+                        {t.recorrencia_id ? (
+                          <span
+                            title="Despesa recorrente"
+                            className="inline-flex items-center gap-1 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground"
+                          >
+                            <Repeat className="h-3 w-3" />
+                            Recorrente
+                          </span>
+                        ) : null}
+                      </p>
                       <p className="text-xs text-muted-foreground">
                         {cat?.nome ?? "Sem categoria"} · {formatarData(t.data)}
                       </p>
