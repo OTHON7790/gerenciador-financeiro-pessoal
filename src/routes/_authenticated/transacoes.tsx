@@ -327,17 +327,41 @@ function TransacoesPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Excluir transação?</AlertDialogTitle>
             <AlertDialogDescription>
-              “{excluindo?.descricao}” será removida permanentemente.
+              {excluindo?.recorrencia_id
+                ? `“${excluindo?.descricao}” é uma despesa recorrente. Escolha se quer remover somente este mês ou encerrar a recorrência daqui em diante.`
+                : `“${excluindo?.descricao}” será removida permanentemente.`}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
+          <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => excluirMutation.mutate()}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Excluir
-            </AlertDialogAction>
+            {excluindo?.recorrencia_id ? (
+              <>
+                <Button
+                  variant="outline"
+                  disabled={excluirMutation.isPending}
+                  onClick={() => excluirMutation.mutate("apenas_esta")}
+                >
+                  Somente esta
+                </Button>
+                <AlertDialogAction
+                  disabled={excluirMutation.isPending}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    excluirMutation.mutate("esta_e_proximas");
+                  }}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Esta e as próximas
+                </AlertDialogAction>
+              </>
+            ) : (
+              <AlertDialogAction
+                onClick={() => excluirMutation.mutate(undefined)}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Excluir
+              </AlertDialogAction>
+            )}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
