@@ -152,21 +152,38 @@ function TransacoesPage() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-1.5">
               <label className="text-xs text-muted-foreground">Mês</label>
-              <Select value={mes} onValueChange={setMes}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {meses
-                    .slice()
-                    .reverse()
-                    .map((m) => (
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 flex-shrink-0"
+                  onClick={() => mudarAno(-1)}
+                  aria-label={`Ano anterior (${ano - 1})`}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Select value={mes} onValueChange={setMes}>
+                  <SelectTrigger className="min-w-0 flex-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {meses.map((m) => (
                       <SelectItem key={m} value={m}>
                         {formatarMes(m).replace(/^./, (c) => c.toUpperCase())}
                       </SelectItem>
                     ))}
-                </SelectContent>
-              </Select>
+                  </SelectContent>
+                </Select>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 flex-shrink-0"
+                  onClick={() => mudarAno(1)}
+                  aria-label={`Próximo ano (${ano + 1})`}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
             <div className="space-y-1.5">
               <label className="text-xs text-muted-foreground">Tipo</label>
