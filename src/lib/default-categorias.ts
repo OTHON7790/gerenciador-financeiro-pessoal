@@ -30,6 +30,7 @@ export const CATEGORIAS_PADRAO: CategoriaPadrao[] = [
     cor: "#b91c1c",
     icone: "credit-card",
   },
+  { nome: "Processo Judicial", tipo: "despesa", cor: "#991b1b", icone: "scale" },
   { nome: "Cuidados Pessoais", tipo: "despesa", cor: "#f472b6", icone: "scissors" },
   { nome: "Outras despesas", tipo: "despesa", cor: "#64748b", icone: "wallet" },
 ];
