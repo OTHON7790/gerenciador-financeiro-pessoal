@@ -100,13 +100,27 @@ function TransacoesPage() {
     .reduce((s, t) => s + t.valor, 0);
 
   const excluirMutation = useMutation({
-    mutationFn: () => excluir({ data: { id: excluindo!.id } }),
+    mutationFn: (escopo?: "apenas_esta" | "esta_e_proximas") => {
+      const alvo = excluindo!;
+      if (alvo.recorrencia_id) {
+        return excluirOcor({
+          data: { id: alvo.id, escopo: escopo ?? "apenas_esta" },
+        });
+      }
+      return excluir({ data: { id: alvo.id } });
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transacoes"] });
-      queryClient.invalidateQueries({ queryKey: ["resumo"] });
-      queryClient.invalidateQueries({ queryKey: ["serie-mensal"] });
-      queryClient.invalidateQueries({ queryKey: ["evolucao-saldo"] });
-      queryClient.invalidateQueries({ queryKey: ["orcamentos"] });
+      for (const chave of [
+        "transacoes",
+        "resumo",
+        "serie-mensal",
+        "evolucao-saldo",
+        "orcamentos",
+        "previsoes",
+        "recorrencias",
+      ]) {
+        queryClient.invalidateQueries({ queryKey: [chave] });
+      }
       toast.success("Transação excluída.");
       setExcluindo(null);
     },
