@@ -24,6 +24,11 @@ import { type Categoria } from "@/lib/schemas";
 import { aplicarDemo } from "@/lib/demo-serie";
 
 import { Button } from "@/components/ui/button";
+import {
+  PeriodoSelector,
+  mesesAte,
+  mesInicialValido,
+} from "@/components/periodo-selector";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TransacaoDialog } from "@/components/transacao-dialog";
 import {
@@ -62,8 +67,8 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 function DashboardPage() {
-  const mes = mesAtual();
-  const meses = useMemo(() => mesesAnteriores(6), []);
+  const [mes, setMes] = useState(() => mesInicialValido(mesAtual()));
+  const meses = useMemo(() => mesesAte(mes, 6), [mes]);
   const queryClient = useQueryClient();
   const garantir = useServerFn(garantirCategoriasPadrao);
 
@@ -79,7 +84,7 @@ function DashboardPage() {
   }, [garantir, queryClient]);
 
   const { data: categorias } = useSuspenseQuery(categoriasQuery);
-  const { data: transacoes } = useSuspenseQuery(transacoesQuery({ limite: 6 }));
+  const { data: transacoes } = useSuspenseQuery(transacoesQuery({ mes, limite: 6 }));
   const { data: resumo } = useSuspenseQuery(resumoMesQuery(mes));
   const { data: serie } = useSuspenseQuery(serieMensalQuery(meses));
   
@@ -119,10 +124,13 @@ function DashboardPage() {
             {formatarMes(mes).replace(/^./, (c) => c.toUpperCase())}
           </p>
         </div>
-        <Button onClick={() => setDialogoAberto(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Nova transação
-        </Button>
+        <div className="flex flex-wrap items-center gap-3">
+          <PeriodoSelector mes={mes} onChange={setMes} />
+          <Button onClick={() => setDialogoAberto(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Nova transação
+          </Button>
+        </div>
       </div>
 
       {/* Cards de resumo */}
@@ -248,7 +256,7 @@ function DashboardPage() {
           </CardContent>
         </Card>
 
-        <CardEvolucaoFinanceira />
+        <CardEvolucaoFinanceira mesFinal={mes} />
 
       </div>
 
@@ -337,10 +345,10 @@ const SERIES = [
   { chave: "saldo", rotulo: "Saldo", cor: "var(--chart-3)", largura: 3.25 },
 ] as const;
 
-function CardEvolucaoFinanceira() {
+function CardEvolucaoFinanceira({ mesFinal }: { mesFinal: string }) {
   const [periodo, setPeriodo] = useState<Periodo>(6);
   const [ocultas, setOcultas] = useState<string[]>([]);
-  const padrao = useMemo(() => mesesAnteriores(6), []);
+  const padrao = useMemo(() => mesesAte(mesFinal, 6), [mesFinal]);
   const [inicio, setInicio] = useState(padrao[0]!);
   const [fim, setFim] = useState(padrao[padrao.length - 1]!);
 
@@ -348,8 +356,8 @@ function CardEvolucaoFinanceira() {
     () =>
       periodo === "custom"
         ? mesesEntre(inicio, fim)
-        : mesesAnteriores(periodo),
-    [periodo, inicio, fim],
+        : mesesAte(mesFinal, periodo),
+    [periodo, inicio, fim, mesFinal],
   );
 
   const { data: serie = [], isFetching } = useQuery({
