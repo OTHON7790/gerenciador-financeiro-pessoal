@@ -3,11 +3,15 @@ import { useMemo, useState } from "react";
 import { useSuspenseQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Wallet, Filter, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Pencil, Trash2, Wallet, Filter } from "lucide-react";
 import { categoriasQuery, transacoesQuery } from "@/lib/queries";
 import { excluirTransacao } from "@/lib/transacoes.functions";
 import { type Categoria, type Transacao, type TipoTransacao } from "@/lib/schemas";
-import { formatarMoeda, formatarData, mesAtual, formatarMes } from "@/lib/format";
+import { formatarMoeda, formatarData, mesAtual } from "@/lib/format";
+import {
+  PeriodoSelector,
+  mesInicialValido,
+} from "@/components/periodo-selector";
 import { iconeCategoria } from "@/lib/icones";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -53,7 +57,7 @@ export const Route = createFileRoute("/_authenticated/transacoes")({
 type FiltroTipo = "todas" | TipoTransacao;
 
 function TransacoesPage() {
-  const [mes, setMes] = useState(mesAtual());
+  const [mes, setMes] = useState(() => mesInicialValido(mesAtual()));
   const [tipo, setTipo] = useState<FiltroTipo>("todas");
   const [categoriaId, setCategoriaId] = useState<string>("todas");
   const [busca, setBusca] = useState("");
@@ -93,20 +97,6 @@ function TransacoesPage() {
   const totalDespesas = filtradas
     .filter((t) => t.tipo === "despesa")
     .reduce((s, t) => s + t.valor, 0);
-
-  const ano = Number(mes.slice(0, 4));
-  const meses = useMemo(
-    () =>
-      Array.from(
-        { length: 12 },
-        (_, i) => `${ano}-${String(i + 1).padStart(2, "0")}`,
-      ),
-    [ano],
-  );
-  const mudarAno = (delta: number) => {
-    const novoAno = ano + delta;
-    setMes(`${novoAno}-${mes.slice(5, 7)}`);
-  };
 
   const excluirMutation = useMutation({
     mutationFn: () => excluir({ data: { id: excluindo!.id } }),
