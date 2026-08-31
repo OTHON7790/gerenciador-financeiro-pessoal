@@ -45,6 +45,12 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import {
+  PeriodoSelector,
+  ANOS_PERIODO as ANOS,
+  NOMES_MESES,
+  mesInicialValido,
+} from "@/components/periodo-selector";
 
 export const Route = createFileRoute("/_authenticated/previsoes")({
   head: () => ({
@@ -72,21 +78,6 @@ export const Route = createFileRoute("/_authenticated/previsoes")({
   component: PrevisoesPage,
 });
 
-const ANOS = [2026, 2027, 2028, 2029, 2030];
-const NOMES_MESES = [
-  "Janeiro",
-  "Fevereiro",
-  "Março",
-  "Abril",
-  "Maio",
-  "Junho",
-  "Julho",
-  "Agosto",
-  "Setembro",
-  "Outubro",
-  "Novembro",
-  "Dezembro",
-];
 
 const config = {
   receitas: { label: "Receitas", color: "#16a34a" },
@@ -106,21 +97,10 @@ function nivelDe(percentual: number) {
 }
 
 function PrevisoesPage() {
-  const [mes, setMes] = useState(() => {
-    const atual = mesAtual();
-    const ano = Number(atual.slice(0, 4));
-    return ANOS.includes(ano) ? atual : `${ANOS[0]}-01`;
-  });
+  const [mes, setMes] = useState(() => mesInicialValido(mesAtual()));
 
   const ano = Number(mes.slice(0, 4));
   const mesNum = Number(mes.slice(5, 7));
-
-  const mudarMes = (delta: number) => {
-    const m = mesNum - 1 + delta;
-    const novoAno = ano + Math.floor(m / 12);
-    const novoMes = (((m % 12) + 12) % 12) + 1;
-    setMes(`${novoAno}-${String(novoMes).padStart(2, "0")}`);
-  };
 
   const { data: linhas } = useSuspenseQuery(previsaoAnualQuery(ano));
 
