@@ -1,15 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import { useSuspenseQuery, useQueryClient, useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import { useSuspenseQuery, useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { Plus, TrendingUp, TrendingDown, Wallet, ArrowRight } from "lucide-react";
 import {
   categoriasQuery,
   transacoesQuery,
   resumoMesQuery,
   serieMensalQuery,
-  garantirCategoriasPadrao,
 } from "@/lib/queries";
 import {
   mesesEntre,
@@ -68,19 +66,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 function DashboardPage() {
   const [mes, setMes] = useState(() => mesInicialValido(mesAtual()));
   const meses = useMemo(() => mesesAte(mes, 6), [mes]);
-  const queryClient = useQueryClient();
-  const garantir = useServerFn(garantirCategoriasPadrao);
-
   const [dialogoAberto, setDialogoAberto] = useState(false);
-
-  // Onboarding: garante categorias padrão no primeiro acesso
-  useEffect(() => {
-    garantir()
-      .then((res) => {
-        if (res.criadas > 0) queryClient.invalidateQueries({ queryKey: ["categorias"] });
-      })
-      .catch(() => {});
-  }, [garantir, queryClient]);
 
   const { data: categorias } = useSuspenseQuery(categoriasQuery);
   const { data: transacoes } = useSuspenseQuery(transacoesQuery({ mes, limite: 6 }));

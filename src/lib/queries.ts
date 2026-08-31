@@ -28,10 +28,8 @@ export const categoriasQuery = queryOptions({
   queryKey: ["categorias"],
   queryFn: () => listarCategorias(),
   select: (categorias) =>
-    [...categorias].sort(
-      (a, b) =>
-        a.tipo.localeCompare(b.tipo, "pt-BR") ||
-        a.nome.localeCompare(b.nome, "pt-BR", { sensitivity: "base" }),
+    [...categorias].sort((a, b) =>
+      a.nome.localeCompare(b.nome, "pt-BR", { sensitivity: "base" }),
     ),
 });
 
