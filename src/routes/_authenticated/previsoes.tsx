@@ -6,8 +6,6 @@ import {
   TrendingDown,
   Wallet,
   Target,
-  ChevronLeft,
-  ChevronRight,
   AlertTriangle,
   CheckCircle2,
 } from "lucide-react";
@@ -22,13 +20,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   ChartContainer,
   ChartTooltip,
@@ -45,6 +36,11 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import {
+  PeriodoSelector,
+  NOMES_MESES,
+  mesInicialValido,
+} from "@/components/periodo-selector";
 
 export const Route = createFileRoute("/_authenticated/previsoes")({
   head: () => ({
@@ -72,21 +68,6 @@ export const Route = createFileRoute("/_authenticated/previsoes")({
   component: PrevisoesPage,
 });
 
-const ANOS = [2026, 2027, 2028, 2029, 2030];
-const NOMES_MESES = [
-  "Janeiro",
-  "Fevereiro",
-  "Março",
-  "Abril",
-  "Maio",
-  "Junho",
-  "Julho",
-  "Agosto",
-  "Setembro",
-  "Outubro",
-  "Novembro",
-  "Dezembro",
-];
 
 const config = {
   receitas: { label: "Receitas", color: "#16a34a" },
@@ -106,21 +87,10 @@ function nivelDe(percentual: number) {
 }
 
 function PrevisoesPage() {
-  const [mes, setMes] = useState(() => {
-    const atual = mesAtual();
-    const ano = Number(atual.slice(0, 4));
-    return ANOS.includes(ano) ? atual : `${ANOS[0]}-01`;
-  });
+  const [mes, setMes] = useState(() => mesInicialValido(mesAtual()));
 
   const ano = Number(mes.slice(0, 4));
   const mesNum = Number(mes.slice(5, 7));
-
-  const mudarMes = (delta: number) => {
-    const m = mesNum - 1 + delta;
-    const novoAno = ano + Math.floor(m / 12);
-    const novoMes = (((m % 12) + 12) % 12) + 1;
-    setMes(`${novoAno}-${String(novoMes).padStart(2, "0")}`);
-  };
 
   const { data: linhas } = useSuspenseQuery(previsaoAnualQuery(ano));
 
@@ -220,56 +190,7 @@ function PrevisoesPage() {
             Previsto x realizado a partir dos seus dados reais.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            aria-label="Mês anterior"
-            onClick={() => mudarMes(-1)}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Select
-            value={String(ano)}
-            onValueChange={(v) => setMes(`${v}-${String(mesNum).padStart(2, "0")}`)}
-          >
-            <SelectTrigger className="w-[110px]" aria-label="Ano">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {ANOS.map((a) => (
-                <SelectItem key={a} value={String(a)}>
-                  {a}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
-            value={String(mesNum)}
-            onValueChange={(v) =>
-              setMes(`${ano}-${String(Number(v)).padStart(2, "0")}`)
-            }
-          >
-            <SelectTrigger className="w-[140px]" aria-label="Mês">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {NOMES_MESES.map((nome, i) => (
-                <SelectItem key={nome} value={String(i + 1)}>
-                  {nome}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button
-            variant="outline"
-            size="icon"
-            aria-label="Próximo mês"
-            onClick={() => mudarMes(1)}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
+        <PeriodoSelector mes={mes} onChange={setMes} />
       </div>
 
       {/* Cards de resumo */}

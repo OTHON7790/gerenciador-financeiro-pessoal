@@ -3,11 +3,15 @@ import { useMemo, useState } from "react";
 import { useSuspenseQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Wallet, Filter, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Pencil, Trash2, Wallet, Filter } from "lucide-react";
 import { categoriasQuery, transacoesQuery } from "@/lib/queries";
 import { excluirTransacao } from "@/lib/transacoes.functions";
 import { type Categoria, type Transacao, type TipoTransacao } from "@/lib/schemas";
-import { formatarMoeda, formatarData, mesAtual, formatarMes } from "@/lib/format";
+import { formatarMoeda, formatarData, mesAtual } from "@/lib/format";
+import {
+  PeriodoSelector,
+  mesInicialValido,
+} from "@/components/periodo-selector";
 import { iconeCategoria } from "@/lib/icones";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -53,7 +57,7 @@ export const Route = createFileRoute("/_authenticated/transacoes")({
 type FiltroTipo = "todas" | TipoTransacao;
 
 function TransacoesPage() {
-  const [mes, setMes] = useState(mesAtual());
+  const [mes, setMes] = useState(() => mesInicialValido(mesAtual()));
   const [tipo, setTipo] = useState<FiltroTipo>("todas");
   const [categoriaId, setCategoriaId] = useState<string>("todas");
   const [busca, setBusca] = useState("");
@@ -93,20 +97,6 @@ function TransacoesPage() {
   const totalDespesas = filtradas
     .filter((t) => t.tipo === "despesa")
     .reduce((s, t) => s + t.valor, 0);
-
-  const ano = Number(mes.slice(0, 4));
-  const meses = useMemo(
-    () =>
-      Array.from(
-        { length: 12 },
-        (_, i) => `${ano}-${String(i + 1).padStart(2, "0")}`,
-      ),
-    [ano],
-  );
-  const mudarAno = (delta: number) => {
-    const novoAno = ano + delta;
-    setMes(`${novoAno}-${mes.slice(5, 7)}`);
-  };
 
   const excluirMutation = useMutation({
     mutationFn: () => excluir({ data: { id: excluindo!.id } }),
@@ -150,40 +140,9 @@ function TransacoesPage() {
             <Filter className="h-4 w-4" /> Filtros
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="space-y-1.5">
-              <label className="text-xs text-muted-foreground">Mês</label>
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-9 w-9 flex-shrink-0"
-                  onClick={() => mudarAno(-1)}
-                  aria-label={`Ano anterior (${ano - 1})`}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <Select value={mes} onValueChange={setMes}>
-                  <SelectTrigger className="min-w-0 flex-1">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {meses.map((m) => (
-                      <SelectItem key={m} value={m}>
-                        {formatarMes(m).replace(/^./, (c) => c.toUpperCase())}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-9 w-9 flex-shrink-0"
-                  onClick={() => mudarAno(1)}
-                  aria-label={`Próximo ano (${ano + 1})`}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
+            <div className="space-y-1.5 sm:col-span-2">
+              <label className="text-xs text-muted-foreground">Período</label>
+              <PeriodoSelector mes={mes} onChange={setMes} />
             </div>
             <div className="space-y-1.5">
               <label className="text-xs text-muted-foreground">Tipo</label>
