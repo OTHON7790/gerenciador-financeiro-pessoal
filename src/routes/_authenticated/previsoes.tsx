@@ -220,56 +220,7 @@ function PrevisoesPage() {
             Previsto x realizado a partir dos seus dados reais.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            aria-label="Mês anterior"
-            onClick={() => mudarMes(-1)}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Select
-            value={String(ano)}
-            onValueChange={(v) => setMes(`${v}-${String(mesNum).padStart(2, "0")}`)}
-          >
-            <SelectTrigger className="w-[110px]" aria-label="Ano">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {ANOS.map((a) => (
-                <SelectItem key={a} value={String(a)}>
-                  {a}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
-            value={String(mesNum)}
-            onValueChange={(v) =>
-              setMes(`${ano}-${String(Number(v)).padStart(2, "0")}`)
-            }
-          >
-            <SelectTrigger className="w-[140px]" aria-label="Mês">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {NOMES_MESES.map((nome, i) => (
-                <SelectItem key={nome} value={String(i + 1)}>
-                  {nome}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button
-            variant="outline"
-            size="icon"
-            aria-label="Próximo mês"
-            onClick={() => mudarMes(1)}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
+        <PeriodoSelector mes={mes} onChange={setMes} />
       </div>
 
       {/* Cards de resumo */}
