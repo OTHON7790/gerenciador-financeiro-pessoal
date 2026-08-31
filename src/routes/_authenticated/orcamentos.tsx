@@ -274,6 +274,46 @@ function OrcamentosPage() {
                 }[totais.nivel]
               }`}
             />
+
+            {situacao.nivel === "controle" && (
+              <div className="mt-3 flex items-center gap-2 rounded-lg bg-success/10 px-3 py-2 text-sm font-medium text-success ring-1 ring-success/20">
+                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                Orçamentos sob controle.
+              </div>
+            )}
+
+            {situacao.nivel === "proximo" && (
+              <div className="mt-3 flex items-center gap-2 rounded-lg bg-warning/10 px-3 py-2 text-sm font-medium text-warning ring-1 ring-warning/20">
+                <AlertTriangle className="h-4 w-4 shrink-0" />
+                {situacao.proximos.length === 1
+                  ? `1 orçamento está próximo do limite: ${situacao.proximos[0]}.`
+                  : `${situacao.proximos.length} orçamentos estão próximos do limite: ${situacao.proximos.join(", ")}.`}
+              </div>
+            )}
+
+            {situacao.nivel === "atingido" && (
+              <div className="mt-3 flex items-center gap-2 rounded-lg bg-danger/10 px-3 py-2 text-sm font-medium text-danger ring-1 ring-danger/20">
+                <AlertTriangle className="h-4 w-4 shrink-0" />
+                {situacao.atingidos.length === 1
+                  ? `Limite atingido em ${situacao.atingidos[0]}.`
+                  : `Limite atingido em ${situacao.atingidos.length} orçamentos: ${situacao.atingidos.join(", ")}.`}
+              </div>
+            )}
+
+            {situacao.nivel === "excedido" && (
+              <div className="mt-3 flex items-center gap-2 rounded-lg bg-danger/15 px-3 py-2 text-sm font-semibold text-danger ring-1 ring-danger/40">
+                <AlertTriangle className="h-4 w-4 shrink-0" />
+                <span>
+                  {situacao.excedidos.length === 1
+                    ? `1 orçamento excedido em ${formatarMoeda(situacao.totalExcedido)}: ${situacao.excedidos[0].nome}.`
+                    : `${situacao.excedidos.length} orçamentos excedidos em ${formatarMoeda(situacao.totalExcedido)}: ${situacao.excedidos.map((e) => e.nome).join(", ")}.`}
+                  {situacao.proximos.length > 0 &&
+                    (situacao.proximos.length === 1
+                      ? ` 1 orçamento está próximo do limite: ${situacao.proximos[0]}.`
+                      : ` ${situacao.proximos.length} orçamentos estão próximos do limite: ${situacao.proximos.join(", ")}.`)}
+                </span>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
