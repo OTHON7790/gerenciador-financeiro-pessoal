@@ -105,6 +105,34 @@ function OrcamentosPage() {
     return { orcado, gasto, percentualReal, nivel } as const;
   }, [orcamentos, gastoPorCategoria]);
 
+  // Indicador automático de situação das categorias (mês selecionado)
+  const situacao = useMemo(() => {
+    const excedidos: { nome: string; excesso: number }[] = [];
+    const atingidos: string[] = [];
+    const proximos: string[] = [];
+    for (const o of orcamentos) {
+      const gasto = gastoPorCategoria.get(o.categoria_id) ?? 0;
+      const nome =
+        despesaCategorias.find((c) => c.id === o.categoria_id)?.nome ??
+        "Categoria";
+      const percentual = o.limite > 0 ? (gasto / o.limite) * 100 : 0;
+      if (percentual > 100) {
+        excedidos.push({ nome, excesso: gasto - o.limite });
+      } else if (percentual >= 100) {
+        atingidos.push(nome);
+      } else if (percentual >= 80) {
+        proximos.push(nome);
+      }
+    }
+    const totalExcedido = excedidos.reduce((s, e) => s + e.excesso, 0);
+    const nivel =
+      excedidos.length > 0 ? "excedido"
+      : atingidos.length > 0 ? "atingido"
+      : proximos.length > 0 ? "proximo"
+      : "controle";
+    return { excedidos, atingidos, proximos, totalExcedido, nivel } as const;
+  }, [orcamentos, gastoPorCategoria, despesaCategorias]);
+
 
   // formulário de novo orçamento
   const [novaCategoria, setNovaCategoria] = useState<string>("");
