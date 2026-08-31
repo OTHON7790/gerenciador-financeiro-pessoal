@@ -10,11 +10,13 @@ import {
   AlertTriangle,
   CheckCircle2,
   Wallet,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { categoriasQuery, orcamentosQuery, resumoMesQuery } from "@/lib/queries";
 import { salvarOrcamento, excluirOrcamento } from "@/lib/orcamentos.functions";
 import { type Categoria, type Orcamento } from "@/lib/schemas";
-import { formatarMoeda, formatarMes, mesAtual, mesesAnteriores } from "@/lib/format";
+import { formatarMoeda, formatarMes, mesAtual } from "@/lib/format";
 import { paraFloat } from "@/lib/format";
 import { iconeCategoria } from "@/lib/icones";
 import { Button } from "@/components/ui/button";
@@ -55,7 +57,20 @@ export const Route = createFileRoute("/_authenticated/orcamentos")({
 
 function OrcamentosPage() {
   const [mes, setMes] = useState(mesAtual());
-  const meses = useMemo(() => mesesAnteriores(6).slice().reverse(), []);
+
+  const ano = Number(mes.slice(0, 4));
+  const meses = useMemo(
+    () =>
+      Array.from(
+        { length: 12 },
+        (_, i) => `${ano}-${String(i + 1).padStart(2, "0")}`,
+      ),
+    [ano],
+  );
+  const mudarAno = (delta: number) => {
+    const novoAno = ano + delta;
+    setMes(`${novoAno}-${mes.slice(5, 7)}`);
+  };
 
   const { data: categorias } = useSuspenseQuery(categoriasQuery);
   const { data: orcamentos, isPending } = useSuspenseQuery(orcamentosQuery(mes));
@@ -193,18 +208,38 @@ function OrcamentosPage() {
 
       <div className="flex items-center gap-3">
         <label className="text-sm text-muted-foreground">Mês:</label>
-        <Select value={mes} onValueChange={setMes}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {meses.map((m) => (
-              <SelectItem key={m} value={m}>
-                {formatarMes(m).replace(/^./, (c) => c.toUpperCase())}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 flex-shrink-0"
+            onClick={() => mudarAno(-1)}
+            aria-label={`Ano anterior (${ano - 1})`}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Select value={mes} onValueChange={setMes}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {meses.map((m) => (
+                <SelectItem key={m} value={m}>
+                  {formatarMes(m).replace(/^./, (c) => c.toUpperCase())}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 flex-shrink-0"
+            onClick={() => mudarAno(1)}
+            aria-label={`Próximo ano (${ano + 1})`}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
       {/* Resumo do mês */}
