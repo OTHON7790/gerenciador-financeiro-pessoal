@@ -10,14 +10,18 @@ export const garantirCategoriasPadrao = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
 
-    const { count } = await supabase
+    // Complementar: insere apenas as categorias padrão que ainda não existem
+    const { data: existentes, error: erroLista } = await supabase
       .from("categorias")
-      .select("id", { count: "exact", head: true })
+      .select("nome")
       .eq("user_id", userId);
+    if (erroLista) throw new Error(erroLista.message);
 
-    if ((count ?? 0) > 0) return { criadas: 0 };
+    const nomes = new Set((existentes ?? []).map((c) => c.nome));
+    const faltantes = CATEGORIAS_PADRAO.filter((c) => !nomes.has(c.nome));
+    if (faltantes.length === 0) return { criadas: 0 };
 
-    const linhas = CATEGORIAS_PADRAO.map((c) => ({ ...c, user_id: userId }));
+    const linhas = faltantes.map((c) => ({ ...c, user_id: userId }));
     // upsert idempotente: chamadas simultâneas não quebram na constraint única
     const { error } = await supabase
       .from("categorias")

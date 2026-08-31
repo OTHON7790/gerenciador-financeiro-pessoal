@@ -12,6 +12,12 @@ import {
   ShoppingBag,
   Repeat,
   Wallet,
+  Zap,
+  Droplets,
+  Flame,
+  Wifi,
+  CreditCard,
+  Scissors,
   type LucideIcon,
 } from "lucide-react";
 
@@ -29,6 +35,12 @@ const MAPA: Record<string, LucideIcon> = {
   "shopping-bag": ShoppingBag,
   repeat: Repeat,
   wallet: Wallet,
+  zap: Zap,
+  droplets: Droplets,
+  flame: Flame,
+  wifi: Wifi,
+  "credit-card": CreditCard,
+  scissors: Scissors,
 };
 
 export function iconeCategoria(nome: string): LucideIcon {
