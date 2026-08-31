@@ -56,35 +56,7 @@ export const Route = createFileRoute("/_authenticated/orcamentos")({
 });
 
 function OrcamentosPage() {
-  const [mes, setMes] = useState(mesAtual());
-
-  const ano = Number(mes.slice(0, 4));
-  const mesNum = mes.slice(5, 7);
-  const ANOS = [2026, 2027, 2028, 2029, 2030];
-  const NOMES_MESES = [
-    "Janeiro",
-    "Fevereiro",
-    "Março",
-    "Abril",
-    "Maio",
-    "Junho",
-    "Julho",
-    "Agosto",
-    "Setembro",
-    "Outubro",
-    "Novembro",
-    "Dezembro",
-  ];
-
-  // Mês "YYYY-MM" deslocado em delta meses, com virada automática de ano
-  const mesComOffset = (delta: number) => {
-    const y = Number(mes.slice(0, 4));
-    const m = Number(mes.slice(5, 7)) - 1 + delta;
-    const novoAno = y + Math.floor(m / 12);
-    const novoMes = (((m % 12) + 12) % 12) + 1;
-    return `${novoAno}-${String(novoMes).padStart(2, "0")}`;
-  };
-  const mudarMes = (delta: number) => setMes(mesComOffset(delta));
+  const [mes, setMes] = useState(() => mesInicialValido(mesAtual()));
 
   const { data: categorias } = useSuspenseQuery(categoriasQuery);
   const { data: orcamentos, isPending } = useSuspenseQuery(orcamentosQuery(mes));
