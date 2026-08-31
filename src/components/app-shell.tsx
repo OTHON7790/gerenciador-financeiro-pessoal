@@ -8,6 +8,7 @@ import {
   Target,
   PieChart,
   Trophy,
+  LineChart,
   Menu,
   LogOut,
   Wallet,
@@ -31,6 +32,7 @@ const NAV = [
   { to: "/categorias", label: "Categorias", icon: Tags },
   { to: "/orcamentos", label: "Orçamentos", icon: Target },
   { to: "/metas", label: "Metas", icon: Trophy },
+  { to: "/previsoes", label: "Previsões", icon: LineChart },
   { to: "/relatorios", label: "Relatórios", icon: PieChart },
 ];
 
