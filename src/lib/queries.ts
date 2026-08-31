@@ -11,6 +11,13 @@ import {
 } from "./transacoes.functions";
 import { listarOrcamentos } from "./orcamentos.functions";
 import { listarMetas } from "./metas.functions";
+import { previsaoAnual } from "./previsoes.functions";
+
+export const previsaoAnualQuery = (ano: number) =>
+  queryOptions({
+    queryKey: ["previsoes", ano],
+    queryFn: () => previsaoAnual({ data: { ano } }),
+  });
 
 export const metasQuery = queryOptions({
   queryKey: ["metas"],

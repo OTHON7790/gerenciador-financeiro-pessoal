@@ -17,6 +17,7 @@ import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authentic
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedMetasRouteImport } from './routes/_authenticated/metas'
 import { Route as AuthenticatedOrcamentosRouteImport } from './routes/_authenticated/orcamentos'
+import { Route as AuthenticatedPrevisoesRouteImport } from './routes/_authenticated/previsoes'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
 import { Route as AuthenticatedTransacoesRouteImport } from './routes/_authenticated/transacoes'
 
@@ -59,6 +60,11 @@ const AuthenticatedOrcamentosRoute = AuthenticatedOrcamentosRouteImport.update({
   path: '/orcamentos',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPrevisoesRoute = AuthenticatedPrevisoesRouteImport.update({
+  id: '/previsoes',
+  path: '/previsoes',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedRelatoriosRoute = AuthenticatedRelatoriosRouteImport.update({
   id: '/relatorios',
   path: '/relatorios',
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/metas': typeof AuthenticatedMetasRoute
   '/orcamentos': typeof AuthenticatedOrcamentosRoute
+  '/previsoes': typeof AuthenticatedPrevisoesRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/transacoes': typeof AuthenticatedTransacoesRoute
 }
@@ -89,6 +96,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/metas': typeof AuthenticatedMetasRoute
   '/orcamentos': typeof AuthenticatedOrcamentosRoute
+  '/previsoes': typeof AuthenticatedPrevisoesRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/transacoes': typeof AuthenticatedTransacoesRoute
 }
@@ -102,6 +110,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/metas': typeof AuthenticatedMetasRoute
   '/_authenticated/orcamentos': typeof AuthenticatedOrcamentosRoute
+  '/_authenticated/previsoes': typeof AuthenticatedPrevisoesRoute
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
   '/_authenticated/transacoes': typeof AuthenticatedTransacoesRoute
 }
@@ -115,6 +124,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/metas'
     | '/orcamentos'
+    | '/previsoes'
     | '/relatorios'
     | '/transacoes'
   fileRoutesByTo: FileRoutesByTo
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/metas'
     | '/orcamentos'
+    | '/previsoes'
     | '/relatorios'
     | '/transacoes'
   id:
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/metas'
     | '/_authenticated/orcamentos'
+    | '/_authenticated/previsoes'
     | '/_authenticated/relatorios'
     | '/_authenticated/transacoes'
   fileRoutesById: FileRoutesById
@@ -207,6 +219,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrcamentosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/previsoes': {
+      id: '/_authenticated/previsoes'
+      path: '/previsoes'
+      fullPath: '/previsoes'
+      preLoaderRoute: typeof AuthenticatedPrevisoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/relatorios': {
       id: '/_authenticated/relatorios'
       path: '/relatorios'
@@ -229,6 +248,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedMetasRoute: typeof AuthenticatedMetasRoute
   AuthenticatedOrcamentosRoute: typeof AuthenticatedOrcamentosRoute
+  AuthenticatedPrevisoesRoute: typeof AuthenticatedPrevisoesRoute
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
   AuthenticatedTransacoesRoute: typeof AuthenticatedTransacoesRoute
 }
@@ -238,6 +258,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedMetasRoute: AuthenticatedMetasRoute,
   AuthenticatedOrcamentosRoute: AuthenticatedOrcamentosRoute,
+  AuthenticatedPrevisoesRoute: AuthenticatedPrevisoesRoute,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
   AuthenticatedTransacoesRoute: AuthenticatedTransacoesRoute,
 }
