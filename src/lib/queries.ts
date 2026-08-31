@@ -20,6 +20,12 @@ export const metasQuery = queryOptions({
 export const categoriasQuery = queryOptions({
   queryKey: ["categorias"],
   queryFn: () => listarCategorias(),
+  select: (categorias) =>
+    [...categorias].sort(
+      (a, b) =>
+        a.tipo.localeCompare(b.tipo, "pt-BR") ||
+        a.nome.localeCompare(b.nome, "pt-BR", { sensitivity: "base" }),
+    ),
 });
 
 export const transacoesQuery = (filtros: {
