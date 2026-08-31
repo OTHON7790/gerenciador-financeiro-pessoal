@@ -139,7 +139,7 @@ function PrevisoesPage() {
       titulo: "Receitas previstas",
       valor: mediaReceita === null ? null : atual.receitas,
       icone: TrendingUp,
-      classe: "text-emerald-600 dark:text-emerald-400",
+      classe: "text-success",
       nota:
         atual.receitaReal > 0
           ? "Receita real do mês"
@@ -149,7 +149,7 @@ function PrevisoesPage() {
       titulo: "Despesas previstas",
       valor: atual.temOrcamento ? atual.orcado : null,
       icone: Target,
-      classe: "text-orange-600 dark:text-orange-400",
+      classe: "text-warning",
       nota: atual.temOrcamento
         ? "Soma dos orçamentos do mês"
         : "Nenhum orçamento definido",
@@ -158,7 +158,7 @@ function PrevisoesPage() {
       titulo: "Gastos reais",
       valor: atual.temTransacoes ? atual.gastosReais : null,
       icone: TrendingDown,
-      classe: "text-red-600 dark:text-red-400",
+      classe: "text-danger",
       nota: atual.temTransacoes
         ? "Despesas lançadas no mês"
         : "Nenhuma transação no mês",
@@ -172,8 +172,8 @@ function PrevisoesPage() {
       icone: Wallet,
       classe:
         atual.saldoProjetado < 0
-          ? "text-red-600 dark:text-red-400"
-          : "text-blue-600 dark:text-blue-400",
+          ? "text-danger"
+          : "text-primary",
       nota: "Receitas previstas − despesas previstas",
     },
   ];
@@ -403,8 +403,8 @@ function PrevisoesPage() {
                         "py-2 pr-3 text-right tabular-nums",
                         d.temOrcamento &&
                           (diferenca < 0
-                            ? "text-red-600 dark:text-red-400"
-                            : "text-emerald-600 dark:text-emerald-400"),
+                            ? "text-danger"
+                            : "text-success"),
                       )}
                     >
                       {d.temOrcamento ? (

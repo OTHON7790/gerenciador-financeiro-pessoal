@@ -210,7 +210,7 @@ function OrcamentosPage() {
                 <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
                   Total orçado
                 </p>
-                <p className="text-lg font-semibold">
+                <p className="text-lg font-semibold text-warning">
                   {formatarMoeda(totais.orcado)}
                 </p>
               </div>
@@ -218,7 +218,7 @@ function OrcamentosPage() {
                 <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
                   Total gasto
                 </p>
-                <p className="text-lg font-semibold">
+                <p className="text-lg font-semibold text-nav-purple">
                   {formatarMoeda(totais.gasto)}
                 </p>
               </div>
@@ -228,7 +228,7 @@ function OrcamentosPage() {
                 </p>
                 <p
                   className={`text-lg font-semibold ${
-                    totais.gasto > totais.orcado ? "text-danger" : "text-success"
+                    totais.gasto > totais.orcado ? "text-danger" : "text-nav-cyan"
                   }`}
                 >
                   {formatarMoeda(Math.abs(totais.orcado - totais.gasto))}
