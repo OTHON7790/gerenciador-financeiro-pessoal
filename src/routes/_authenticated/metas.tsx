@@ -435,26 +435,35 @@ function CardMeta({
         </div>
 
         <form
-          className="flex gap-2"
+          className="space-y-1"
           onSubmit={(e) => {
             e.preventDefault();
-            if (paraFloat(valor) <= 0) {
+            if (parseMoedaBR(valor) <= 0) {
               toast.error("Informe um valor válido.");
               return;
             }
             aporte.mutate();
           }}
         >
-          <Input
-            inputMode="decimal"
-            value={valor}
-            onChange={(e) => setValor(e.target.value)}
-            placeholder="Adicionar valor (R$)"
-            aria-label={`Adicionar valor à meta ${meta.nome}`}
-          />
-          <Button type="submit" variant="outline" disabled={aporte.isPending}>
-            <Plus /> Guardar
-          </Button>
+          <div className="flex gap-2">
+            <Input
+              inputMode="decimal"
+              value={valor}
+              onChange={(e) =>
+                setValor(e.target.value.replace(/[^\d.,]/g, ""))
+              }
+              placeholder="Adicionar valor (R$)"
+              aria-label={`Adicionar valor à meta ${meta.nome}`}
+            />
+            <Button type="submit" variant="outline" disabled={aporte.isPending}>
+              <Plus /> Guardar
+            </Button>
+          </div>
+          {parseMoedaBR(valor) > 0 && (
+            <p className="text-xs text-muted-foreground">
+              Será adicionado: {formatarMoeda(parseMoedaBR(valor))}
+            </p>
+          )}
         </form>
       </CardContent>
     </Card>
