@@ -94,31 +94,20 @@ export function mesesAnteriores(quantidade: number): string[] {
   return meses;
 }
 
-export function paraFloat(valor: string): number {
-  // aceita "1.234,56" ou "1234.56"
-  const normalizado = valor
-    .replace(/\s/g, "")
-    .replace(/R\$/g, "")
-    .replace(/\.(?=\d{3}(\D|$))/g, "")
-    .replace(",", ".");
-  const n = parseFloat(normalizado);
-  return Number.isFinite(n) ? n : 0;
-}
-
 export function parseMoedaBR(valor: string): number {
   // Padrão pt-BR: vírgula = decimal, ponto = milhar.
-  const limpo = valor.replace(/[^\d.,]/g, "");
+  // Exceção: um único ponto seguido de 1 ou 2 dígitos é tratado como decimal
+  // ("100.50" => 100,50), para aceitar também o formato digitado em teclado numérico.
+  const limpo = String(valor ?? "").replace(/[^\d.,]/g, "");
   if (!limpo) return 0;
   let normalizado: string;
   if (limpo.includes(",")) {
-    // vírgula manda: pontos são separadores de milhar
     const partes = limpo.split(",");
     const decimais = partes.pop() ?? "";
     normalizado = `${partes.join("").replace(/\./g, "")}.${decimais}`;
   } else {
     const pontos = limpo.split(".");
     const ultimo = pontos.length > 1 ? (pontos[pontos.length - 1] ?? "") : "";
-    // "100.50" => decimal; "1.250" ou "1.250.000" => milhar
     normalizado =
       pontos.length === 2 && ultimo.length > 0 && ultimo.length < 3
         ? limpo
@@ -127,3 +116,21 @@ export function parseMoedaBR(valor: string): number {
   const n = parseFloat(normalizado);
   return Number.isFinite(n) ? Math.round(n * 100) / 100 : 0;
 }
+
+/** Alias mantido por compatibilidade: usa a mesma regra monetária pt-BR. */
+export const paraFloat = parseMoedaBR;
+
+/** Soma valores em centavos inteiros, evitando erro de ponto flutuante. */
+export function somarCentavos(...valores: number[]): number {
+  const total = valores.reduce(
+    (acc, v) => acc + Math.round((Number(v) || 0) * 100),
+    0,
+  );
+  return total / 100;
+}
+
+/** Converte um valor para centavos inteiros. */
+export function emCentavos(valor: number): number {
+  return Math.round((Number(valor) || 0) * 100);
+}
+

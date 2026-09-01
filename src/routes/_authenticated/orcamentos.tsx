@@ -15,7 +15,7 @@ import { categoriasQuery, orcamentosQuery, resumoMesQuery } from "@/lib/queries"
 import { salvarOrcamento, excluirOrcamento } from "@/lib/orcamentos.functions";
 import { type Categoria, type Orcamento } from "@/lib/schemas";
 import { formatarMoeda, formatarMes, mesAtual } from "@/lib/format";
-import { paraFloat } from "@/lib/format";
+import { parseMoedaBR } from "@/lib/format";
 import { iconeCategoria } from "@/lib/icones";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -146,7 +146,7 @@ function OrcamentosPage() {
       const payload = {
         categoria_id: novaCategoria,
         mes,
-        limite: paraFloat(novoLimite),
+        limite: parseMoedaBR(novoLimite),
       };
       return salvar({ data: payload });
     },
@@ -345,7 +345,7 @@ function OrcamentosPage() {
             </div>
             <Button
               onClick={() => salvarMutation.mutate()}
-              disabled={!novaCategoria || paraFloat(novoLimite) <= 0}
+              disabled={!novaCategoria || parseMoedaBR(novoLimite) <= 0}
             >
               Adicionar
             </Button>
@@ -455,7 +455,7 @@ function OrcamentosPage() {
                         inputMode="decimal"
                         defaultValue={formatarMoeda(o.limite).replace(/\s/g, "")}
                         onBlur={(e) => {
-                          const v = paraFloat(e.target.value);
+                          const v = parseMoedaBR(e.target.value);
                           if (v !== o.limite && v >= 0) {
                             atualizarMutation.mutate({ id: o.id, limite: v, categoria_id: o.categoria_id });
                           }

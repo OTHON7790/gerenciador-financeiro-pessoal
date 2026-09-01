@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { transacaoSchema, type Transacao, type TipoTransacao } from "./schemas";
+import { emCentavos } from "./format";
 
 const filtrosSchema = z.object({
   mes: z.string().regex(/^\d{4}-\d{2}$/).optional(),
@@ -106,23 +107,24 @@ export const resumoMes = createServerFn({ method: "GET" })
     let despesas = 0;
     const porCategoria = new Map<string, number>();
     for (const t of linhas ?? []) {
-      if (t.tipo === "receita") receitas += Number(t.valor);
+      const centavos = emCentavos(Number(t.valor));
+      if (t.tipo === "receita") receitas += centavos;
       else {
-        despesas += Number(t.valor);
+        despesas += centavos;
         // Despesas sem categoria entram no grupo "Sem categoria"
         const chave = t.categoria_id ?? "__sem_categoria__";
-        porCategoria.set(chave, (porCategoria.get(chave) ?? 0) + Number(t.valor));
+        porCategoria.set(chave, (porCategoria.get(chave) ?? 0) + centavos);
       }
     }
     return {
-      receitas,
-      despesas,
-      saldo: receitas - despesas,
+      receitas: receitas / 100,
+      despesas: despesas / 100,
+      saldo: (receitas - despesas) / 100,
       porCategoria: Array.from(porCategoria.entries()).map(
         ([categoria_id, valor]) => ({
           categoria_id:
             categoria_id === "__sem_categoria__" ? null : categoria_id,
-          valor,
+          valor: valor / 100,
         }),
       ),
     };
@@ -158,10 +160,15 @@ export const serieMensal = createServerFn({ method: "GET" })
       const mes = String(t.data).slice(0, 7);
       const entry = mapa.get(mes);
       if (!entry) continue;
-      if (t.tipo === "receita") entry.receitas += Number(t.valor);
-      else entry.despesas += Number(t.valor);
+      const centavos = emCentavos(Number(t.valor));
+      if (t.tipo === "receita") entry.receitas += centavos;
+      else entry.despesas += centavos;
     }
-    return Array.from(mapa.values());
+    return Array.from(mapa.values()).map((e) => ({
+      mes: e.mes,
+      receitas: e.receitas / 100,
+      despesas: e.despesas / 100,
+    }));
   });
 
 // Evolução do saldo acumulado por mês
@@ -186,14 +193,17 @@ export const evolucaoSaldo = createServerFn({ method: "GET" })
     let acumulado = 0;
     const porMes = new Map<string, number>();
     for (const t of linhas ?? []) {
-      acumulado += t.tipo === "receita" ? Number(t.valor) : -Number(t.valor);
+      acumulado +=
+        t.tipo === "receita"
+          ? emCentavos(Number(t.valor))
+          : -emCentavos(Number(t.valor));
       porMes.set(String(t.data).slice(0, 7), acumulado);
     }
     let ultimo = acumulado;
     return data.meses.map((m) => {
       const valor = porMes.get(m);
       if (valor !== undefined) ultimo = valor;
-      return { mes: m, saldo: ultimo };
+      return { mes: m, saldo: ultimo / 100 };
     });
   });
 

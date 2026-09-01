@@ -15,7 +15,7 @@ import {
   type FrequenciaRecorrencia,
   type EscopoRecorrencia,
 } from "@/lib/schemas";
-import { paraFloat, formatarMoeda } from "@/lib/format";
+import { parseMoedaBR, formatarMoeda } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -115,7 +115,7 @@ export function TransacaoDialog({
     mutationFn: async (escopo?: EscopoRecorrencia) => {
       const payload = {
         descricao: descricao.trim(),
-        valor: paraFloat(valor),
+        valor: parseMoedaBR(valor),
         tipo,
         categoria_id: categoriaId === "nenhuma" ? null : categoriaId,
         data,
@@ -166,7 +166,7 @@ export function TransacaoDialog({
   });
 
   function valido(): boolean {
-    if (!descricao.trim() || paraFloat(valor) <= 0) {
+    if (!descricao.trim() || parseMoedaBR(valor) <= 0) {
       toast.error("Preencha a descrição e um valor válido.");
       return false;
     }
