@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { somarCentavos } from "./format";
 
 export type PrevisaoMes = {
   mes: string; // YYYY-MM

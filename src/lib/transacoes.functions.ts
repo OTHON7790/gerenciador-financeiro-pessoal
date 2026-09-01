@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { transacaoSchema, type Transacao, type TipoTransacao } from "./schemas";
+import { emCentavos } from "./format";
 
 const filtrosSchema = z.object({
   mes: z.string().regex(/^\d{4}-\d{2}$/).optional(),

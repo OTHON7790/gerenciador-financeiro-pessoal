@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Target } from "lucide-react";
 import { salvarMeta } from "@/lib/metas.functions";
 import { type Meta } from "@/lib/schemas";
-import { paraFloat } from "@/lib/format";
+import { parseMoedaBR } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -50,8 +50,8 @@ export function MetaDialog({ open, onOpenChange, meta }: Props) {
     mutationFn: async () => {
       const payload = {
         nome: nome.trim(),
-        valor_alvo: paraFloat(valorAlvo),
-        valor_acumulado: valorAcumulado ? paraFloat(valorAcumulado) : 0,
+        valor_alvo: parseMoedaBR(valorAlvo),
+        valor_acumulado: valorAcumulado ? parseMoedaBR(valorAcumulado) : 0,
         data_inicio: dataInicio ? dataInicio : null,
         prazo: prazo ? prazo : null,
         ...(meta ? { id: meta.id } : {}),
@@ -68,7 +68,7 @@ export function MetaDialog({ open, onOpenChange, meta }: Props) {
 
   function enviar(e: React.FormEvent) {
     e.preventDefault();
-    if (!nome.trim() || paraFloat(valorAlvo) <= 0) {
+    if (!nome.trim() || parseMoedaBR(valorAlvo) <= 0) {
       toast.error("Informe o nome e um valor-alvo válido.");
       return;
     }
