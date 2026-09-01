@@ -67,7 +67,11 @@ export const adicionarValorMeta = createServerFn({ method: "POST" })
       .single();
     if (erroLeitura) throw new Error(erroLeitura.message);
 
-    const novo = Math.max(Number(atual.valor_acumulado) + data.valor, 0);
+    // Soma em centavos inteiros para não perder/deslocar centavos.
+    const centavos =
+      Math.round(Number(atual.valor_acumulado) * 100) +
+      Math.round(data.valor * 100);
+    const novo = Math.max(centavos, 0) / 100;
     const { data: linha, error } = await supabase
       .from("metas")
       .update({ valor_acumulado: novo })

@@ -11,7 +11,7 @@ import { Target, Plus, Trash2, Pencil, Trophy, AlertTriangle, CheckCircle2 } fro
 import { metasQuery } from "@/lib/queries";
 import { adicionarValorMeta, excluirMeta } from "@/lib/metas.functions";
 import { progressoMeta, planejarMeta, type Meta } from "@/lib/schemas";
-import { formatarMoeda, formatarData, paraFloat } from "@/lib/format";
+import { formatarMoeda, formatarData, parseMoedaBR } from "@/lib/format";
 import { MetaDialog } from "@/components/meta-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -185,7 +185,7 @@ function CardMeta({
   const adicionar = useServerFn(adicionarValorMeta);
 
   const aporte = useMutation({
-    mutationFn: () => adicionar({ data: { id: meta.id, valor: paraFloat(valor) } }),
+    mutationFn: () => adicionar({ data: { id: meta.id, valor: parseMoedaBR(valor) } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["metas"] });
       toast.success("Valor adicionado à meta!");
@@ -435,26 +435,35 @@ function CardMeta({
         </div>
 
         <form
-          className="flex gap-2"
+          className="space-y-1"
           onSubmit={(e) => {
             e.preventDefault();
-            if (paraFloat(valor) <= 0) {
+            if (parseMoedaBR(valor) <= 0) {
               toast.error("Informe um valor válido.");
               return;
             }
             aporte.mutate();
           }}
         >
-          <Input
-            inputMode="decimal"
-            value={valor}
-            onChange={(e) => setValor(e.target.value)}
-            placeholder="Adicionar valor (R$)"
-            aria-label={`Adicionar valor à meta ${meta.nome}`}
-          />
-          <Button type="submit" variant="outline" disabled={aporte.isPending}>
-            <Plus /> Guardar
-          </Button>
+          <div className="flex gap-2">
+            <Input
+              inputMode="decimal"
+              value={valor}
+              onChange={(e) =>
+                setValor(e.target.value.replace(/[^\d.,]/g, ""))
+              }
+              placeholder="Adicionar valor (R$)"
+              aria-label={`Adicionar valor à meta ${meta.nome}`}
+            />
+            <Button type="submit" variant="outline" disabled={aporte.isPending}>
+              <Plus /> Guardar
+            </Button>
+          </div>
+          {parseMoedaBR(valor) > 0 && (
+            <p className="text-xs text-muted-foreground">
+              Será adicionado: {formatarMoeda(parseMoedaBR(valor))}
+            </p>
+          )}
         </form>
       </CardContent>
     </Card>
