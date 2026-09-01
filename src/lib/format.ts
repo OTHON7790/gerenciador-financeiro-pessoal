@@ -104,3 +104,26 @@ export function paraFloat(valor: string): number {
   const n = parseFloat(normalizado);
   return Number.isFinite(n) ? n : 0;
 }
+
+export function parseMoedaBR(valor: string): number {
+  // Padrão pt-BR: vírgula = decimal, ponto = milhar.
+  const limpo = valor.replace(/[^\d.,]/g, "");
+  if (!limpo) return 0;
+  let normalizado: string;
+  if (limpo.includes(",")) {
+    // vírgula manda: pontos são separadores de milhar
+    const partes = limpo.split(",");
+    const decimais = partes.pop() ?? "";
+    normalizado = `${partes.join("").replace(/\./g, "")}.${decimais}`;
+  } else {
+    const pontos = limpo.split(".");
+    const ultimo = pontos.length > 1 ? (pontos[pontos.length - 1] ?? "") : "";
+    // "100.50" => decimal; "1.250" ou "1.250.000" => milhar
+    normalizado =
+      pontos.length === 2 && ultimo.length > 0 && ultimo.length < 3
+        ? limpo
+        : pontos.join("");
+  }
+  const n = parseFloat(normalizado);
+  return Number.isFinite(n) ? Math.round(n * 100) / 100 : 0;
+}
