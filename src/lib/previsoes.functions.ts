@@ -56,15 +56,16 @@ export const previsaoAnual = createServerFn({ method: "GET" })
       const linha = mapa.get(chave);
       if (!linha) continue;
       linha.temTransacoes = true;
-      if (t.tipo === "receita") linha.receitaReal += Number(t.valor);
-      else linha.despesaReal += Number(t.valor);
+      if (t.tipo === "receita")
+        linha.receitaReal = somarCentavos(linha.receitaReal, Number(t.valor));
+      else linha.despesaReal = somarCentavos(linha.despesaReal, Number(t.valor));
     }
 
     for (const o of orcamentosRes.data ?? []) {
       const linha = mapa.get(String(o.mes));
       if (!linha) continue;
       linha.temOrcamento = true;
-      linha.orcado += Number(o.limite);
+      linha.orcado = somarCentavos(linha.orcado, Number(o.limite));
     }
 
     return meses.map((m) => mapa.get(m)!);
