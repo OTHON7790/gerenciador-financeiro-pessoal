@@ -403,7 +403,7 @@ function RelatoriosPage() {
                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
                 <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={12} />
                 <YAxis
-                  tickFormatter={(v) => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v))}
+                  tickFormatter={(v) => formatarMoedaEixo(Number(v))}
                   tickLine={false}
                   axisLine={false}
                   fontSize={12}
