@@ -354,7 +354,7 @@ function PrevisoesPage() {
       <Card className="min-w-0">
         <CardHeader>
           <CardTitle className="text-base">
-            Previsto x Realizado · {ano}
+            Despesas — Previsto x Realizado · {ano}
           </CardTitle>
         </CardHeader>
         <CardContent className="overflow-x-auto">
@@ -362,8 +362,12 @@ function PrevisoesPage() {
             <thead>
               <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
                 <th className="py-2 pr-3 font-medium">Mês</th>
-                <th className="py-2 pr-3 text-right font-medium">Previsto</th>
-                <th className="py-2 pr-3 text-right font-medium">Realizado</th>
+                <th className="py-2 pr-3 text-right font-medium">
+                  Despesas previstas
+                </th>
+                <th className="py-2 pr-3 text-right font-medium">
+                  Despesas realizadas
+                </th>
                 <th className="py-2 pr-3 text-right font-medium">Diferença</th>
                 <th className="py-2 pr-3 text-right font-medium">% usado</th>
                 <th className="py-2 text-right font-medium">Situação</th>
