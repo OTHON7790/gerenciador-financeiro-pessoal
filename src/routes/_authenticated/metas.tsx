@@ -11,7 +11,7 @@ import { Target, Plus, Trash2, Pencil, Trophy, AlertTriangle, CheckCircle2 } fro
 import { metasQuery } from "@/lib/queries";
 import { adicionarValorMeta, excluirMeta } from "@/lib/metas.functions";
 import { progressoMeta, planejarMeta, type Meta } from "@/lib/schemas";
-import { formatarMoeda, formatarData, paraFloat } from "@/lib/format";
+import { formatarMoeda, formatarData, parseMoedaBR } from "@/lib/format";
 import { MetaDialog } from "@/components/meta-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -185,7 +185,7 @@ function CardMeta({
   const adicionar = useServerFn(adicionarValorMeta);
 
   const aporte = useMutation({
-    mutationFn: () => adicionar({ data: { id: meta.id, valor: paraFloat(valor) } }),
+    mutationFn: () => adicionar({ data: { id: meta.id, valor: parseMoedaBR(valor) } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["metas"] });
       toast.success("Valor adicionado à meta!");
