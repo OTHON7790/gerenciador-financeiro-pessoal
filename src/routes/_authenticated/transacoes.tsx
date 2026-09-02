@@ -62,6 +62,7 @@ function TransacoesPage() {
   }, [transacoes, busca]);
   const totalReceitas = filtradas.filter((t) => t.tipo === "receita").reduce((s, t) => s + t.valor, 0);
   const totalDespesas = filtradas.filter((t) => t.tipo === "despesa" && statusTransacao(t) === "pago").reduce((s, t) => s + t.valor, 0);
+  const totalPendentes = filtradas.filter((t) => t.tipo === "despesa" && statusTransacao(t) === "pendente").reduce((s, t) => s + t.valor, 0);
 
   function invalidarTudo() {
     for (const chave of ["transacoes", "resumo", "serie-mensal", "evolucao-saldo", "orcamentos", "previsoes", "recorrencias", "contas-a-pagar"]) {
