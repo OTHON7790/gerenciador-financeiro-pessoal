@@ -55,9 +55,9 @@ function LandingPage() {
         </header>
 
         {/* Hero centralizado */}
-        <section className="relative flex flex-1 items-center justify-center py-8">
+        <section className="relative flex flex-1 items-center justify-center py-6">
           <div className="mx-auto max-w-4xl px-4 text-center">
-            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-glow-cyan/30 bg-card/60 px-4 py-2 text-sm font-semibold text-foreground shadow-sm shadow-primary/20 backdrop-blur">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-glow-cyan/30 bg-card/60 px-4 py-2 text-sm font-semibold text-foreground shadow-sm shadow-primary/20 backdrop-blur">
               <Lock className="h-4 w-4 text-glow-cyan" />
               Acesso exclusivo após o login
             </div>
@@ -67,15 +67,15 @@ function LandingPage() {
                 sob controle
               </span>
             </h1>
-            <p className="mx-auto mt-7 max-w-2xl text-lg font-semibold leading-relaxed text-foreground/90 sm:text-xl lg:text-2xl">
+            <p className="mx-auto mt-6 max-w-2xl text-xl font-medium leading-relaxed text-foreground/85 sm:text-2xl lg:text-[1.7rem]">
               Organize transações, categorias, orçamentos, metas e relatórios em
               um só lugar — com privacidade total.
             </p>
-            <div className="mt-9 flex flex-wrap justify-center gap-4">
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
               <Link to="/auth">
                 <Button
                   size="lg"
-                  className="h-14 gap-2 bg-linear-to-r from-primary to-glow-cyan px-8 text-base font-bold text-primary-foreground shadow-xl shadow-primary/40 transition-all duration-200 hover:scale-[1.04] hover:shadow-primary/60"
+                  className="h-14 gap-2 bg-linear-to-r from-primary to-glow-cyan px-9 text-lg font-bold text-primary-foreground shadow-xl shadow-primary/40 transition-all duration-200 hover:scale-[1.04] hover:shadow-primary/60"
                 >
                   Criar conta grátis
                   <ArrowRight className="h-5 w-5" />
@@ -85,13 +85,13 @@ function LandingPage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="h-14 border-border/80 bg-card/50 px-8 text-base font-semibold text-foreground backdrop-blur transition-colors duration-200 hover:border-primary/50 hover:bg-card hover:text-foreground"
+                  className="h-14 border-border/80 bg-card/50 px-9 text-lg font-semibold text-foreground backdrop-blur transition-colors duration-200 hover:border-primary/50 hover:bg-card hover:text-foreground"
                 >
                   Já tenho conta
                 </Button>
               </Link>
             </div>
-            <p className="mx-auto mt-9 flex max-w-md items-center justify-center gap-2 text-base font-semibold text-foreground/90">
+            <p className="mx-auto mt-8 flex max-w-lg items-center justify-center gap-2.5 text-base font-semibold leading-snug text-foreground/95 sm:text-lg">
               <CheckCircle2 className="h-5 w-5 shrink-0 text-success" />
               Seus dados financeiros ficam protegidos e disponíveis somente após
               o login.
