@@ -140,6 +140,9 @@ function DashboardPage() {
         />
       </div>
 
+      <CardContasAPagar />
+
+
       {/* Gráficos */}
       <div className="grid min-w-0 gap-4 lg:grid-cols-2">
         <Card className="min-w-0 overflow-hidden shadow-card">
