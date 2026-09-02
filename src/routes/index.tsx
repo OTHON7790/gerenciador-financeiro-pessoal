@@ -137,6 +137,7 @@ function LandingPage() {
           Finanças Pessoal · Feito para você gerenciar seu dinheiro com clareza.
         </div>
       </footer>
+      </div>
     </div>
   );
 }
