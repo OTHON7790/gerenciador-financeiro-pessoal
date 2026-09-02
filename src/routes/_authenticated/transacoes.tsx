@@ -106,7 +106,7 @@ function TransacoesPage() {
         </div>
       </CardContent></Card>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground">Receitas</p><p className="text-xl font-bold text-success">{formatarMoeda(totalReceitas)}</p></CardContent></Card>
         <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground">Despesas pagas</p><p className="text-xl font-bold text-danger">{formatarMoeda(totalDespesas)}</p></CardContent></Card>
         <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground">Contas pendentes</p><p className="text-xl font-bold text-warning">{formatarMoeda(totalPendentes)}</p></CardContent></Card>
