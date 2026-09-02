@@ -1,7 +1,4 @@
-import { createFileRoute, useNavigate,
-
-use
-Search } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
