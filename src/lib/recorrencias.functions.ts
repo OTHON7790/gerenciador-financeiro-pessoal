@@ -103,20 +103,33 @@ async function gerarOcorrencias(
   const faltantes = previstas.filter((o) => !jaExistem.has(o.ref));
   if (faltantes.length === 0) return 0;
 
-  const linhas = faltantes.map((o) => ({
-    user_id: userId,
-    descricao: rec.descricao,
-    valor: rec.valor,
-    tipo: "despesa" as const,
-    categoria_id: rec.categoria_id,
-    data: o.data,
-    status_pagamento: rec.status_pagamento ?? "pago",
-    data_vencimento: o.data_vencimento,
-    data_pagamento: rec.status_pagamento === "pago" ? o.data : null,
-    recorrencia_id: rec.id,
-    ocorrencia_ref: o.ref,
-    editada_manualmente: false,
-  }));
+  const refInicial = refMes({
+    ano: partesData(rec.data_inicio).ano,
+    mes: partesData(rec.data_inicio).mes,
+  });
+
+  const linhas = faltantes.map((o) => {
+    // Só a ocorrência do mês inicial usa o status informado na criação da regra.
+    // Toda ocorrência gerada automaticamente para meses seguintes nasce PENDENTE,
+    // sem herdar pagamento do mês anterior.
+    const status =
+      o.ref === refInicial ? (rec.status_pagamento ?? "pago") : "pendente";
+    return {
+      user_id: userId,
+      descricao: rec.descricao,
+      valor: rec.valor,
+      tipo: "despesa" as const,
+      categoria_id: rec.categoria_id,
+      data: o.data,
+      status_pagamento: status as "pago" | "pendente",
+      data_vencimento: o.data_vencimento,
+      data_pagamento: status === "pago" ? o.data : null,
+      recorrencia_id: rec.id,
+      ocorrencia_ref: o.ref,
+      editada_manualmente: false,
+    };
+  });
+
 
   const { error: erroInsert } = await supabase.from("transacoes").insert(linhas);
   // conflito com o índice único = outra chamada já gerou; não é erro real
