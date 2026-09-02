@@ -270,7 +270,7 @@ export function TransacaoDialog({ open, onOpenChange, categorias, transacao }: P
               <div className="space-y-3 rounded-lg border border-border/70 bg-muted/30 p-3">
                 <div className="space-y-2">
                   <Label>Status do pagamento</Label>
-                  <Select value={statusPagamento || undefined} onValueChange={(v) => {
+                  <Select value={statusPagamento} onValueChange={(v) => {
                     const novoStatus = v as StatusPagamento;
                     setStatusPagamento(novoStatus);
                     if (novoStatus === "pendente") setDataPagamento("");
