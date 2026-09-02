@@ -8,6 +8,27 @@
       "when": 1788210555650,
       "tag": "0000_create_recorrencias",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788368723493,
+      "tag": "0001_status_pagamento_transacoes",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788368858752,
+      "tag": "0002_status_pagamento_recorrencias",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1788368885538,
+      "tag": "0003_vencimento_recorrencias",
+      "breakpoints": true
     }
   ]
 }

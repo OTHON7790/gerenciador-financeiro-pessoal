@@ -129,10 +129,12 @@ export type Database = {
           criado_em: string
           data_fim: string | null
           data_inicio: string
+          data_vencimento: string | null
           descricao: string
           dia_referencia: number
           frequencia: Database["public"]["Enums"]["frequencia_recorrencia"]
           id: string
+          status_pagamento: Database["public"]["Enums"]["status_pagamento"]
           user_id: string
           valor: number
         }
@@ -143,10 +145,12 @@ export type Database = {
           criado_em?: string
           data_fim?: string | null
           data_inicio: string
+          data_vencimento?: string | null
           descricao: string
           dia_referencia?: number
           frequencia?: Database["public"]["Enums"]["frequencia_recorrencia"]
           id?: string
+          status_pagamento?: Database["public"]["Enums"]["status_pagamento"]
           user_id: string
           valor: number
         }
@@ -157,10 +161,12 @@ export type Database = {
           criado_em?: string
           data_fim?: string | null
           data_inicio?: string
+          data_vencimento?: string | null
           descricao?: string
           dia_referencia?: number
           frequencia?: Database["public"]["Enums"]["frequencia_recorrencia"]
           id?: string
+          status_pagamento?: Database["public"]["Enums"]["status_pagamento"]
           user_id?: string
           valor?: number
         }
@@ -179,11 +185,14 @@ export type Database = {
           categoria_id: string | null
           criado_em: string
           data: string
+          data_pagamento: string | null
+          data_vencimento: string | null
           descricao: string
           editada_manualmente: boolean
           id: string
           ocorrencia_ref: string | null
           recorrencia_id: string | null
+          status_pagamento: Database["public"]["Enums"]["status_pagamento"]
           tipo: Database["public"]["Enums"]["tipo_lancamento"]
           user_id: string
           valor: number
@@ -192,11 +201,14 @@ export type Database = {
           categoria_id?: string | null
           criado_em?: string
           data?: string
+          data_pagamento?: string | null
+          data_vencimento?: string | null
           descricao: string
           editada_manualmente?: boolean
           id?: string
           ocorrencia_ref?: string | null
           recorrencia_id?: string | null
+          status_pagamento?: Database["public"]["Enums"]["status_pagamento"]
           tipo: Database["public"]["Enums"]["tipo_lancamento"]
           user_id: string
           valor: number
@@ -205,11 +217,14 @@ export type Database = {
           categoria_id?: string | null
           criado_em?: string
           data?: string
+          data_pagamento?: string | null
+          data_vencimento?: string | null
           descricao?: string
           editada_manualmente?: boolean
           id?: string
           ocorrencia_ref?: string | null
           recorrencia_id?: string | null
+          status_pagamento?: Database["public"]["Enums"]["status_pagamento"]
           tipo?: Database["public"]["Enums"]["tipo_lancamento"]
           user_id?: string
           valor?: number
@@ -240,6 +255,7 @@ export type Database = {
     }
     Enums: {
       frequencia_recorrencia: "mensal" | "anual"
+      status_pagamento: "pago" | "pendente"
       tipo_lancamento: "receita" | "despesa"
     }
     CompositeTypes: {
@@ -369,6 +385,7 @@ export const Constants = {
   public: {
     Enums: {
       frequencia_recorrencia: ["mensal", "anual"],
+      status_pagamento: ["pago", "pendente"],
       tipo_lancamento: ["receita", "despesa"],
     },
   },

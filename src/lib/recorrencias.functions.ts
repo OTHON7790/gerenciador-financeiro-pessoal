@@ -43,7 +43,8 @@ function ocorrenciasPrevistas(rec: {
   dia_referencia: number;
   data_inicio: string;
   data_fim: string | null;
-}): { ref: string; data: string }[] {
+  data_vencimento?: string | null;
+}): { ref: string; data: string; data_vencimento: string | null }[] {
   const inicio = partesData(rec.data_inicio);
   const limiteHorizonte = horizonte();
   const fim = rec.data_fim ? partesData(rec.data_fim) : null;
@@ -55,15 +56,21 @@ function ocorrenciasPrevistas(rec: {
     return true;
   };
 
-  const saida: { ref: string; data: string }[] = [];
+  const saida: { ref: string; data: string; data_vencimento: string | null }[] = [];
+  const vencimento = rec.data_vencimento ? partesData(rec.data_vencimento) : null;
   let ano = inicio.ano;
   let mes = inicio.mes;
   const passo = rec.frequencia === "anual" ? 12 : 1;
 
   while (dentro(ano, mes) && saida.length < 240) {
     const data = dataDoDia(ano, mes, rec.dia_referencia);
+    const dataVencimento = vencimento ? dataDoDia(ano, mes, vencimento.dia) : null;
     if (!fim || data <= rec.data_fim!) {
-      saida.push({ ref: refMes({ ano, mes }), data });
+      saida.push({
+        ref: refMes({ ano, mes }),
+        data,
+        data_vencimento: dataVencimento,
+      });
     }
     const total = (ano * 12 + (mes - 1)) + passo;
     ano = Math.floor(total / 12);
@@ -103,6 +110,9 @@ async function gerarOcorrencias(
     tipo: "despesa" as const,
     categoria_id: rec.categoria_id,
     data: o.data,
+    status_pagamento: rec.status_pagamento ?? "pago",
+    data_vencimento: o.data_vencimento,
+    data_pagamento: rec.status_pagamento === "pago" ? o.data : null,
     recorrencia_id: rec.id,
     ocorrencia_ref: o.ref,
     editada_manualmente: false,
@@ -147,6 +157,8 @@ export const criarRecorrencia = createServerFn({ method: "POST" })
         dia_referencia: dia,
         data_inicio: data.data_inicio,
         data_fim: data.data_fim ?? null,
+        status_pagamento: data.status_pagamento ?? "pago",
+        data_vencimento: data.data_vencimento ?? null,
       })
       .select()
       .single();
@@ -197,16 +209,23 @@ export const atualizarOcorrencia = createServerFn({ method: "POST" })
       .single();
     if (erroAtual) throw new Error(erroAtual.message);
 
+    const status = data.status_pagamento ?? atual.status_pagamento ?? "pago";
     const campos = {
       descricao: data.descricao,
       valor: data.valor,
       categoria_id: data.categoria_id ?? null,
+      status_pagamento: status,
+      data_vencimento: data.data_vencimento ?? null,
+    };
+    const camposOcorrencia = {
+      ...campos,
+      data_pagamento: status === "pago" ? (data.data_pagamento ?? data.data) : null,
     };
 
     if (data.escopo === "apenas_esta" || !atual.recorrencia_id) {
       const { error } = await supabase
         .from("transacoes")
-        .update({ ...campos, data: data.data, editada_manualmente: true })
+        .update({ ...camposOcorrencia, data: data.data, editada_manualmente: true })
         .eq("id", data.id);
       if (error) throw new Error(error.message);
       return { ok: true, atualizadas: 1 };
@@ -227,7 +246,7 @@ export const atualizarOcorrencia = createServerFn({ method: "POST" })
     // Ocorrência atual sempre recebe a alteração
     const { error: erroEsta } = await supabase
       .from("transacoes")
-      .update({ ...campos, data: data.data })
+      .update({ ...camposOcorrencia, data: data.data })
       .eq("id", data.id);
     if (erroEsta) throw new Error(erroEsta.message);
 
