@@ -6,11 +6,14 @@ import {
   Wallet,
   Loader2,
   ArrowLeft,
+  ArrowRight,
   MailCheck,
   Mail,
   Lock,
   Eye,
   EyeOff,
+  ShieldCheck,
+  DatabaseBackup,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,8 +63,7 @@ function AuthPage() {
   async function entrar(e: React.FormEvent) {
     e.preventDefault();
     setCarregando("login");
-    const {
- error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password: senha,
     });
@@ -77,8 +79,7 @@ function AuthPage() {
   async function cadastrar(e: React.FormEvent) {
     e.preventDefault();
     setCarregando("cadastro");
-    const { data, error
- } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password: senha,
     });
@@ -96,144 +97,163 @@ function AuthPage() {
   }
 
   return (
-    <div className="dark min-h-screen">
-      <div className="relative flex min-h-screen
- items-center justify-center overflow-hidden bg-background px-4 py-6 text-foreground">
-        {/* Iluminação discreta sobre fundo preto/grafite */}
+    <div className="dark min-h-screen bg-background text-foreground">
+      <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 py-8">
+        {/* Fundo predominantemente preto/grafite com detalhes luminosos nas laterais */}
         <div
           aria-hidden
-          className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[40rem] w-[44rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[150px]"
+          className="pointer-events-none absolute -left-40 top-1/2 -z-10 h-[36rem] w-[36rem] -translate-y-1/2 rounded-full bg-primary/15 blur-[140px]"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute left-1/2
+          className="pointer-events-none absolute -right-40 top-1/2 -z-10 h-[36rem] w-[36rem] -translate-y-1/2 rounded-full bg-glow-cyan/10 blur-[140px]"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-0 top-1/2 -z-10 h-[70vh] w-px -translate-y-1/2 bg-gradient-to-b from-transparent via-glow-cyan/40 to-transparent"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute right-0 top-1/2 -z-10 h-[70vh] w-px -translate-y-1/2 bg-gradient-to-b from-transparent via-primary/40 to-transparent"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-1/3 top-0 -z-10 h-72 w-[36rem] -translate-x-1/2 rounded-full bg-primary/5 blur-[120px]"
+        />
 
-top-[32%] -z-10
- h-56
- w-[34rem] -translate-x-1/2 rounded-full bg-glow-cyan/10 blur-[120px]"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute
- inset-x-0 bottom-0 -z-10
- h-64
- bg-gradient-to-t from-primary/5 to-transparent"
-        />
-
-        <div className="w-full max-w-[530px]">
-          <div className="mb-4 flex items-center justify-center gap-3.5">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-primary to-glow-cyan shadow-lg shadow-primary/40">
-              <Wallet className="h-7 w-7 text-primary-foreground" />
-            </div>
-            <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-[2.75rem] sm:leading-none">
-              Finanças Pessoal
-            </h1>
+        {/* Identidade no topo */}
+        <div className="flex flex-col items-center">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-primary to-glow-cyan shadow-lg shadow-primary/40">
+            <Wallet className="h-8 w-8 text-primary-foreground" />
           </div>
-          <p className="mb-5 text-center text-lg font-medium text-foreground/90">
-            Gerencie receitas, despesas e orçamentos num só lugar.
+          <h1 className="mt-3 text-4xl font-extrabold tracking-tight sm:text-[2.6rem]">
+            <span className="text-foreground">Finanças</span>{" "}
+            <span className="bg-linear-to-r from-primary to-glow-cyan bg-clip-text text-transparent">
+              Pessoal
+            </span>
+          </h1>
+          <p className="mt-1.5 text-lg font-medium text-foreground/90">
+            Seu dinheiro. Seus dados. Seu controle.
           </p>
-
-          <Card className="gap-4 rounded-2xl border border-glow-cyan/30 bg-card/85 py-5 shadow-2xl shadow-primary/10 ring-1 ring-primary/10 backdrop-blur-xl">
-            <CardHeader className="pb-1 text-center">
-              {modo === "recuperar" ? (
-                <>
-                  <CardTitle className="text-3xl font-bold tracking-tight">
-                    Recuperar senha
-                  </CardTitle>
-                  <CardDescription className="text-lg text-foreground/
-85">
-                    Informe seu e-mail para receber um link de redefinição.
-                  </CardDescription>
-                </>
-              ) : (
-                <>
-                  <CardTitle className="text-3xl font-bold tracking-tight">
-                    Acesse sua conta
-                  </CardTitle>
-                  <CardDescription className="text-lg text-foreground/85">
-                    Entre para visualizar seu painel financeiro.
-                  </CardDescription>
-                </>
-              )}
-            </CardHeader>
-            <CardContent>
-              {modo === "recuperar" ? (
-                <FormularioRecuperacao
-                  email={email}
-                  setEmail={setEmail}
-                  onVoltar={() => setModo("auth")}
-                />
-              ) : (
-                <Tabs defaultValue="entrar">
-                  <TabsList className="grid h-12
- w-full grid-cols-2
- rounded-xl border border-border/60 bg-black/30 p-1">
-                    <TabsTrigger
-                      value="entrar"
-                      className="h-10 rounded-lg text-base font-bold text-foreground/75 data-[state=active]:bg-linear-to-r data-[state=active]:from-primary data-[state=active]:to-glow-cyan data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=active]:shadow-primary/40"
-                    >
-                      Entrar
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="criar"
-                      className="h-10 rounded-lg text-base font-bold text-foreground/75 data-[state=active]:bg-linear-to-r data-[state=active]:from-primary data-[state=active]:to-glow-cyan data-[state=active]:text-primary-foreground
- data-[state=active]:shadow-lg data-[state=active]:shadow-primary/40"
-                    >
-                      Criar conta
-                    </TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="entrar" className="mt-4">
-                    <form onSubmit={entrar} className="space-y-4">
-                      <CampoEmail email={email} setEmail={setEmail} />
-                      <CampoSenha senha={senha} setSenha={setSenha} />
-                      <Button
-                        type="submit"
-                        className="mt-1 h-12 w-full bg-linear-to-r from-primary to-glow-cyan text-lg font-bold
- text-primary-foreground shadow-xl shadow-primary/40 ring-1
- ring-glow-cyan/40 transition-all duration-200 hover:scale-[1.01] hover:shadow-primary/60"
-                        disabled={carregando !== null}
-                      >
-                        {carregando === "login" && (
-                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        )}
-                        Entrar
-                      </Button>
-                      <button
-                        type="button"
-                        onClick={() => setModo("recuperar")}
-                        className="w-full text-center text-lg font-bold text-glow-cyan transition-colors
- hover:text-foreground hover:underline"
-                      >
-                        Esqueci minha senha
-                      </button>
-                    </form>
-                  </TabsContent>
-                  <TabsContent value="criar" className="mt-4">
-                    <form onSubmit={cadastrar} className="space-y-4">
-                      <CampoEmail email={email} setEmail={setEmail} />
-                      <CampoSenha senha={senha} setSenha={setSenha} />
-                      <Button
-                        type="submit"
-                        className="mt-1 h-12
- w-full bg-linear-to-r
- from-primary to-glow-cyan text-lg font-bold text
--primary-foreground shadow-xl shadow-primary/40 ring-1 ring-glow-cyan/40 transition-all duration-200 hover:scale-[1.01] hover:shadow-primary/60"
-                        disabled={carregando !== null}
-                      >
-                        {carregando === "cadastro" && (
-                          <Loader2 className="
-mr-2 h-5
- w-5 animate-spin" />
-                        )}
-                        Criar conta
-                      </Button>
-                    </form>
-                  </TabsContent>
-                </Tabs>
-              )}
-            </CardContent>
-          </Card>
         </div>
+
+        {/* Card de login */}
+        <Card className="mt-7 w-full max-w-[440px] rounded-2xl border border-primary/40 bg-black/55 py-6 shadow-2xl shadow-primary/20 backdrop-blur-xl">
+          <CardHeader className="pb-1 text-center">
+            {modo === "recuperar" ? (
+              <>
+                <CardTitle className="text-3xl font-bold tracking-tight text-foreground">
+                  Recuperar senha
+                </CardTitle>
+                <CardDescription className="text-lg text-foreground/85">
+                  Informe seu e-mail para receber um link de redefinição.
+                </CardDescription>
+              </>
+            ) : (
+              <>
+                <CardTitle className="text-3xl font-bold tracking-tight text-foreground">
+                  Acesse sua conta
+                </Title>
+                <CardDescription className="text-lg text-foreground/85">
+                  Entre para acessar seu painel financeiro.
+                </CardDescription>
+              </>
+            )}
+          </CardHeader>
+          <CardContent>
+            {modo === "recuperar" ? (
+              <FormularioRecuperacao
+                email={email}
+                setEmail={setEmail}
+                onVoltar={() => setModo("auth")}
+              />
+            ) : (
+              <Tabs defaultValue="entrar">
+                <TabsList className="mb-5 grid h-12 w-full grid-cols-2 gap-2 rounded-none border-b border-border/50 bg-transparent p-0">
+                  <TabsTrigger
+                    value="entrar"
+                    className="h-12 rounded-none border-b-2 border-transparent bg-transparent text-base font-bold uppercase tracking-wider text-foreground/65 shadow-none transition-colors data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
+                  >
+                    Entrar
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="criar"
+                    className="h-12 rounded-none border-b-2 border-transparent bg-transparent text-base font-bold uppercase tracking-wider text-foreground/65 shadow-none transition-colors data-[state=active]:border-glow-cyan data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
+                  >
+                    Criar conta
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="entrar" className="mt-0">
+                  <form onSubmit={entrar} className="space-y-4">
+                    <CampoEmail email={email} setEmail={setEmail} />
+                    <CampoSenha senha={senha} setSenha={setSenha} />
+                    <Button
+                      type="submit"
+                      className="mt-2 h-14 w-full bg-linear-to-r from-primary to-glow-cyan text-lg font-extrabold tracking-wide text-primary-foreground shadow-lg shadow-primary/40 transition-all duration-200 hover:scale-[1.01] hover:shadow-primary/60"
+                      disabled={carregando !== null}
+                    >
+                      {carregando === "login" ? (
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      ) : (
+                        <ArrowRight className="ml-2 h-5 w-5" />
+                      )}
+                      ENTRAR
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={() => setModo("recuperar")}
+                      className="w-full text-center text-lg font-bold text-glow-cyan transition-colors hover:text-foreground hover:underline"
+                    >
+                      Esqueci minha senha
+                    </button>
+                  </form>
+                </TabsContent>
+                <TabsContent value="criar" className="mt-0">
+                  <form onSubmit={cadastrar} className="space-y-4">
+                    <CampoEmail email={email} setEmail={setEmail} />
+                    <CampoSenha senha={senha} setSenha={setSenha} />
+                    <Button
+                      type="submit"
+                      className="mt-2 h-14 w-full bg-linear-to-r from-primary to-glow-cyan text-lg font-extrabold tracking-wide text-primary-foreground shadow-lg shadow-primary/40 transition-all duration-200 hover:scale-[1.01] hover:shadow-primary/60"
+                      disabled={carregando !== null}
+                    >
+                      {carregando === "cadastro" ? (
+                        <Loader2 className="mr-2
+ h-5 w-5 animate-spin" />
+                      ) : (
+                        <ArrowRight className="ml-2 h-5 w-5" />
+                      )}
+                      CRIAR CONTA
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Segurança em uma única linha */}
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-base font-medium text-foreground/85">
+          <span className="flex items-center gap-1.5">
+            <ShieldCheck className="h-4.5 w-4.5 text-glow-cyan" />
+            100% Seguro
+          </span>
+          <span className="text-border">|</span>
+          <span className="flex items-center gap-1.5">
+            <Lock className="h-4.5 w-4.5 text-glow-cyan" />
+            Privacidade Total
+          </span>
+          <span className="text-border">|</span>
+          <span className="flex items-center gap-1.5">
+            <DatabaseBackup className="h-4.5 w-4.5 text-glow-cyan" />
+            Dados protegidos
+          </span>
+        </div>
+
+        {/* Rodapé */}
+        <p className="mt-6 text-base font-medium text-foreground/75">
+          Finanças Pessoal • Feito para você gerenciar seu dinheiro com clareza.
+        </p>
       </div>
     </div>
   );
@@ -260,17 +280,15 @@ function CampoEmail({
           onChange={(e) => setEmail(e.target.value)}
           placeholder="voce@email.com"
           required
-          className="h-[52px] rounded-xl
- border border-border/80
- bg-black/40 pl-11 text-lg
- text-foreground shadow-inner placeholder:text-muted-foreground/70 focus-visible:border-glow-cyan focus-visible:ring-2 focus-visible:ring-primary/40"
+          className="h-[52px] rounded-xl border border-border/80 bg-secondary/40 pl-11 text-lg text-foreground shadow-inner placeholder:text-muted-foreground/70 focus-visible:border-glow-cyan focus-visible:ring-2 focus-visible:ring-primary/50"
         />
       </div>
     </div>
   );
 }
 
-function CampoSenha({
+function
+CampoSenha({
   senha,
   setSenha,
 }: {
@@ -284,27 +302,28 @@ function CampoSenha({
         Senha
       </Label>
       <div className="relative">
-        <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-glow-cyan" />
+        <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text
+-glow-cyan" />
         <Input
           id="senha"
           type={visivel ? "text" : "password"}
           value={senha}
-          onChange={(e) => setSenha(e.target.value)}
+          onChange={(e) => setSenha
+(e.target.value)}
           placeholder="••••••••"
           required
           minLength={6}
-          className="h-[52px] rounded-xl border border-border/80 bg-black/40
- pl-11 pr-11
- text-lg text-foreground shadow-inner placeholder:text-muted-foreground/70 focus-visible:border-glow-cyan focus-visible:ring-2 focus-visible:ring-primary/40"
+          className="h-[52px] rounded-xl border border-border/80 bg-secondary/40 pl-11 pr-11 text-lg text-foreground shadow-inner placeholder:text-muted-foreground/70 focus-visible:border-glow-cyan focus-visible:ring-2 focus-visible:ring-primary/50"
         />
         <button
           type="button"
           onClick={() =>
- setVisivel((v) => !v)}
+            setVisivel((v) => !v)}
           aria-label={visivel ? "Ocultar senha" : "Mostrar senha"}
           className="absolute right-3 top-1/2 -translate-y-1/2 text-glow-cyan/70 transition-colors hover:text-glow-cyan"
         >
-          {visivel ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+          {visivel ? <EyeOff className="h-5 w-5" /> : <Eye className
+="h-5 w-5" />}
         </button>
       </div>
     </div>
@@ -362,29 +381,22 @@ function FormularioRecuperacao({
   }
 
   return (
-    <form onSubmit={enviar}
- className="space-y-4">
-      <CampoEmail email={email} setEmail={setEmail
-} />
+    <form onSubmit={enviar} className="space-y-4">
+      <CampoEmail email={email} setEmail={setEmail} />
       <Button
         type="submit"
-        className="mt-1 h-12 w-full bg-linear-to-r from-primary to-glow-cyan text-lg font-bold text
--primary-foreground
- shadow-xl shadow-primary/40 ring-1 ring-glow-cyan/40 transition-all duration-200 hover:scale-[1.01] hover:shadow-primary/60"
+        className="mt-2 h-14 w-full bg-linear-to-r from-primary to-glow-cyan text-lg font-extrabold tracking-wide text-primary-foreground shadow-lg shadow-primary/40 transition-all duration-200 hover:scale-[1.01] hover:shadow-primary/60"
         disabled={enviando}
       >
-        {enviando && <Loader2 className="mr-2 h-5
- w-5
- animate-spin" />}
+        {enviando && <Loader2 className="mr-2
+ h-5 w-5
+animate-spin" />}
         Enviar link de recuperação
       </Button>
       <button
         type="button"
         onClick={onVoltar}
-        className="flex w-full
- items-center justify-center gap-1.5 text-lg
- font-bold
- text-glow-cyan transition-colors hover:text-foreground hover:underline"
+        className="flex w-full items-center justify-center gap-1.5 text-lg font-bold text-glow-cyan transition-colors hover:text-foreground hover:underline"
       >
         <ArrowLeft className="h-4 w-4" />
         Voltar para o login
@@ -398,7 +410,7 @@ function sanitizarDestino(raw?: string): string {
   try {
     const url = new URL(raw, window.location.origin);
     if (url.origin === window.location.origin && url.pathname.startsWith("/"))
- {
+      {
       return url.pathname + url.search;
     }
   } catch {
