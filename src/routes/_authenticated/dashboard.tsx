@@ -8,6 +8,7 @@ import {
   transacoesQuery,
   resumoMesQuery,
   serieMensalQuery,
+  contasAPagarQuery,
 } from "@/lib/queries";
 import {
   mesesEntre,
@@ -139,6 +140,9 @@ function DashboardPage() {
           tom="danger"
         />
       </div>
+
+      <CardContasAPagar />
+
 
       {/* Gráficos */}
       <div className="grid min-w-0 gap-4 lg:grid-cols-2">
@@ -674,6 +678,53 @@ function CardMetas() {
           );
         })}
 
+      </CardContent>
+    </Card>
+  );
+}
+
+function CardContasAPagar() {
+  const { data } = useQuery({ ...contasAPagarQuery, placeholderData: keepPreviousData });
+  if (!data || (data.pendente === 0 && data.vencido === 0)) return null;
+  return (
+    <Card className="shadow-card">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0">
+        <CardTitle className="text-base">Contas a pagar</CardTitle>
+        <Link to="/transacoes">
+          <Button variant="ghost" size="sm" className="gap-1">
+            Ver todas <ArrowRight className="h-3.5 w-3.5" />
+          </Button>
+        </Link>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="rounded-lg border border-warning/30 bg-warning/10 p-3">
+            <p className="text-xs text-muted-foreground">Total pendente</p>
+            <p className="text-lg font-bold text-warning">{formatarMoeda(data.pendente)}</p>
+          </div>
+          <div className="rounded-lg border border-danger/30 bg-danger/10 p-3">
+            <p className="text-xs text-muted-foreground">Total vencido</p>
+            <p className="text-lg font-bold text-danger">{formatarMoeda(data.vencido)}</p>
+          </div>
+        </div>
+        {data.proximos.length > 0 && (
+          <div className="space-y-1.5">
+            <p className="text-xs font-medium text-muted-foreground">Próximos vencimentos</p>
+            <ul className="divide-y rounded-lg border">
+              {data.proximos.map((c) => (
+                <li key={c.id} className="flex items-center justify-between gap-3 px-3 py-2 text-sm">
+                  <span className="min-w-0 truncate">{c.descricao}</span>
+                  <span className="flex flex-shrink-0 items-center gap-3">
+                    <span className="text-xs text-muted-foreground">
+                      {c.data_vencimento ? formatarData(c.data_vencimento) : "Sem vencimento"}
+                    </span>
+                    <span className="font-semibold tabular-nums">{formatarMoeda(c.valor)}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

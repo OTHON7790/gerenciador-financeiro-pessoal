@@ -12,6 +12,18 @@ export const categoriaSchema = z.object({
 });
 export type CategoriaInput = z.infer<typeof categoriaSchema>;
 
+// Status de pagamento (apenas despesas)
+export const STATUS_PAGAMENTO = ["pago", "pendente"] as const;
+export type StatusPagamento = (typeof STATUS_PAGAMENTO)[number];
+/** Status exibido: "vencido" é derivado, nunca escolhido pelo usuário. */
+export type StatusExibido = "pago" | "pendente" | "vencido";
+
+const dataOpcional = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida")
+  .nullable()
+  .optional();
+
 // Transações
 export const transacaoSchema = z.object({
   descricao: z.string().trim().min(1, "Informe a descrição").max(100),
@@ -19,8 +31,35 @@ export const transacaoSchema = z.object({
   tipo: z.enum(TIPO_TRANSACAO),
   categoria_id: z.string().uuid().nullable().optional(),
   data: z.string().min(1, "Informe a data"),
+  status_pagamento: z.enum(STATUS_PAGAMENTO).optional(),
+  data_vencimento: dataOpcional,
+  data_pagamento: dataOpcional,
 });
 export type TransacaoInput = z.infer<typeof transacaoSchema>;
+
+function hojeIso(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+/** Status efetivo de uma transação: receitas sempre "pago". */
+export function statusTransacao(t: {
+  tipo: TipoTransacao;
+  status_pagamento?: StatusPagamento | null;
+  data_vencimento?: string | null;
+}): StatusExibido {
+  if (t.tipo !== "despesa") return "pago";
+  const status = t.status_pagamento ?? "pago";
+  if (status === "pago") return "pago";
+  if (t.data_vencimento && t.data_vencimento < hojeIso()) return "vencido";
+  return "pendente";
+}
+
+export const ROTULO_STATUS: Record<StatusExibido, string> = {
+  pago: "Pago",
+  pendente: "Pendente",
+  vencido: "Vencido",
+};
 
 // Recorrências (despesas recorrentes)
 export const FREQUENCIAS = ["mensal", "anual"] as const;
@@ -35,6 +74,8 @@ export const recorrenciaSchema = z.object({
   frequencia: z.enum(FREQUENCIAS),
   data_inicio: dataIso,
   data_fim: dataIso.nullable().optional(),
+  status_pagamento: z.enum(STATUS_PAGAMENTO).optional(),
+  data_vencimento: dataIso.nullable().optional(),
 });
 export type RecorrenciaInput = z.infer<typeof recorrenciaSchema>;
 
@@ -48,6 +89,9 @@ export const atualizarOcorrenciaSchema = z.object({
   categoria_id: z.string().uuid().nullable().optional(),
   data: dataIso,
   data_fim: dataIso.nullable().optional(),
+  status_pagamento: z.enum(STATUS_PAGAMENTO).optional(),
+  data_vencimento: dataIso.nullable().optional(),
+  data_pagamento: dataIso.nullable().optional(),
   escopo: z.enum(ESCOPOS_RECORRENCIA),
 });
 
@@ -66,6 +110,8 @@ export type Recorrencia = {
   dia_referencia: number;
   data_inicio: string;
   data_fim: string | null;
+  status_pagamento?: StatusPagamento;
+  data_vencimento?: string | null;
   ativa: boolean;
   criado_em: string;
   atualizado_em: string;
@@ -305,6 +351,9 @@ export type Transacao = {
   tipo: TipoTransacao;
   data: string;
   criado_em: string;
+  status_pagamento?: StatusPagamento | null;
+  data_vencimento?: string | null;
+  data_pagamento?: string | null;
   recorrencia_id?: string | null;
   ocorrencia_ref?: string | null;
   editada_manualmente?: boolean;

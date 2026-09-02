@@ -31,8 +31,8 @@ export const previsaoAnual = createServerFn({ method: "GET" })
 
     const [transacoesRes, orcamentosRes] = await Promise.all([
       supabase
-        .from("transacoes")
-        .select("valor, tipo, data")
+.from("transacoes")
+        .select("valor, tipo, data, status_pagamento")
         .gte("data", inicio)
         .lt("data", fim),
       supabase.from("orcamentos").select("limite, mes").in("mes", meses),
@@ -53,6 +53,7 @@ export const previsaoAnual = createServerFn({ method: "GET" })
       });
 
     for (const t of transacoesRes.data ?? []) {
+      if (t.tipo === "despesa" && t.status_pagamento !== "pago") continue;
       const chave = String(t.data).slice(0, 7);
       const linha = mapa.get(chave);
       if (!linha) continue;

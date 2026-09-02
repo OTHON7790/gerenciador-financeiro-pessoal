@@ -8,6 +8,7 @@ import {
   resumoMes,
   serieMensal,
   evolucaoSaldo,
+  contasAPagar,
 } from "./transacoes.functions";
 import { listarOrcamentos } from "./orcamentos.functions";
 import { listarMetas } from "./metas.functions";
@@ -37,6 +38,7 @@ export const transacoesQuery = (filtros: {
   mes?: string;
   tipo?: "receita" | "despesa";
   categoria_id?: string;
+  status?: "todos" | "pago" | "pendente" | "vencido";
   limite?: number;
 }) =>
   queryOptions({
@@ -67,5 +69,10 @@ export const orcamentosQuery = (mes: string) =>
     queryKey: ["orcamentos", mes],
     queryFn: () => listarOrcamentos({ data: { mes } }),
   });
+
+export const contasAPagarQuery = queryOptions({
+  queryKey: ["contas-a-pagar"],
+  queryFn: () => contasAPagar(),
+});
 
 export { garantirCategoriasPadrao };
