@@ -263,14 +263,17 @@ export const atualizarOcorrencia = createServerFn({ method: "POST" })
       .eq("id", data.id);
     if (erroEsta) throw new Error(erroEsta.message);
 
-    // Próximas ocorrências ainda não personalizadas
+    // Próximas ocorrências ainda não personalizadas.
+    // O status de pagamento é individual por mês: não propagamos "pago".
+    const { status_pagamento: _ignorado, ...camposFuturos } = campos;
     const { data: futuras, error: erroFuturas } = await supabase
       .from("transacoes")
-      .update(campos)
+      .update(camposFuturos)
       .eq("recorrencia_id", atual.recorrencia_id)
       .eq("editada_manualmente", false)
       .gt("ocorrencia_ref", ref)
       .select("id");
+
     if (erroFuturas) throw new Error(erroFuturas.message);
 
     // Se o término mudou, remove ocorrências futuras fora do novo período
