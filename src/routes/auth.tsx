@@ -218,8 +218,7 @@ function AuthPage() {
                       disabled={carregando !== null}
                     >
                       {carregando === "cadastro" ? (
-                        <Loader2 className="mr-2
- h-5 w-5 animate-spin" />
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                       ) : (
                         <ArrowRight className="ml-2 h-5 w-5" />
                       )}
