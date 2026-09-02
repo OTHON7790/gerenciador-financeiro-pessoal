@@ -62,6 +62,7 @@ function TransacoesPage() {
   }, [transacoes, busca]);
   const totalReceitas = filtradas.filter((t) => t.tipo === "receita").reduce((s, t) => s + t.valor, 0);
   const totalDespesas = filtradas.filter((t) => t.tipo === "despesa" && statusTransacao(t) === "pago").reduce((s, t) => s + t.valor, 0);
+  const totalPendentes = filtradas.filter((t) => t.tipo === "despesa" && statusTransacao(t) === "pendente").reduce((s, t) => s + t.valor, 0);
 
   function invalidarTudo() {
     for (const chave of ["transacoes", "resumo", "serie-mensal", "evolucao-saldo", "orcamentos", "previsoes", "recorrencias", "contas-a-pagar"]) {
@@ -105,9 +106,10 @@ function TransacoesPage() {
         </div>
       </CardContent></Card>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground">Receitas</p><p className="text-xl font-bold text-success">{formatarMoeda(totalReceitas)}</p></CardContent></Card>
         <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground">Despesas pagas</p><p className="text-xl font-bold text-danger">{formatarMoeda(totalDespesas)}</p></CardContent></Card>
+        <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground">Contas pendentes</p><p className="text-xl font-bold text-warning">{formatarMoeda(totalPendentes)}</p></CardContent></Card>
         <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground">Saldo realizado</p><p className="text-xl font-bold">{formatarMoeda(totalReceitas - totalDespesas)}</p></CardContent></Card>
       </div>
 
