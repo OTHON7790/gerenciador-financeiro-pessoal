@@ -37,7 +37,8 @@ export const Route = createFileRoute("/")({
 
 function LandingPage() {
   return (
-    <div className="dark min-h-screen bg-background text-foreground">
+    <div className="dark min-h-screen">
+      <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-6">
         <div className="flex items-center gap-2.5">
