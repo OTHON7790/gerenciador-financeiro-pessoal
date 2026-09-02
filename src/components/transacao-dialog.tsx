@@ -63,7 +63,7 @@ export function TransacaoDialog({ open, onOpenChange, categorias, transacao }: P
   const [tipo, setTipo] = useState<TipoTransacao>("despesa");
   const [categoriaId, setCategoriaId] = useState<string>("nenhuma");
   const [data, setData] = useState(hoje());
-  const [statusPagamento, setStatusPagamento] = useState<StatusPagamento>("pago");
+  const [statusPagamento, setStatusPagamento] = useState<StatusPagamento | "">("");
   const [dataVencimento, setDataVencimento] = useState("");
   const [dataPagamento, setDataPagamento] = useState("");
 
@@ -77,7 +77,7 @@ export function TransacaoDialog({ open, onOpenChange, categorias, transacao }: P
 
   useEffect(() => {
     if (!open) return;
-    const status = transacao?.status_pagamento ?? "pago";
+    const status = transacao ? (transacao.status_pagamento ?? "pago") : "";
     setDescricao(transacao?.descricao ?? "");
     setValor(transacao ? formatarMoeda(transacao.valor).replace(/\s/g, "") : "");
     setTipo(transacao?.tipo ?? "despesa");
@@ -110,7 +110,8 @@ export function TransacaoDialog({ open, onOpenChange, categorias, transacao }: P
 
   const mutation = useMutation({
     mutationFn: async (escopo?: EscopoRecorrencia) => {
-      const status = tipo === "despesa" ? statusPagamento : "pago";
+      const status =
+        tipo === "despesa" ? ((statusPagamento || "pago") as StatusPagamento) : "pago";
       const pagamento = status === "pago" ? dataPagamento || data : null;
       const payload = {
         descricao: descricao.trim(),
@@ -173,6 +174,10 @@ export function TransacaoDialog({ open, onOpenChange, categorias, transacao }: P
   function valido(): boolean {
     if (!descricao.trim() || parseMoedaBR(valor) <= 0) {
       toast.error("Preencha a descrição e um valor válido.");
+      return false;
+    }
+    if (tipo === "despesa" && !statusPagamento) {
+      toast.error("Selecione o status do pagamento (Pago ou Pendente).");
       return false;
     }
     if (tipo === "despesa" && dataVencimento && dataVencimento < data) {
@@ -264,14 +269,14 @@ export function TransacaoDialog({ open, onOpenChange, categorias, transacao }: P
             {tipo === "despesa" && (
               <div className="space-y-3 rounded-lg border border-border/70 bg-muted/30 p-3">
                 <div className="space-y-2">
-                  <Label>Status de pagamento</Label>
+                  <Label>Status do pagamento</Label>
                   <Select value={statusPagamento} onValueChange={(v) => {
                     const novoStatus = v as StatusPagamento;
                     setStatusPagamento(novoStatus);
                     if (novoStatus === "pendente") setDataPagamento("");
                     else if (!dataPagamento) setDataPagamento(data);
                   }}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger><SelectValue placeholder="Selecione o status" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="pago">Pago</SelectItem>
                       <SelectItem value="pendente">Pendente</SelectItem>
