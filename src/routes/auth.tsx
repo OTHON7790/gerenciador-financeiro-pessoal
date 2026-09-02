@@ -1,4 +1,7 @@
-import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
+import { createFileRoute, useNavigate,
+
+use
+Search } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -60,11 +63,12 @@ function AuthPage() {
   async function entrar(e: React.FormEvent) {
     e.preventDefault();
     setCarregando("login");
-    const { error } = await supabase.auth.signInWithPassword({
+    const {
+ error } = await supabase.auth.signInWithPassword({
       email,
       password: senha,
     });
-    setCarrefandoSafe(setCarregando);
+    setCarregando(null);
     if (error) {
       toast.error("Credenciais inválidas. Verifique e tente novamente.");
       return;
@@ -76,7 +80,8 @@ function AuthPage() {
   async function cadastrar(e: React.FormEvent) {
     e.preventDefault();
     setCarregando("cadastro");
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error
+ } = await supabase.auth.signUp({
       email,
       password: senha,
     });
@@ -95,19 +100,27 @@ function AuthPage() {
 
   return (
     <div className="dark min-h-screen">
-      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-6 text-foreground">
-        {/* Iluminação discreta: predominância de preto/grafite */}
+      <div className="relative flex min-h-screen
+ items-center justify-center overflow-hidden bg-background px-4 py-6 text-foreground">
+        {/* Iluminação discreta sobre fundo preto/grafite */}
         <div
           aria-hidden
           className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[40rem] w-[44rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[150px]"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute left-1/2 top-[32%] -z-10 h-56 w-[34rem] -translate-x-1/2 rounded-full bg-glow-cyan/10 blur-[120px]"
+          className="pointer-events-none absolute left-1/2
+
+top-[32%] -z-10
+ h-56
+ w-[34rem] -translate-x-1/2 rounded-full bg-glow-cyan/10 blur-[120px]"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-64 bg-gradient-to-t from-primary/5 to-transparent"
+          className="pointer-events-none absolute
+ inset-x-0 bottom-0 -z-10
+ h-64
+ bg-gradient-to-t from-primary/5 to-transparent"
         />
 
         <div className="w-full max-w-[530px]">
@@ -130,7 +143,8 @@ function AuthPage() {
                   <CardTitle className="text-3xl font-bold tracking-tight">
                     Recuperar senha
                   </CardTitle>
-                  <CardDescription className="text-lg text-foreground/85">
+                  <CardDescription className="text-lg text-foreground/
+85">
                     Informe seu e-mail para receber um link de redefinição.
                   </CardDescription>
                 </>
@@ -154,16 +168,19 @@ function AuthPage() {
                 />
               ) : (
                 <Tabs defaultValue="entrar">
-                  <TabsList className="grid h-12 w-full grid-cols-2 rounded-xl border border-border/60 bg-black/30 p-1">
+                  <TabsList className="grid h-12
+ w-full grid-cols-2
+ rounded-xl border border-border/60 bg-black/30 p-1">
                     <TabsTrigger
                       value="entrar"
-                      className="h-10 rounded-lg text-base font-bold text-foreground/75 data-[state=active]:bg-linear-to-r data-[state=active]:from-primary data-[state=active]:to-glow-cyan data-[active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=state=active]:shadow-primary/40 data-[state=active]:text-primary-foreground"
+                      className="h-10 rounded-lg text-base font-bold text-foreground/75 data-[state=active]:bg-linear-to-r data-[state=active]:from-primary data-[state=active]:to-glow-cyan data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=active]:shadow-primary/40"
                     >
                       Entrar
                     </TabsTrigger>
                     <TabsTrigger
                       value="criar"
-                      className="h-10 rounded-lg text-base font-bold text-foreground/75 data-[state=active]:bg-linear-to-r data-[state=active]:from-primary data-[state=active]:to-glow-cyan data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=active]:shadow-primary/40"
+                      className="h-10 rounded-lg text-base font-bold text-foreground/75 data-[state=active]:bg-linear-to-r data-[state=active]:from-primary data-[state=active]:to-glow-cyan data-[state=active]:text-primary-foreground
+ data-[state=active]:shadow-lg data-[state=active]:shadow-primary/40"
                     >
                       Criar conta
                     </TabsTrigger>
@@ -174,7 +191,9 @@ function AuthPage() {
                       <CampoSenha senha={senha} setSenha={setSenha} />
                       <Button
                         type="submit"
-                        className="mt-1 h-13 w-full bg-linear-to-r from-primary to-glow-cyan text-lg font-bold text-primary-foreground shadow-xl shadow-primary/40 ring-1 ring-glow-cyan/40 transition-all duration-200 hover:scale-[1.01] hover:shadow-primary/60"
+                        className="mt-1 h-12 w-full bg-linear-to-r from-primary to-glow-cyan text-lg font-bold
+ text-primary-foreground shadow-xl shadow-primary/40 ring-1
+ ring-glow-cyan/40 transition-all duration-200 hover:scale-[1.01] hover:shadow-primary/60"
                         disabled={carregando !== null}
                       >
                         {carregando === "login" && (
@@ -185,7 +204,8 @@ function AuthPage() {
                       <button
                         type="button"
                         onClick={() => setModo("recuperar")}
-                        className="w-full text-center text-lg font-bold text-glow-cyan transition-colors hover:text-foreground hover:underline"
+                        className="w-full text-center text-lg font-bold text-glow-cyan transition-colors
+ hover:text-foreground hover:underline"
                       >
                         Esqueci minha senha
                       </button>
@@ -194,17 +214,19 @@ function AuthPage() {
                   <TabsContent value="criar" className="mt-4">
                     <form onSubmit={cadastrar} className="space-y-4">
                       <CampoEmail email={email} setEmail={setEmail} />
-                      <CampoSenha senha={senha} setSenha={setsenha2(senha)} />
+                      <CampoSenha senha={senha} setSenha={setSenha} />
                       <Button
                         type="submit"
-                        className="mt-1 h-13
- w-full bg-linear-to-r from
--primary to-glow-cyan text-lg font-bold text-primary-foreground shadow-xl shadow-primary/40 ring-1 ring-glow-cyan/40 transition-all duration-200 hover:scale-[1.01] hover:shadow-primary/60"
+                        className="mt-1 h-12
+ w-full bg-linear-to-r
+ from-primary to-glow-cyan text-lg font-bold text
+-primary-foreground shadow-xl shadow-primary/40 ring-1 ring-glow-cyan/40 transition-all duration-200 hover:scale-[1.01] hover:shadow-primary/60"
                         disabled={carregando !== null}
                       >
-                        {"
-cadastro" === carregando && (
-                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        {carregando === "cadastro" && (
+                          <Loader2 className="
+mr-2 h-5
+ w-5 animate-spin" />
                         )}
                         Criar conta
                       </Button>
@@ -241,7 +263,10 @@ function CampoEmail({
           onChange={(e) => setEmail(e.target.value)}
           placeholder="voce@email.com"
           required
-          className="h-[52px] rounded-xl border border-border/80 bg-black/40 pl-11 text-lg text-foreground shadow-inner placeholder:text-muted-foreground/70 focus-visible:border-glow-cyan focus-visible:ring-2 focus-visible:ring-primary/40"
+          className="h-[52px] rounded-xl
+ border border-border/80
+ bg-black/40 pl-11 text-lg
+ text-foreground shadow-inner placeholder:text-muted-foreground/70 focus-visible:border-glow-cyan focus-visible:ring-2 focus-visible:ring-primary/40"
         />
       </div>
     </div>
@@ -260,7 +285,7 @@ function CampoSenha({
     <div className="space-y-2">
       <Label htmlFor="senha" className="text-lg font-semibold text-foreground">
         Senha
-      </Label>
+      Label>
       <div className="relative">
         <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-glow-cyan" />
         <Input
@@ -271,12 +296,14 @@ function CampoSenha({
           placeholder="••••••••"
           required
           minLength={6}
-          className="h-[52px] rounded-xl border border-border/80 bg-black/40 pl-11 pr-11 text-lg text-foreground shadow-inner placeholder:text-muted-foreground/70 focus-visible:border-glow-cyan focus-visible:ring-2 focus-visible:ring-primary/40"
+          className="h-[52px] rounded-xl border border-border/80 bg-black/40
+ pl-11 pr-11
+ text-lg text-foreground shadow-inner placeholder:text-muted-foreground/70 focus-visible:border-glow-cyan focus-visible:ring-2 focus-visible:ring-primary/40"
         />
         <button
           type="button"
-          onClick={() => setVisivel((v) => !
-v)}
+          onClick={() =>
+ setVisivel((v) => !v)}
           aria-label={visivel ? "Ocultar senha" : "Mostrar senha"}
           className="absolute right-3 top-1/2 -translate-y-1/2 text-glow-cyan/70 transition-colors hover:text-glow-cyan"
         >
@@ -338,21 +365,29 @@ function FormularioRecuperacao({
   }
 
   return (
-    <form onSubmit={enviar} className="space-y-4">
-      <CampoEmail email={email} setEmail={setEmail} />
+    <form onSubmit={enviar}
+ className="space-y-4">
+      <CampoEmail email={email} setEmail={setEmail
+} />
       <Button
         type="submit"
-        className="mt-1 h-13 w-full bg-linear-to-r from-primary to-glow-cyan text-lg font-bold text-foreground-foreground shadow-xl shadow-primary/40 ring-1 ring-glow-cyan/40 transition-all duration-200 hover:scale-[1.01] hover:shadow-primary/60"
+        className="mt-1 h-12 w-full bg-linear-to-r from-primary to-glow-cyan text-lg font-bold text
+-primary-foreground
+ shadow-xl shadow-primary/40 ring-1 ring-glow-cyan/40 transition-all duration-200 hover:scale-[1.01] hover:shadow-primary/60"
         disabled={enviando}
       >
-        {enviando && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+        {enviando && <Loader2 className="mr-2 h-5
+ w-5
+ animate-spin" />}
         Enviar link de recuperação
       </Button>
       <button
         type="button"
-        onClick
-={onVoltar}
-        className="flex w-full items-center justify-center gap-1.5 text-lg font-bold text-glow-cyan transition-colors hover:text-foreground hover:underline"
+        onClick={onVoltar}
+        className="flex w-full
+ items-center justify-center gap-1.5 text-lg
+ font-bold
+ text-glow-cyan transition-colors hover:text-foreground hover:underline"
       >
         <ArrowLeft className="h-4 w-4" />
         Voltar para o login
@@ -361,12 +396,12 @@ function FormularioRecuperacao({
   );
 }
 
-function sanitizar
-Destino(raw?: string): string {
+function sanitizarDestino(raw?: string): string {
   if (!raw) return "/dashboard";
   try {
     const url = new URL(raw, window.location.origin);
-    if (url.origin === window.location.origin && url.pathname.startsWith("/")) {
+    if (url.origin === window.location.origin && url.pathname.startsWith("/"))
+ {
       return url.pathname + url.search;
     }
   } catch {
