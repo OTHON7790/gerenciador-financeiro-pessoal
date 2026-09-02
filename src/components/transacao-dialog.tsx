@@ -269,14 +269,14 @@ export function TransacaoDialog({ open, onOpenChange, categorias, transacao }: P
             {tipo === "despesa" && (
               <div className="space-y-3 rounded-lg border border-border/70 bg-muted/30 p-3">
                 <div className="space-y-2">
-                  <Label>Status de pagamento</Label>
-                  <Select value={statusPagamento} onValueChange={(v) => {
+                  <Label>Status do pagamento</Label>
+                  <Select value={statusPagamento || undefined} onValueChange={(v) => {
                     const novoStatus = v as StatusPagamento;
                     setStatusPagamento(novoStatus);
                     if (novoStatus === "pendente") setDataPagamento("");
                     else if (!dataPagamento) setDataPagamento(data);
                   }}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger><SelectValue placeholder="Selecione o status" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="pago">Pago</SelectItem>
                       <SelectItem value="pendente">Pendente</SelectItem>
