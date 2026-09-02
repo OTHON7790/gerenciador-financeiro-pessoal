@@ -321,8 +321,8 @@ CampoSenha({
           aria-label={visivel ? "Ocultar senha" : "Mostrar senha"}
           className="absolute right-3 top-1/2 -translate-y-1/2 text-glow-cyan/70 transition-colors hover:text-glow-cyan"
         >
-          {visivel ? <EyeOff className="h-5 w-5" /> : <Eye className
-="h-5 w-5" />}
+          {visivel ? <EyeOff className="h-5
+ w-5" /> : <Eye className="h-5 w-5" />}
         </button>
       </div>
     </div>
