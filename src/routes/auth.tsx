@@ -153,7 +153,7 @@ function AuthPage() {
               <>
                 <CardTitle className="text-3xl font-bold tracking-tight text-foreground">
                   Acesse sua conta
-                </Title>
+                </CardTitle>
                 <CardDescription className="text-lg text-foreground/85">
                   Entre para acessar seu painel financeiro.
                 </CardDescription>
