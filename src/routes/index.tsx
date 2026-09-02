@@ -65,35 +65,50 @@ function LandingPage() {
       </header>
 
       {/* Hero */}
-      <section className="mx-auto max-w-6xl px-4 py-16 text-center sm:py-24">
-        <div className="mb-5 inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm">
-          <CheckCircle2 className="h-3.5 w-3.5 text-success" />
-          100% gratuito · dados protegidos
+      <section className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-14 sm:py-20 lg:grid-cols-2 lg:gap-16">
+        <div className="text-center lg:text-left">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm">
+            <CheckCircle2 className="h-3.5 w-3.5 text-success" />
+            100% gratuito · dados protegidos
+          </div>
+          <h1 className="text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
+            Suas finanças,{" "}
+            <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              sob controle
+            </span>
+          </h1>
+          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg lg:mx-0">
+            Registre receitas e despesas, organize por categorias, defina
+            orçamentos mensais e acompanhe tudo em gráficos claros.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
+            <Link to="/auth">
+              <Button size="lg" className="gap-1.5">
+                Criar conta grátis
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Link to="/auth">
+              <Button size="lg" variant="outline">
+                Já tenho conta
+              </Button>
+            </Link>
+          </div>
+          <ul className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground lg:justify-start">
+            {["Transações ilimitadas", "Orçamentos por categoria", "Metas financeiras"].map(
+              (item) => (
+                <li key={item} className="flex items-center gap-1.5">
+                  <CheckCircle2 className="h-4 w-4 text-success" />
+                  {item}
+                </li>
+              ),
+            )}
+          </ul>
         </div>
-        <h1 className="mx-auto max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
-          Suas finanças,{" "}
-          <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            sob controle
-          </span>
-        </h1>
-        <p className="mx-auto mt-4 max-w-xl text-base text-muted-foreground sm:text-lg">
-          Registre receitas e despesas, organize por categorias, defina
-          orçamentos mensais e acompanhe tudo em gráficos claros.
-        </p>
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Link to="/auth">
-            <Button size="lg" className="gap-1.5">
-              Criar conta grátis
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
-          <Link to="/auth">
-            <Button size="lg" variant="outline">
-              Já tenho conta
-            </Button>
-          </Link>
-        </div>
+
+        <DashboardPreview />
       </section>
+
 
       {/* Features */}
       <section className="mx-auto max-w-6xl px-4 pb-20">
