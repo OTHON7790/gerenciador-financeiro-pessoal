@@ -1,18 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect } from "react";
 import {
   Wallet,
   TrendingUp,
   Tags,
   Target,
+  Trophy,
   PieChart,
   ArrowRight,
   CheckCircle2,
+  Lock,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { DashboardPreview } from "@/components/dashboard-preview";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -21,13 +20,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Aplicativo completo de gestão financeira pessoal: transações, categorias, orçamentos e relatórios.",
+          "Aplicativo completo de gestão financeira pessoal: transações, categorias, orçamentos, metas e relatórios.",
       },
       { property: "og:title", content: "Finanças Pessoal" },
       {
         property: "og:description",
         content:
-          "Gerencie receitas, despesas, orçamentos e acompanhe seus relatórios num só lugar.",
+          "Organize transações, categorias, orçamentos, metas e relatórios num só lugar.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -37,23 +36,17 @@ export const Route = createFileRoute("/")({
 });
 
 function LandingPage() {
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        // pequena conveniência: se já logado, segue para o dashboard
-      }
-    });
-  }, []);
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary-soft/40">
+    <div className="dark min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5">
+      <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-6">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-            <Wallet className="h-5 w-5" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-lg shadow-primary/25">
+            <Wallet className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="text-lg font-bold">Finanças Pessoal</span>
+          <span className="text-lg font-bold tracking-tight">
+            Finanças Pessoal
+          </span>
         </div>
         <div className="flex gap-2">
           <Link to="/auth">
@@ -66,25 +59,29 @@ function LandingPage() {
       </header>
 
       {/* Hero */}
-      <section className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-14 sm:py-20 lg:grid-cols-2 lg:gap-16">
-        <div className="text-center lg:text-left">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm">
-            <CheckCircle2 className="h-3.5 w-3.5 text-success" />
-            100% gratuito · dados protegidos
+      <section className="relative overflow-hidden">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 -z-10 mx-auto h-96 max-w-4xl rounded-full bg-primary/15 blur-[120px]"
+        />
+        <div className="mx-auto max-w-3xl px-4 pb-16 pt-14 text-center sm:pb-20 sm:pt-20">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border bg-card/60 px-3.5 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur">
+            <Lock className="h-3.5 w-3.5 text-primary" />
+            Acesso exclusivo após o login
           </div>
           <h1 className="text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
             Suas finanças,{" "}
-            <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
               sob controle
             </span>
           </h1>
-          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg lg:mx-0">
-            Registre receitas e despesas, organize por categorias, defina
-            orçamentos mensais e acompanhe tudo em gráficos claros.
+          <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+            Organize transações, categorias, orçamentos, metas e relatórios em
+            um só lugar — com privacidade total.
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
+          <div className="mt-9 flex flex-wrap justify-center gap-3">
             <Link to="/auth">
-              <Button size="lg" className="gap-1.5">
+              <Button size="lg" className="gap-1.5 shadow-lg shadow-primary/30">
                 Criar conta grátis
                 <ArrowRight className="h-4 w-4" />
               </Button>
@@ -95,49 +92,46 @@ function LandingPage() {
               </Button>
             </Link>
           </div>
-          <ul className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground lg:justify-start">
-            {["Transações ilimitadas", "Orçamentos por categoria", "Metas financeiras"].map(
-              (item) => (
-                <li key={item} className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-4 w-4 text-success" />
-                  {item}
-                </li>
-              ),
-            )}
-          </ul>
+          <p className="mt-8 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+            <CheckCircle2 className="h-4 w-4 text-primary" />
+            Seus dados financeiros ficam protegidos e disponíveis somente após o
+            login.
+          </p>
         </div>
-
-        <DashboardPreview />
       </section>
 
-
-      {/* Features */}
-      <section className="mx-auto max-w-6xl px-4 pb-20">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          <Feature
+      {/* Recursos */}
+      <section className="mx-auto max-w-5xl px-4 pb-20">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          <Recurso
             icon={<TrendingUp className="h-5 w-5" />}
             title="Transações"
-            desc="Registre receitas e despesas com filtros por mês, tipo e categoria."
+            desc="Registre entradas e saídas do dia a dia."
           />
-          <Feature
+          <Recurso
             icon={<Tags className="h-5 w-5" />}
             title="Categorias"
-            desc="Organize com cores e ícones. Categorias padrão já vêm prontas."
+            desc="Organize com cores e ícones personalizados."
           />
-          <Feature
+          <Recurso
             icon={<Target className="h-5 w-5" />}
             title="Orçamentos"
-            desc="Defina limites de gastos e veja o progresso em tempo real."
+            desc="Defina limites mensais por categoria."
           />
-          <Feature
+          <Recurso
+            icon={<Trophy className="h-5 w-5" />}
+            title="Metas"
+            desc="Planeje conquistas e acompanhe o progresso."
+          />
+          <Recurso
             icon={<PieChart className="h-5 w-5" />}
             title="Relatórios"
-            desc="Gráficos de receitas, despesas e evolução do saldo."
+            desc="Visualize sua evolução em gráficos claros."
           />
         </div>
       </section>
 
-      <footer className="border-t bg-card/50">
+      <footer className="border-t bg-card/40">
         <div className="mx-auto max-w-6xl px-4 py-6 text-center text-xs text-muted-foreground">
           Finanças Pessoal · Feito para você gerenciar seu dinheiro com clareza.
         </div>
@@ -146,7 +140,7 @@ function LandingPage() {
   );
 }
 
-function Feature({
+function Recurso({
   icon,
   title,
   desc,
@@ -156,15 +150,16 @@ function Feature({
   desc: string;
 }) {
   return (
-    <Card>
+    <Card className="border-border/70 bg-card/60 backdrop-blur transition-colors hover:border-primary/30">
       <CardContent className="p-5">
-        <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-primary/15 text-primary">
           {icon}
         </div>
-        <h3 className="text-base font-semibold">{title}</h3>
-        <p className="mt-1 text-sm text-muted-foreground">{desc}</p>
+        <h3 className="text-sm font-semibold">{title}</h3>
+        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+          {desc}
+        </p>
       </CardContent>
     </Card>
   );
 }
-
