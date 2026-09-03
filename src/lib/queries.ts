@@ -70,9 +70,10 @@ export const orcamentosQuery = (mes: string) =>
     queryFn: () => listarOrcamentos({ data: { mes } }),
   });
 
-export const contasAPagarQuery = queryOptions({
-  queryKey: ["contas-a-pagar"],
-  queryFn: () => contasAPagar(),
-});
+export const contasAPagarQuery = (mes: string) =>
+  queryOptions({
+    queryKey: ["contas-a-pagar", mes],
+    queryFn: () => contasAPagar({ data: { mes } }),
+  });
 
 export { garantirCategoriasPadrao };
