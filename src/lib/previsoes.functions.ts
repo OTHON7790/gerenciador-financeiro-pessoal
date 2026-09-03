@@ -7,6 +7,12 @@ export type PrevisaoMes = {
   mes: string; // YYYY-MM
   receitaReal: number;
   despesaReal: number;
+  /** Despesas recorrentes do mês (pagas + pendentes). */
+  despesaRecorrente: number;
+  /** Despesas pagas do mês que NÃO são recorrentes (gastos variáveis). */
+  despesaVariavelPaga: number;
+  /** Receitas recorrentes do mês. */
+  receitaRecorrente: number;
   orcado: number;
   temTransacoes: boolean;
   temOrcamento: boolean;
