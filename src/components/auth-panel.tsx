@@ -294,12 +294,12 @@ function GraficoDecorativo() {
         Evolução financeira
       </div>
       <div className="relative h-16">
-        <div className="flex h-full items-end justify-between gap-2.5">
+        <div className="flex h-full items-end justify-around gap-2.5">
           {barras.map((h, i) => (
             <div
               key={i}
               style={{ height: `${h}%` }}
-              className="w-1.5 flex-1 rounded-t-sm bg-linear-to-t from-primary/15 to-primary/55"
+              className="w-2 rounded-t-sm bg-linear-to-t from-primary/15 to-primary/50"
             />
           ))}
         </div>
@@ -313,7 +313,7 @@ function GraficoDecorativo() {
               key={x}
               cx={x}
               cy={y}
-              r="1.6"
+              r="2.4"
               fill="var(--glow-cyan)"
               vectorEffect="non-scaling-stroke"
             />
