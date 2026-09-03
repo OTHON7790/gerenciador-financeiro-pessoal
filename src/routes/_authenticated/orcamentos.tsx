@@ -194,6 +194,35 @@ function OrcamentosPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const copiarMutation = useMutation({
+    mutationFn: () => copiar({ data: { mes } }),
+    onSuccess: (res) => {
+      const nomeOrigem = formatarMes(res.origem).replace(/^./, (c) =>
+        c.toUpperCase(),
+      );
+      const nomeDestino = formatarMes(mes).replace(/^./, (c) =>
+        c.toUpperCase(),
+      );
+      if (res.semOrigem) {
+        toast.info(`${nomeOrigem} não possui orçamentos para copiar.`);
+        return;
+      }
+      if (res.copiados === 0) {
+        toast.info(
+          `Todas as categorias de ${nomeOrigem} já possuem orçamento em ${nomeDestino}.`,
+        );
+        return;
+      }
+      queryClient.invalidateQueries({ queryKey: ["orcamentos"] });
+      queryClient.invalidateQueries({ queryKey: ["resumo"] });
+      queryClient.invalidateQueries({ queryKey: ["previsoes"] });
+      toast.success(
+        `Orçamentos de ${nomeOrigem} copiados para ${nomeDestino} com sucesso.`,
+      );
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   return (
     <div className="space-y-6">
       <div>
