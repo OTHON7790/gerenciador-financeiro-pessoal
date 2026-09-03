@@ -76,26 +76,26 @@ export function AuthScreen() {
   }
 
   return (
-    <div className="dark min-h-screen overflow-x-hidden bg-background text-foreground">
+    <div className="dark flex min-h-screen flex-col overflow-x-hidden bg-background text-foreground">
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(60rem_40rem_at_15%_10%,color-mix(in_oklab,var(--primary)_20%,transparent),transparent),radial-gradient(50rem_35rem_at_90%_85%,color-mix(in_oklab,var(--glow-cyan)_14%,transparent),transparent)]"
+        className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(45rem_28rem_at_12%_8%,color-mix(in_oklab,var(--primary)_14%,transparent),transparent),radial-gradient(38rem_24rem_at_92%_88%,color-mix(in_oklab,var(--glow-cyan)_9%,transparent),transparent)]"
       />
 
-      <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:py-12">
-        <div className="grid items-start gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
+      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center px-4 py-6 sm:px-6 lg:py-8">
+        <div className="grid items-center gap-7 lg:grid-cols-[52fr_48fr] lg:gap-10">
           {/* Card de acesso — primeiro no mobile, à direita no desktop */}
           <section className="order-1 lg:order-2">
-            <div className="rounded-2xl border border-primary/35 bg-card/70 p-5 shadow-2xl shadow-primary/10 backdrop-blur-xl sm:p-7">
+            <div className="rounded-2xl border border-primary/30 bg-card/70 p-4 shadow-xl shadow-primary/10 backdrop-blur-xl sm:p-6">
               {modo === "recuperar" ? (
                 <>
-                  <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                  <h2 className="text-xl font-bold tracking-tight sm:text-2xl">
                     Recuperar senha
                   </h2>
-                  <p className="mt-1.5 text-base text-muted-foreground">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     Informe seu e-mail para receber um link de redefinição.
                   </p>
-                  <div className="mt-6">
+                  <div className="mt-5">
                     <FormularioRecuperacao
                       email={email}
                       setEmail={setEmail}
@@ -105,31 +105,31 @@ export function AuthScreen() {
                 </>
               ) : (
                 <>
-                  <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                  <h2 className="text-xl font-bold tracking-tight sm:text-2xl">
                     Acesse sua conta
                   </h2>
-                  <p className="mt-1.5 text-base text-muted-foreground">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     Entre para acessar seu painel financeiro.
                   </p>
 
-                  <Tabs defaultValue="entrar" className="mt-6">
-                    <TabsList className="grid h-auto w-full grid-cols-2 gap-2 rounded-xl border border-border/70 bg-secondary/50 p-1.5">
+                  <Tabs defaultValue="entrar" className="mt-5">
+                    <TabsList className="grid h-auto w-full grid-cols-2 gap-1 rounded-xl border border-border/70 bg-secondary/60 p-1">
                       <TabsTrigger
                         value="entrar"
-                        className="h-12 rounded-lg text-sm font-black uppercase tracking-wide text-foreground/70 transition-colors data-[state=active]:bg-linear-to-r data-[state=active]:from-primary data-[state=active]:to-glow-cyan data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=active]:shadow-primary/30"
+                        className="h-10 cursor-pointer rounded-lg text-xs font-black uppercase tracking-wide text-foreground/70 transition-colors hover:bg-foreground/5 hover:text-foreground data-[state=active]:bg-linear-to-r data-[state=active]:from-primary data-[state=active]:to-glow-cyan data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/30"
                       >
                         Entrar
                       </TabsTrigger>
                       <TabsTrigger
                         value="criar"
-                        className="h-12 rounded-lg text-sm font-black uppercase tracking-wide text-foreground/70 transition-colors data-[state=active]:bg-success data-[state=active]:text-success-foreground data-[state=active]:shadow-lg data-[state=active]:shadow-success/25"
+                        className="h-10 cursor-pointer rounded-lg text-xs font-black uppercase tracking-wide text-foreground/70 transition-colors hover:bg-foreground/5 hover:text-foreground data-[state=active]:bg-success data-[state=active]:text-success-foreground data-[state=active]:shadow-md data-[state=active]:shadow-success/25"
                       >
                         Criar conta
                       </TabsTrigger>
                     </TabsList>
 
-                    <TabsContent value="entrar" className="mt-6">
-                      <form onSubmit={entrar} className="space-y-4">
+                    <TabsContent value="entrar" className="mt-5">
+                      <form onSubmit={entrar} className="space-y-3.5">
                         <CampoEmail email={email} setEmail={setEmail} />
                         <CampoSenha senha={senha} setSenha={setSenha} />
                         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -150,35 +150,35 @@ export function AuthScreen() {
                         </div>
                         <Button
                           type="submit"
-                          className="h-13 w-full bg-linear-to-r from-primary to-glow-cyan text-base font-extrabold uppercase tracking-wide text-primary-foreground shadow-lg shadow-primary/30 transition-opacity hover:opacity-90"
+                          className="h-11 w-full bg-linear-to-r from-primary to-glow-cyan text-sm font-extrabold uppercase tracking-wide text-primary-foreground shadow-md shadow-primary/25 transition-opacity hover:opacity-90"
                           disabled={carregando !== null}
                         >
                           {carregando === "login" ? (
-                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                           ) : null}
                           Entrar
                           {carregando !== "login" && (
-                            <ArrowRight className="ml-2 h-5 w-5" />
+                            <ArrowRight className="ml-2 h-4 w-4" />
                           )}
                         </Button>
                       </form>
                     </TabsContent>
 
-                    <TabsContent value="criar" className="mt-6">
-                      <form onSubmit={cadastrar} className="space-y-4">
+                    <TabsContent value="criar" className="mt-5">
+                      <form onSubmit={cadastrar} className="space-y-3.5">
                         <CampoEmail email={email} setEmail={setEmail} />
                         <CampoSenha senha={senha} setSenha={setSenha} />
                         <Button
                           type="submit"
-                          className="h-13 w-full bg-success text-base font-extrabold uppercase tracking-wide text-success-foreground shadow-lg shadow-success/25 transition-colors hover:bg-success/90"
+                          className="h-11 w-full bg-success text-sm font-extrabold uppercase tracking-wide text-success-foreground shadow-md shadow-success/25 transition-colors hover:bg-success/90"
                           disabled={carregando !== null}
                         >
                           {carregando === "cadastro" ? (
-                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                           ) : null}
                           Criar conta grátis
                         </Button>
-                        <p className="text-center text-sm font-medium text-muted-foreground">
+                        <p className="text-center text-xs font-medium text-muted-foreground">
                           É rápido, fácil e seguro!
                         </p>
                       </form>
@@ -187,8 +187,8 @@ export function AuthScreen() {
                 </>
               )}
 
-              <p className="mt-6 flex items-center justify-center gap-2 text-center text-sm text-muted-foreground">
-                <ShieldCheck className="h-4 w-4 shrink-0 text-glow-cyan" />
+              <p className="mt-5 flex items-center justify-center gap-2 text-center text-xs text-muted-foreground">
+                <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-glow-cyan" />
                 Privacidade em primeiro lugar · seus dados financeiros são
                 privados.
               </p>
@@ -197,16 +197,16 @@ export function AuthScreen() {
 
           {/* Apresentação */}
           <section className="order-2 lg:order-1">
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-primary to-glow-cyan shadow-lg shadow-primary/30">
-                <Wallet className="h-6 w-6 text-primary-foreground" />
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-primary to-glow-cyan shadow-md shadow-primary/25">
+                <Wallet className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold tracking-tight sm:text-2xl">
+              <span className="text-lg font-bold tracking-tight sm:text-xl">
                 Finanças Pessoais
               </span>
             </div>
 
-            <h1 className="mt-7 text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl">
+            <h1 className="mt-5 text-3xl font-extrabold leading-[1.12] tracking-tight sm:text-4xl">
               Seu dinheiro.
               <br />
               Seus dados.
@@ -215,24 +215,24 @@ export function AuthScreen() {
                 Seu controle.
               </span>
             </h1>
-            <p className="mt-5 max-w-xl text-lg text-muted-foreground">
+            <p className="mt-3.5 max-w-md text-sm text-muted-foreground sm:text-base">
               Organize suas finanças, acompanhe seus objetivos e tenha clareza
               total da sua vida financeira.
             </p>
 
-            <ul className="mt-8 space-y-4">
+            <ul className="mt-5 space-y-2.5">
               <Beneficio
-                icone={<LayoutDashboard className="h-5 w-5 text-primary" />}
+                icone={<LayoutDashboard className="h-4 w-4 text-primary" />}
                 titulo="Visão completa"
                 texto="Receitas, despesas, orçamentos e relatórios."
               />
               <Beneficio
-                icone={<Target className="h-5 w-5 text-glow-cyan" />}
+                icone={<Target className="h-4 w-4 text-glow-cyan" />}
                 titulo="Metas e objetivos"
                 texto="Acompanhe seu progresso financeiro."
               />
               <Beneficio
-                icone={<ShieldCheck className="h-5 w-5 text-success" />}
+                icone={<ShieldCheck className="h-4 w-4 text-success" />}
                 titulo="Privacidade"
                 texto="Seus dados ficam disponíveis somente após autenticação."
               />
@@ -242,7 +242,7 @@ export function AuthScreen() {
           </section>
         </div>
 
-        <footer className="mt-10 text-center text-sm text-muted-foreground">
+        <footer className="mt-7 text-center text-xs text-muted-foreground">
           Finanças Pessoais • Feito para você gerenciar seu dinheiro com
           clareza.
         </footer>
