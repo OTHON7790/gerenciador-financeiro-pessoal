@@ -152,6 +152,7 @@ function OrcamentosPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orcamentos"] });
+      queryClient.invalidateQueries({ queryKey: ["previsoes"] });
       toast.success("Orçamento definido!");
       setNovaCategoria("");
       setNovoLimite("");
@@ -171,6 +172,7 @@ function OrcamentosPage() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orcamentos"] });
+      queryClient.invalidateQueries({ queryKey: ["previsoes"] });
     },
   });
 
@@ -179,6 +181,7 @@ function OrcamentosPage() {
     mutationFn: () => excluir({ data: { id: excluindo!.id } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orcamentos"] });
+      queryClient.invalidateQueries({ queryKey: ["previsoes"] });
       toast.success("Orçamento removido.");
       setExcluindo(null);
     },

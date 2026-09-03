@@ -19,7 +19,6 @@ import {
   formatarMes,
 } from "@/lib/format";
 import { type Categoria } from "@/lib/schemas";
-import { aplicarDemo } from "@/lib/demo-serie";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -81,12 +80,7 @@ function DashboardPage() {
     return m;
   }, [categorias]);
 
-  const { dados: serieBase, demo: demoBarras } = useMemo(
-    () => aplicarDemo(serie),
-    [serie],
-  );
-
-  const dadosSerie = serieBase.map((s) => ({
+  const dadosSerie = serie.map((s) => ({
     mes: formatarMes(s.mes).replace(/^./, (c) => c.toUpperCase()),
     receitas: s.receitas,
     despesas: s.despesas,
@@ -149,11 +143,6 @@ function DashboardPage() {
         <Card className="min-w-0 overflow-hidden shadow-card">
           <CardHeader>
             <CardTitle className="text-base">Receitas x Despesas</CardTitle>
-            {demoBarras && (
-              <p className="text-xs text-muted-foreground">
-                Dados de demonstração em meses sem transações
-              </p>
-            )}
           </CardHeader>
 
           <CardContent className="min-w-0 overflow-hidden">
@@ -361,12 +350,7 @@ function CardEvolucaoFinanceira({ mesFinal }: { mesFinal: string }) {
     [serie, meses],
   );
 
-  const { dados: serieFinal, demo } = useMemo(
-    () => aplicarDemo(serieDoPeriodo),
-    [serieDoPeriodo],
-  );
-
-  const dados = serieFinal.map((s) => ({
+  const dados = serieDoPeriodo.map((s) => ({
     mes: formatarMes(s.mes).replace(/^./, (c) => c.toUpperCase()),
     receitas: s.receitas,
     despesas: s.despesas,
@@ -399,11 +383,6 @@ function CardEvolucaoFinanceira({ mesFinal }: { mesFinal: string }) {
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
         <div className="min-w-0 space-y-0.5">
           <CardTitle className="text-base">Evolução financeira</CardTitle>
-          {demo && (
-            <p className="text-xs text-muted-foreground">
-              Dados de demonstração em meses sem transações
-            </p>
-          )}
         </div>
 
         <div className="flex min-w-0 flex-wrap gap-1 rounded-lg bg-muted p-1">
