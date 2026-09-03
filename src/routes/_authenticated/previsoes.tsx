@@ -97,8 +97,15 @@ function PrevisoesPage() {
   const dados = useMemo(
     () =>
       linhas.map((l, i) => {
-        const receitas = l.receitaReal > 0 ? l.receitaReal : null;
-        const despesasPrevistas = l.temOrcamento ? l.orcado : null;
+        // Receita prevista: recorrente quando existir, senão a receita lançada.
+        const receitaPrevista =
+          l.receitaRecorrente > 0 ? l.receitaRecorrente : l.receitaReal;
+        const receitas = receitaPrevista > 0 ? receitaPrevista : null;
+        // Despesa prevista: recorrentes do mês (pagas + pendentes) + gastos
+        // variáveis já pagos. Orçamentos não são projetados.
+        const previsto = l.despesaRecorrente + l.despesaVariavelPaga;
+        const temPrevisao = previsto > 0;
+        const despesasPrevistas = temPrevisao ? previsto : null;
         const gastosReais = l.temTransacoes ? l.despesaReal : null;
         const saldoProjetado =
           receitas === null && despesasPrevistas === null
@@ -111,11 +118,13 @@ function PrevisoesPage() {
           despesasPrevistas,
           gastosReais,
           saldoProjetado,
-          temOrcamento: l.temOrcamento,
+          previsto,
+          temPrevisao,
           temTransacoes: l.temTransacoes,
-          orcado: l.orcado,
+          receitaRecorrente: l.receitaRecorrente,
           receitaReal: l.receitaReal,
           despesaReal: l.despesaReal,
+          despesaRecorrente: l.despesaRecorrente,
         };
       }),
     [linhas],
