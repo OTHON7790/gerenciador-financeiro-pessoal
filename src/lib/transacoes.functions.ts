@@ -238,11 +238,11 @@ export const evolucaoSaldo = createServerFn({ method: "GET" })
       acumulado += t.tipo === "receita" ? emCentavos(Number(t.valor)) : -emCentavos(Number(t.valor));
       porMes.set(String(t.data).slice(0, 7), acumulado);
     }
-    let ultimo = acumulado;
+    let ultimo: number | null = null;
     return data.meses.map((m) => {
       const valor = porMes.get(m);
       if (valor !== undefined) ultimo = valor;
-      return { mes: m, saldo: ultimo / 100 };
+      return { mes: m, saldo: ultimo === null ? null : ultimo / 100 };
     });
   });
 

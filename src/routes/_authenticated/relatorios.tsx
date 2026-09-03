@@ -416,6 +416,8 @@ function RelatoriosPage() {
                   stroke="var(--color-saldo)"
                   fill="url(#saldoRel)"
                   strokeWidth={2}
+                  connectNulls={false}
+                  dot={{ r: 3, strokeWidth: 2, stroke: "var(--card)", fill: "var(--color-saldo)" }}
                 />
               </AreaChart>
             </ChartContainer>
