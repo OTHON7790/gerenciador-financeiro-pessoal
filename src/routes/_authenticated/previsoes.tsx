@@ -134,7 +134,7 @@ function PrevisoesPage() {
   const anterior = mesNum > 1 ? dados[mesNum - 2] : undefined;
 
   const percentualAtual =
-    atual.orcado > 0 ? (atual.despesaReal / atual.orcado) * 100 : 0;
+    atual.previsto > 0 ? (atual.despesaReal / atual.previsto) * 100 : 0;
   const altaDespesas =
     anterior && anterior.despesaReal > 0
       ? (atual.despesaReal - anterior.despesaReal) / anterior.despesaReal
