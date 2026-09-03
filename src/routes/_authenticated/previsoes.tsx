@@ -384,9 +384,9 @@ function PrevisoesPage() {
             </thead>
             <tbody>
               {dados.map((d, i) => {
-                const pct = d.orcado > 0 ? (d.despesaReal / d.orcado) * 100 : 0;
+                const pct = d.previsto > 0 ? (d.despesaReal / d.previsto) * 100 : 0;
                 const nivel = nivelDe(pct);
-                const diferenca = d.orcado - d.despesaReal;
+                const diferenca = d.previsto - d.despesaReal;
                 const selecionado = i === mesNum - 1;
                 return (
                   <tr
@@ -398,8 +398,8 @@ function PrevisoesPage() {
                   >
                     <td className="py-2 pr-3 font-medium">{NOMES_MESES[i]}</td>
                     <td className="py-2 pr-3 text-right tabular-nums">
-                      {d.temOrcamento ? (
-                        formatarMoeda(d.orcado)
+                      {d.temPrevisao ? (
+                        formatarMoeda(d.previsto)
                       ) : (
                         <span className="text-muted-foreground">Sem dados</span>
                       )}
@@ -414,27 +414,27 @@ function PrevisoesPage() {
                     <td
                       className={cn(
                         "py-2 pr-3 text-right tabular-nums",
-                        d.temOrcamento &&
+                        d.temPrevisao &&
                           (diferenca < 0
                             ? "text-danger"
                             : "text-success"),
                       )}
                     >
-                      {d.temOrcamento ? (
+                      {d.temPrevisao ? (
                         formatarMoeda(diferenca)
                       ) : (
                         <span className="text-muted-foreground">—</span>
                       )}
                     </td>
                     <td className="py-2 pr-3 text-right tabular-nums">
-                      {d.temOrcamento ? (
+                      {d.temPrevisao ? (
                         `${Math.round(pct)}%`
                       ) : (
                         <span className="text-muted-foreground">—</span>
                       )}
                     </td>
                     <td className="py-2 text-right">
-                      {d.temOrcamento ? (
+                      {d.temPrevisao ? (
                         <Badge className={cn("gap-1", nivel.classe)}>
                           {nivel.chave === "controle" ? (
                             <CheckCircle2 className="h-3 w-3" />
