@@ -234,9 +234,9 @@ function PrevisoesPage() {
             <div className="flex items-start gap-2 rounded-xl border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
               <span>
-                Orçamento de {formatarMes(mes)} excedido: gastos de{" "}
+                Previsão de {formatarMes(mes)} excedida: gastos de{" "}
                 {formatarMoeda(atual.despesaReal)} contra{" "}
-                {formatarMoeda(atual.orcado)} previstos.
+                {formatarMoeda(atual.previsto)} previstos.
               </span>
             </div>
           )}
