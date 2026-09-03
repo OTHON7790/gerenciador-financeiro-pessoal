@@ -135,7 +135,7 @@ function DashboardPage() {
         />
       </div>
 
-      <CardContasAPagar />
+      <CardContasAPagar mes={mes} />
 
 
       {/* Gráficos */}
