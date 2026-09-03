@@ -254,6 +254,7 @@ function OrcamentosPage() {
       }
       queryClient.invalidateQueries({ queryKey: ["orcamentos"] });
       queryClient.invalidateQueries({ queryKey: ["resumo"] });
+      queryClient.invalidateQueries({ queryKey: ["comprometido"] });
       queryClient.invalidateQueries({ queryKey: ["previsoes"] });
       toast.success(
         `Orçamentos de ${nomeOrigem} copiados para ${nomeDestino} com sucesso.`,
