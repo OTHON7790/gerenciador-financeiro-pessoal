@@ -71,6 +71,21 @@ function TransacoesPage() {
     const b = busca.trim().toLowerCase();
     return b ? transacoes.filter((t) => t.descricao.toLowerCase().includes(b)) : transacoes;
   }, [transacoes, busca]);
+  const ordenadas = useMemo(() => {
+    const porTexto = (a: Transacao, b: Transacao) =>
+      a.descricao.localeCompare(b.descricao, "pt-BR", { sensitivity: "base" });
+    const porData = (a: Transacao, b: Transacao) =>
+      a.data === b.data ? porTexto(a, b) : a.data < b.data ? -1 : 1;
+    const comparadores: Record<Ordenacao, (a: Transacao, b: Transacao) => number> = {
+      recentes: (a, b) => -porData(a, b),
+      antigas: porData,
+      az: porTexto,
+      za: (a, b) => -porTexto(a, b),
+      maior: (a, b) => (b.valor - a.valor) || porTexto(a, b),
+      menor: (a, b) => (a.valor - b.valor) || porTexto(a, b),
+    };
+    return [...filtradas].sort(comparadores[ordenacao]);
+  }, [filtradas, ordenacao]);
   const totalReceitas = filtradas.filter((t) => t.tipo === "receita").reduce((s, t) => s + t.valor, 0);
   const totalDespesas = filtradas.filter((t) => t.tipo === "despesa" && statusTransacao(t) === "pago").reduce((s, t) => s + t.valor, 0);
   const totalPendentes = filtradas.filter((t) => t.tipo === "despesa" && statusTransacao(t) === "pendente").reduce((s, t) => s + t.valor, 0);
