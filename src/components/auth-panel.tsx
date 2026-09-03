@@ -342,7 +342,7 @@ function CampoEmail({
 }) {
   return (
     <div className="space-y-2">
-      <Label htmlFor="email" className="text-base font-semibold text-foreground">
+      <Label htmlFor="email" className="text-sm font-semibold text-foreground">
         E-mail
       </Label>
       <div className="relative">
@@ -371,7 +371,7 @@ function CampoSenha({
   const [visivel, setVisivel] = useState(false);
   return (
     <div className="space-y-2">
-      <Label htmlFor="senha" className="text-base font-semibold text-foreground">
+      <Label htmlFor="senha" className="text-sm font-semibold text-foreground">
         Senha
       </Label>
       <div className="relative">
