@@ -369,9 +369,9 @@ function PrevisoesPage() {
             </thead>
             <tbody>
               {dados.map((d, i) => {
-                const pct = d.orcado > 0 ? (d.gastosReais / d.orcado) * 100 : 0;
+                const pct = d.orcado > 0 ? (d.despesaReal / d.orcado) * 100 : 0;
                 const nivel = nivelDe(pct);
-                const diferenca = d.orcado - d.gastosReais;
+                const diferenca = d.orcado - d.despesaReal;
                 const selecionado = i === mesNum - 1;
                 return (
                   <tr
@@ -391,7 +391,7 @@ function PrevisoesPage() {
                     </td>
                     <td className="py-2 pr-3 text-right tabular-nums">
                       {d.temTransacoes ? (
-                        formatarMoeda(d.gastosReais)
+                        formatarMoeda(d.despesaReal)
                       ) : (
                         <span className="text-muted-foreground">Sem dados</span>
                       )}
