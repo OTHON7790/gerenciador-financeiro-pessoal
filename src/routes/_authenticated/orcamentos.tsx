@@ -174,7 +174,12 @@ function OrcamentosPage() {
       : proximos.length > 0 ? "proximo"
       : "controle";
     return { excedidos, atingidos, proximos, totalExcedido, nivel } as const;
-  }, [orcamentos, gastoPorCategoria, despesaCategorias]);
+  }, [
+    orcamentos,
+    gastoPorCategoria,
+    comprometidoPorCategoria,
+    despesaCategorias,
+  ]);
 
 
   // formulário de novo orçamento
