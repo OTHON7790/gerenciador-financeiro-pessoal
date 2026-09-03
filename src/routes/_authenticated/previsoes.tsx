@@ -368,7 +368,7 @@ function PrevisoesPage() {
                 <th className="py-2 pr-3 text-right font-medium">
                   Despesas realizadas
                 </th>
-                <th className="py-2 pr-3 text-right font-medium">Diferença</th>
+                <th className="py-2 pr-3 text-right font-medium">Restante do orçamento</th>
                 <th className="py-2 pr-3 text-right font-medium">% usado</th>
                 <th className="py-2 text-right font-medium">Situação</th>
               </tr>
