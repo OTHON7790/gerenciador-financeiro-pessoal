@@ -32,6 +32,16 @@ export const Route = createFileRoute("/_authenticated/transacoes")({
 
 type FiltroTipo = "todas" | TipoTransacao;
 type FiltroStatus = "todos" | StatusExibido;
+type Ordenacao = "recentes" | "antigas" | "az" | "za" | "maior" | "menor";
+
+const ORDENACOES: { valor: Ordenacao; rotulo: string }[] = [
+  { valor: "recentes", rotulo: "Mais recentes" },
+  { valor: "antigas", rotulo: "Mais antigas" },
+  { valor: "az", rotulo: "A–Z" },
+  { valor: "za", rotulo: "Z–A" },
+  { valor: "maior", rotulo: "Maior valor" },
+  { valor: "menor", rotulo: "Menor valor" },
+];
 
 function TransacoesPage() {
   const [mes, setMes] = useState(() => mesInicialValido(mesAtual()));
@@ -39,6 +49,7 @@ function TransacoesPage() {
   const [status, setStatus] = useState<FiltroStatus>("todos");
   const [categoriaId, setCategoriaId] = useState<string>("todas");
   const [busca, setBusca] = useState("");
+  const [ordenacao, setOrdenacao] = useState<Ordenacao>("recentes");
   const { data: categorias } = useSuspenseQuery(categoriasQuery);
   const filtros = {
     mes,
