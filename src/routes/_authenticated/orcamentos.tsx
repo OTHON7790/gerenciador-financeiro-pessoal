@@ -303,7 +303,7 @@ function OrcamentosPage() {
                 <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
                   Total comprometido
                 </p>
-                <p className="text-lg font-semibold text-nav-orange">
+                <p className="text-lg font-semibold text-nav-yellow">
                   {formatarMoeda(totais.comprometido)}
                 </p>
                 <p className="text-[11px] text-muted-foreground">
