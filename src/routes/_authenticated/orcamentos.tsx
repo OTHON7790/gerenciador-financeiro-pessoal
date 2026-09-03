@@ -698,6 +698,9 @@ function OrcamentosPage() {
                       <p className="text-sm font-medium">{c.nome}</p>
                       <p className="text-xs text-muted-foreground">
                         {formatarMoeda(gasto)} gastos neste mês
+                        {comprometidoCat > 0
+                          ? ` · ${formatarMoeda(comprometidoCat)} comprometidos`
+                          : ""}
                       </p>
                     </div>
                   </div>
