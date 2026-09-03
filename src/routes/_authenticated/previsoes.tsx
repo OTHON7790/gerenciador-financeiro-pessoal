@@ -308,6 +308,7 @@ function PrevisoesPage() {
               <ChartLegend content={<ChartLegendContent />} />
               <Line
                 type="linear"
+                connectNulls={false}
                 dataKey="receitas"
                 stroke="var(--color-receitas)"
                 strokeWidth={3}
@@ -316,6 +317,7 @@ function PrevisoesPage() {
               />
               <Line
                 type="linear"
+                connectNulls={false}
                 dataKey="despesasPrevistas"
                 stroke="var(--color-despesasPrevistas)"
                 strokeWidth={2.5}
@@ -325,6 +327,7 @@ function PrevisoesPage() {
               />
               <Line
                 type="linear"
+                connectNulls={false}
                 dataKey="gastosReais"
                 stroke="var(--color-gastosReais)"
                 strokeWidth={3}
@@ -333,6 +336,7 @@ function PrevisoesPage() {
               />
               <Line
                 type="linear"
+                connectNulls={false}
                 dataKey="saldoProjetado"
                 stroke="var(--color-saldoProjetado)"
                 strokeWidth={3}
