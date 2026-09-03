@@ -215,7 +215,7 @@ function PrevisoesPage() {
       </div>
 
       {/* Alertas */}
-      {(atual.saldoProjetado < 0 ||
+      {((atual.saldoProjetado ?? 0) < 0 ||
         percentualAtual >= 100 ||
         altaDespesas > 0.3) && (
         <div className="space-y-2">
@@ -224,16 +224,17 @@ function PrevisoesPage() {
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
               <span>
                 Orçamento de {formatarMes(mes)} excedido: gastos de{" "}
-                {formatarMoeda(atual.gastosReais)} contra{" "}
+                {formatarMoeda(atual.despesaReal)} contra{" "}
                 {formatarMoeda(atual.orcado)} previstos.
               </span>
             </div>
           )}
-          {atual.saldoProjetado < 0 && (
+          {(atual.saldoProjetado ?? 0) < 0 && (
             <div className="flex items-start gap-2 rounded-xl border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
               <span>
-                Saldo projetado negativo ({formatarMoeda(atual.saldoProjetado)})
+                Saldo projetado negativo ({formatarMoeda(atual.saldoProjetado ?? 0)})
+
                 para {formatarMes(mes)}.
               </span>
             </div>
