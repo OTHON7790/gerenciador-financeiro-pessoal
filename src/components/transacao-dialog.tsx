@@ -1,10 +1,17 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { ArrowLeftRight, Repeat } from "lucide-react";
 import { criarTransacao, atualizarTransacao } from "@/lib/transacoes.functions";
-import { criarRecorrencia, atualizarOcorrencia } from "@/lib/recorrencias.functions";
+import {
+  criarRecorrencia,
+  atualizarOcorrencia,
+  obterRecorrenciaDaTransacao,
+  tornarRecorrente,
+  configurarRecorrencia,
+  desativarRecorrenciaDaTransacao,
+} from "@/lib/recorrencias.functions";
 import {
   type Categoria,
   type Transacao,
@@ -57,6 +64,10 @@ export function TransacaoDialog({ open, onOpenChange, categorias, transacao }: P
   const atualizar = useServerFn(atualizarTransacao);
   const criarRec = useServerFn(criarRecorrencia);
   const atualizarOcor = useServerFn(atualizarOcorrencia);
+  const obterRec = useServerFn(obterRecorrenciaDaTransacao);
+  const ativarRec = useServerFn(tornarRecorrente);
+  const configurarRec = useServerFn(configurarRecorrencia);
+  const desativarRec = useServerFn(desativarRecorrenciaDaTransacao);
 
   const [descricao, setDescricao] = useState("");
   const [valor, setValor] = useState("");
@@ -75,6 +86,12 @@ export function TransacaoDialog({ open, onOpenChange, categorias, transacao }: P
 
   const ehOcorrencia = !!transacao?.recorrencia_id;
 
+  const { data: regra } = useQuery({
+    queryKey: ["recorrencia-da-transacao", transacao?.id],
+    queryFn: () => obterRec({ data: { transacao_id: transacao!.id } }),
+    enabled: open && ehOcorrencia,
+  });
+
   useEffect(() => {
     if (!open) return;
     const status = transacao ? (transacao.status_pagamento ?? "pago") : "";
@@ -86,12 +103,20 @@ export function TransacaoDialog({ open, onOpenChange, categorias, transacao }: P
     setStatusPagamento(status);
     setDataVencimento(transacao?.data_vencimento ?? "");
     setDataPagamento(transacao?.data_pagamento ?? (status === "pago" ? transacao?.data ?? hoje() : ""));
-    setRecorrente(false);
+    setRecorrente(!!transacao?.recorrencia_id);
     setFrequencia("mensal");
     setDataInicio(transacao?.data ?? hoje());
     setDataFim("");
     setEscopoAberto(false);
   }, [open, transacao]);
+
+  useEffect(() => {
+    if (!open || !regra) return;
+    setRecorrente(true);
+    setFrequencia(regra.frequencia);
+    setDataInicio(regra.data_inicio);
+    setDataFim(regra.data_fim ?? "");
+  }, [open, regra]);
 
   const categoriasFiltradas = categorias.filter((c) => c.tipo === tipo);
 
@@ -104,6 +129,7 @@ export function TransacaoDialog({ open, onOpenChange, categorias, transacao }: P
       "orcamentos",
       "previsoes",
       "recorrencias",
+      "recorrencia-da-transacao",
       "contas-a-pagar",
     ]) queryClient.invalidateQueries({ queryKey: [chave] });
   }
@@ -124,8 +150,26 @@ export function TransacaoDialog({ open, onOpenChange, categorias, transacao }: P
         data_pagamento: tipo === "despesa" ? pagamento : null,
       };
 
+      async function aplicarRecorrenciaNaEdicao(id: string) {
+        if (tipo !== "despesa") {
+          if (ehOcorrencia) await desativarRec({ data: { transacao_id: id } });
+          return;
+        }
+        if (ehOcorrencia && !recorrente) {
+          await desativarRec({ data: { transacao_id: id } });
+        } else if (ehOcorrencia && recorrente) {
+          await configurarRec({
+            data: { transacao_id: id, frequencia, data_fim: dataFim || null },
+          });
+        } else if (!ehOcorrencia && recorrente) {
+          await ativarRec({
+            data: { transacao_id: id, frequencia, data_fim: dataFim || null },
+          });
+        }
+      }
+
       if (transacao && ehOcorrencia) {
-        return atualizarOcor({
+        const r = await atualizarOcor({
           data: {
             id: transacao.id,
             descricao: payload.descricao,
@@ -138,8 +182,14 @@ export function TransacaoDialog({ open, onOpenChange, categorias, transacao }: P
             escopo: escopo ?? "apenas_esta",
           },
         });
+        await aplicarRecorrenciaNaEdicao(transacao.id);
+        return r;
       }
-      if (transacao) return atualizar({ data: { ...payload, id: transacao.id } });
+      if (transacao) {
+        const r = await atualizar({ data: { ...payload, id: transacao.id } });
+        await aplicarRecorrenciaNaEdicao(transacao.id);
+        return r;
+      }
       if (tipo === "despesa" && recorrente) {
         return criarRec({
           data: {
@@ -180,7 +230,7 @@ export function TransacaoDialog({ open, onOpenChange, categorias, transacao }: P
       toast.error("A data de vencimento não pode ser anterior à data da despesa.");
       return false;
     }
-    if (!transacao && tipo === "despesa" && recorrente) {
+    if (tipo === "despesa" && recorrente) {
       if (!dataInicio) {
         toast.error("Informe a data de início da recorrência.");
         return false;
@@ -294,7 +344,7 @@ export function TransacaoDialog({ open, onOpenChange, categorias, transacao }: P
               </div>
             )}
 
-            {!transacao && tipo === "despesa" && (
+            {tipo === "despesa" && (
               <div className="space-y-3 rounded-lg border border-border/70 bg-muted/30 p-3">
                 <div className="flex items-center justify-between gap-3">
                   <Label htmlFor="recorrente" className="flex items-center gap-2 text-sm font-medium">
@@ -312,7 +362,7 @@ export function TransacaoDialog({ open, onOpenChange, categorias, transacao }: P
                       </Select>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-2"><Label htmlFor="data-inicio">Início</Label><Input id="data-inicio" type="date" value={dataInicio} onChange={(e) => setDataInicio(e.target.value)} /></div>
+                      <div className="space-y-2"><Label htmlFor="data-inicio">Início</Label><Input id="data-inicio" type="date" value={dataInicio} onChange={(e) => setDataInicio(e.target.value)} disabled={!!transacao} /></div>
                       <div className="space-y-2"><Label htmlFor="data-fim">Término (opcional)</Label><Input id="data-fim" type="date" value={dataFim} onChange={(e) => setDataFim(e.target.value)} /></div>
                     </div>
                     <p className="text-xs text-muted-foreground">Sem término, as ocorrências são geradas até 12 meses à frente e continuam avançando automaticamente.</p>

@@ -6,6 +6,8 @@ import {
   recorrenciaSchema,
   atualizarOcorrenciaSchema,
   excluirOcorrenciaSchema,
+  configRecorrenciaSchema,
+  transacaoIdSchema as zObj,
   type Recorrencia,
 } from "./schemas";
 
@@ -339,6 +341,171 @@ export const excluirOcorrencia = createServerFn({ method: "POST" })
       .update({ ativa: false, data_fim: fim })
       .eq("id", atual.recorrencia_id);
     if (erroRegra) throw new Error(erroRegra.message);
+
+    return { ok: true };
+  });
+
+// ---------- gestão da recorrência a partir da tela de edição ----------
+
+/** Regra de recorrência vinculada a uma transação (ou null). */
+export const obterRecorrenciaDaTransacao = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => zObj.parse(input))
+  .handler(async ({ data, context }) => {
+    const { data: tx, error } = await context.supabase
+      .from("transacoes")
+      .select("recorrencia_id")
+      .eq("id", data.transacao_id)
+      .single();
+    if (error) throw new Error(error.message);
+    if (!tx?.recorrencia_id) return null;
+    const { data: rec } = await context.supabase
+      .from("recorrencias")
+      .select("*")
+      .eq("id", tx.recorrencia_id)
+      .single();
+    return (rec ?? null) as Recorrencia | null;
+  });
+
+/**
+ * Ativa a recorrência de uma despesa já existente, sem duplicar o lançamento:
+ * a própria transação vira a primeira ocorrência da nova regra.
+ */
+export const tornarRecorrente = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => configRecorrenciaSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { data: tx, error } = await supabase
+      .from("transacoes")
+      .select("*")
+      .eq("id", data.transacao_id)
+      .single();
+    if (error) throw new Error(error.message);
+    if (tx.tipo !== "despesa") throw new Error("Apenas despesas podem ser recorrentes.");
+    if (tx.recorrencia_id) return { recorrencia_id: tx.recorrencia_id, criadas: 0 };
+
+    const dataBase = String(tx.data);
+    const { data: rec, error: erroRegra } = await supabase
+      .from("recorrencias")
+      .insert({
+        user_id: userId,
+        descricao: tx.descricao,
+        valor: tx.valor,
+        categoria_id: tx.categoria_id,
+        frequencia: data.frequencia,
+        dia_referencia: partesData(dataBase).dia,
+        data_inicio: dataBase,
+        data_fim: data.data_fim ?? null,
+        status_pagamento: (tx.status_pagamento ?? "pago") as "pago" | "pendente",
+        data_vencimento: tx.data_vencimento ?? null,
+      })
+      .select()
+      .single();
+    if (erroRegra) throw new Error(erroRegra.message);
+
+    const { error: erroVinculo } = await supabase
+      .from("transacoes")
+      .update({
+        recorrencia_id: rec.id,
+        ocorrencia_ref: dataBase.slice(0, 7),
+      })
+      .eq("id", tx.id);
+    if (erroVinculo) throw new Error(erroVinculo.message);
+
+    const criadas = await gerarOcorrencias(supabase, userId, rec as Recorrencia);
+    return { recorrencia_id: rec.id as string, criadas };
+  });
+
+/** Atualiza frequência/término da regra e regenera os próximos lançamentos. */
+export const configurarRecorrencia = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => configRecorrenciaSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { data: tx, error } = await supabase
+      .from("transacoes")
+      .select("id, data, recorrencia_id, ocorrencia_ref")
+      .eq("id", data.transacao_id)
+      .single();
+    if (error) throw new Error(error.message);
+    if (!tx.recorrencia_id) throw new Error("Esta transação não é recorrente.");
+
+    const { error: erroRegra } = await supabase
+      .from("recorrencias")
+      .update({
+        frequencia: data.frequencia,
+        data_fim: data.data_fim ?? null,
+        ativa: true,
+      })
+      .eq("id", tx.recorrencia_id);
+    if (erroRegra) throw new Error(erroRegra.message);
+
+    const ref = tx.ocorrencia_ref ?? String(tx.data).slice(0, 7);
+    if (data.data_fim) {
+      const { error: erroCorte } = await supabase
+        .from("transacoes")
+        .delete()
+        .eq("recorrencia_id", tx.recorrencia_id)
+        .eq("editada_manualmente", false)
+        .gt("ocorrencia_ref", ref)
+        .gt("data", data.data_fim);
+      if (erroCorte) throw new Error(erroCorte.message);
+    }
+
+    const { data: rec } = await supabase
+      .from("recorrencias")
+      .select("*")
+      .eq("id", tx.recorrencia_id)
+      .single();
+    const criadas = rec
+      ? await gerarOcorrencias(supabase, userId, rec as Recorrencia)
+      : 0;
+    return { ok: true, criadas };
+  });
+
+/**
+ * Desativa a recorrência a partir desta ocorrência: o histórico anterior é
+ * preservado e os próximos lançamentos ainda não editados são removidos.
+ * A transação atual permanece como despesa comum.
+ */
+export const desativarRecorrenciaDaTransacao = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => zObj.parse(input))
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    const { data: tx, error } = await supabase
+      .from("transacoes")
+      .select("id, data, recorrencia_id, ocorrencia_ref")
+      .eq("id", data.transacao_id)
+      .single();
+    if (error) throw new Error(error.message);
+    if (!tx.recorrencia_id) return { ok: true };
+
+    const ref = tx.ocorrencia_ref ?? String(tx.data).slice(0, 7);
+    const { error: erroFuturas } = await supabase
+      .from("transacoes")
+      .delete()
+      .eq("recorrencia_id", tx.recorrencia_id)
+      .eq("editada_manualmente", false)
+      .gt("ocorrencia_ref", ref);
+    if (erroFuturas) throw new Error(erroFuturas.message);
+
+    const partes = partesData(String(tx.data));
+    const anterior = new Date(partes.ano, partes.mes - 1, partes.dia - 1);
+    const fim = `${anterior.getFullYear()}-${String(anterior.getMonth() + 1).padStart(2, "0")}-${String(anterior.getDate()).padStart(2, "0")}`;
+
+    const { error: erroRegra } = await supabase
+      .from("recorrencias")
+      .update({ ativa: false, data_fim: fim })
+      .eq("id", tx.recorrencia_id);
+    if (erroRegra) throw new Error(erroRegra.message);
+
+    const { error: erroDesvincula } = await supabase
+      .from("transacoes")
+      .update({ recorrencia_id: null, ocorrencia_ref: null })
+      .eq("id", tx.id);
+    if (erroDesvincula) throw new Error(erroDesvincula.message);
 
     return { ok: true };
   });

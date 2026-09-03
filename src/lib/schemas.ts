@@ -100,6 +100,16 @@ export const excluirOcorrenciaSchema = z.object({
   escopo: z.enum(ESCOPOS_RECORRENCIA),
 });
 
+export const transacaoIdSchema = z.object({
+  transacao_id: z.string().uuid(),
+});
+
+export const configRecorrenciaSchema = z.object({
+  transacao_id: z.string().uuid(),
+  frequencia: z.enum(FREQUENCIAS),
+  data_fim: dataIso.nullable().optional(),
+});
+
 export type Recorrencia = {
   id: string;
   user_id: string;
