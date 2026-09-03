@@ -176,10 +176,6 @@ export function TransacaoDialog({ open, onOpenChange, categorias, transacao }: P
       toast.error("Preencha a descrição e um valor válido.");
       return false;
     }
-    if (tipo === "despesa" && !statusPagamento) {
-      toast.error("Selecione o status do pagamento (Pago ou Pendente).");
-      return false;
-    }
     if (tipo === "despesa" && dataVencimento && dataVencimento < data) {
       toast.error("A data de vencimento não pode ser anterior à data da despesa.");
       return false;
@@ -269,7 +265,7 @@ export function TransacaoDialog({ open, onOpenChange, categorias, transacao }: P
             {tipo === "despesa" && (
               <div className="space-y-3 rounded-lg border border-border/70 bg-muted/30 p-3">
                 <div className="space-y-2">
-                  <Label>Status do pagamento</Label>
+                  <Label>Status do pagamento (opcional)</Label>
                   <Select value={statusPagamento} onValueChange={(v) => {
                     const novoStatus = v as StatusPagamento;
                     setStatusPagamento(novoStatus);
@@ -285,7 +281,7 @@ export function TransacaoDialog({ open, onOpenChange, categorias, transacao }: P
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <Label htmlFor="data-vencimento">Vencimento</Label>
+                    <Label htmlFor="data-vencimento">Vencimento (opcional)</Label>
                     <Input id="data-vencimento" type="date" value={dataVencimento} onChange={(e) => setDataVencimento(e.target.value)} />
                   </div>
                   {statusPagamento === "pago" && (
