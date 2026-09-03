@@ -53,6 +53,12 @@ export const resumoMesQuery = (mes: string) =>
     queryFn: () => resumoMes({ data: { mes } }),
   });
 
+export const comprometidoMesQuery = (mes: string) =>
+  queryOptions({
+    queryKey: ["comprometido", mes],
+    queryFn: () => comprometidoMes({ data: { mes } }),
+  });
+
 export const serieMensalQuery = (meses: string[]) =>
   queryOptions({
     queryKey: ["serie-mensal", meses],
