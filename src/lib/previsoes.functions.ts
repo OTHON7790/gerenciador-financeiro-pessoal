@@ -53,20 +53,37 @@ export const previsaoAnual = createServerFn({ method: "GET" })
         mes: m,
         receitaReal: 0,
         despesaReal: 0,
+        despesaRecorrente: 0,
+        despesaVariavelPaga: 0,
+        receitaRecorrente: 0,
         orcado: 0,
         temTransacoes: false,
         temOrcamento: false,
       });
 
     for (const t of transacoesRes.data ?? []) {
-      if (t.tipo === "despesa" && t.status_pagamento !== "pago") continue;
       const chave = String(t.data).slice(0, 7);
       const linha = mapa.get(chave);
       if (!linha) continue;
+      const valor = Number(t.valor);
+      const recorrente = t.recorrencia_id != null;
+      const pago = t.status_pagamento === "pago";
+
+      if (t.tipo === "receita") {
+        linha.temTransacoes = true;
+        linha.receitaReal = somarCentavos(linha.receitaReal, valor);
+        if (recorrente)
+          linha.receitaRecorrente = somarCentavos(linha.receitaRecorrente, valor);
+        continue;
+      }
+
+      if (recorrente)
+        linha.despesaRecorrente = somarCentavos(linha.despesaRecorrente, valor);
+      if (!pago) continue;
       linha.temTransacoes = true;
-      if (t.tipo === "receita")
-        linha.receitaReal = somarCentavos(linha.receitaReal, Number(t.valor));
-      else linha.despesaReal = somarCentavos(linha.despesaReal, Number(t.valor));
+      linha.despesaReal = somarCentavos(linha.despesaReal, valor);
+      if (!recorrente)
+        linha.despesaVariavelPaga = somarCentavos(linha.despesaVariavelPaga, valor);
     }
 
     for (const o of orcamentosRes.data ?? []) {
