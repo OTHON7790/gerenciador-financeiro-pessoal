@@ -9,6 +9,7 @@ import {
   serieMensal,
   evolucaoSaldo,
   contasAPagar,
+  comprometidoMes,
 } from "./transacoes.functions";
 import { listarOrcamentos } from "./orcamentos.functions";
 import { listarMetas } from "./metas.functions";
@@ -50,6 +51,12 @@ export const resumoMesQuery = (mes: string) =>
   queryOptions({
     queryKey: ["resumo", mes],
     queryFn: () => resumoMes({ data: { mes } }),
+  });
+
+export const comprometidoMesQuery = (mes: string) =>
+  queryOptions({
+    queryKey: ["comprometido", mes],
+    queryFn: () => comprometidoMes({ data: { mes } }),
   });
 
 export const serieMensalQuery = (meses: string[]) =>

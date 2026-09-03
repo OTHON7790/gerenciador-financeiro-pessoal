@@ -12,7 +12,12 @@ import {
   Wallet,
   Copy,
 } from "lucide-react";
-import { categoriasQuery, orcamentosQuery, resumoMesQuery } from "@/lib/queries";
+import {
+  categoriasQuery,
+  orcamentosQuery,
+  resumoMesQuery,
+  comprometidoMesQuery,
+} from "@/lib/queries";
 import {
   salvarOrcamento,
   excluirOrcamento,
@@ -68,6 +73,7 @@ function OrcamentosPage() {
   const { data: categorias } = useSuspenseQuery(categoriasQuery);
   const { data: orcamentos, isPending } = useSuspenseQuery(orcamentosQuery(mes));
   const { data: resumo } = useSuspenseQuery(resumoMesQuery(mes));
+  const { data: comprometido } = useSuspenseQuery(comprometidoMesQuery(mes));
 
   const queryClient = useQueryClient();
   const salvar = useServerFn(salvarOrcamento);
@@ -87,6 +93,14 @@ function OrcamentosPage() {
     return m;
   }, [resumo]);
 
+  // Despesas recorrentes pendentes (valor comprometido) por categoria
+  const comprometidoPorCategoria = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const g of comprometido.porCategoria)
+      if (g.categoria_id) m.set(g.categoria_id, g.valor);
+    return m;
+  }, [comprometido]);
+
   const despesaCategorias = categorias.filter((c) => c.tipo === "despesa");
 
   const semOrcamento = useMemo(
@@ -94,9 +108,15 @@ function OrcamentosPage() {
       despesaCategorias.filter(
         (c) =>
           !orcamentosPorCategoria.has(c.id) &&
-          (gastoPorCategoria.get(c.id) ?? 0) > 0,
+          ((gastoPorCategoria.get(c.id) ?? 0) > 0 ||
+            (comprometidoPorCategoria.get(c.id) ?? 0) > 0),
       ),
-    [despesaCategorias, orcamentosPorCategoria, gastoPorCategoria],
+    [
+      despesaCategorias,
+      orcamentosPorCategoria,
+      gastoPorCategoria,
+      comprometidoPorCategoria,
+    ],
   );
 
   const totais = useMemo(() => {
@@ -105,14 +125,26 @@ function OrcamentosPage() {
       (s, o) => s + (gastoPorCategoria.get(o.categoria_id) ?? 0),
       0,
     );
-    const percentualReal = orcado > 0 ? (gasto / orcado) * 100 : 0;
+    const comprometidoTotal = orcamentos.reduce(
+      (s, o) => s + (comprometidoPorCategoria.get(o.categoria_id) ?? 0),
+      0,
+    );
+    const utilizado = gasto + comprometidoTotal;
+    const percentualReal = orcado > 0 ? (utilizado / orcado) * 100 : 0;
     const nivel =
       percentualReal >= 100 ? "danger"
       : percentualReal >= 90 ? "alert"
       : percentualReal >= 70 ? "warning"
       : "success";
-    return { orcado, gasto, percentualReal, nivel } as const;
-  }, [orcamentos, gastoPorCategoria]);
+    return {
+      orcado,
+      gasto,
+      comprometido: comprometidoTotal,
+      utilizado,
+      percentualReal,
+      nivel,
+    } as const;
+  }, [orcamentos, gastoPorCategoria, comprometidoPorCategoria]);
 
   // Indicador automático de situação das categorias (mês selecionado)
   const situacao = useMemo(() => {
@@ -120,13 +152,15 @@ function OrcamentosPage() {
     const atingidos: string[] = [];
     const proximos: string[] = [];
     for (const o of orcamentos) {
-      const gasto = gastoPorCategoria.get(o.categoria_id) ?? 0;
+      const utilizado =
+        (gastoPorCategoria.get(o.categoria_id) ?? 0) +
+        (comprometidoPorCategoria.get(o.categoria_id) ?? 0);
       const nome =
         despesaCategorias.find((c) => c.id === o.categoria_id)?.nome ??
         "Categoria";
-      const percentual = o.limite > 0 ? (gasto / o.limite) * 100 : 0;
+      const percentual = o.limite > 0 ? (utilizado / o.limite) * 100 : 0;
       if (percentual > 100) {
-        excedidos.push({ nome, excesso: gasto - o.limite });
+        excedidos.push({ nome, excesso: utilizado - o.limite });
       } else if (percentual >= 100) {
         atingidos.push(nome);
       } else if (percentual >= 80) {
@@ -140,7 +174,12 @@ function OrcamentosPage() {
       : proximos.length > 0 ? "proximo"
       : "controle";
     return { excedidos, atingidos, proximos, totalExcedido, nivel } as const;
-  }, [orcamentos, gastoPorCategoria, despesaCategorias]);
+  }, [
+    orcamentos,
+    gastoPorCategoria,
+    comprometidoPorCategoria,
+    despesaCategorias,
+  ]);
 
 
   // formulário de novo orçamento
@@ -243,7 +282,7 @@ function OrcamentosPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
               <div>
                 <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
                   Total orçado
@@ -262,14 +301,29 @@ function OrcamentosPage() {
               </div>
               <div>
                 <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                  {totais.gasto > totais.orcado ? "Total excedido" : "Restante"}
+                  Total comprometido
+                </p>
+                <p className="text-lg font-semibold text-nav-yellow">
+                  {formatarMoeda(totais.comprometido)}
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  Recorrentes pendentes
+                </p>
+              </div>
+              <div>
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  {totais.utilizado > totais.orcado
+                    ? "Total excedido"
+                    : "Disponível"}
                 </p>
                 <p
                   className={`text-lg font-semibold ${
-                    totais.gasto > totais.orcado ? "text-danger" : "text-nav-cyan"
+                    totais.utilizado > totais.orcado
+                      ? "text-danger"
+                      : "text-nav-cyan"
                   }`}
                 >
-                  {formatarMoeda(Math.abs(totais.orcado - totais.gasto))}
+                  {formatarMoeda(Math.abs(totais.orcado - totais.utilizado))}
                 </p>
               </div>
               <div>
@@ -431,10 +485,14 @@ function OrcamentosPage() {
           {orcamentos.map((o) => {
             const cat = despesaCategorias.find((c) => c.id === o.categoria_id);
             const gasto = gastoPorCategoria.get(o.categoria_id) ?? 0;
+            const comprometidoCat =
+              comprometidoPorCategoria.get(o.categoria_id) ?? 0;
+            const utilizado = gasto + comprometidoCat;
             const percentual =
-              o.limite > 0 ? Math.min(100, (gasto / o.limite) * 100) : 0;
-            const percentualReal = o.limite > 0 ? (gasto / o.limite) * 100 : 0;
-            const estourou = gasto > o.limite;
+              o.limite > 0 ? Math.min(100, (utilizado / o.limite) * 100) : 0;
+            const percentualReal =
+              o.limite > 0 ? (utilizado / o.limite) * 100 : 0;
+            const estourou = utilizado > o.limite;
             const nivel =
               percentualReal >= 100
                 ? "danger"
@@ -521,7 +579,7 @@ function OrcamentosPage() {
                     </div>
                   </div>
 
-                  <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
                     <div>
                       <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
                         Orçamento
@@ -540,14 +598,28 @@ function OrcamentosPage() {
                     </div>
                     <div>
                       <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                        {estourou ? "Excedido" : "Restante"}
+                        Comprometido
+                      </p>
+                      <p
+                        className={`text-sm font-semibold ${
+                          comprometidoCat > 0
+                            ? "text-nav-yellow"
+                            : "text-muted-foreground"
+                        }`}
+                      >
+                        {formatarMoeda(comprometidoCat)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                        {estourou ? "Excedido" : "Disponível"}
                       </p>
                       <p
                         className={`text-sm font-semibold ${
                           estourou ? "text-danger" : "text-success"
                         }`}
                       >
-                        {formatarMoeda(Math.abs(o.limite - gasto))}
+                        {formatarMoeda(Math.abs(o.limite - utilizado))}
                       </p>
                     </div>
                     <div>

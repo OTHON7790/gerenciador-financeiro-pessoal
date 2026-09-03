@@ -306,3 +306,41 @@ export type { TipoTransacao };
 function mesAtualIso(): string {
   return hojeIso().slice(0, 7);
 }
+
+// Despesas recorrentes ainda PENDENTES previstas para o mês (valor comprometido).
+export const comprometidoMes = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (input) => z.object({ mes: z.string().regex(/^\d{4}-\d{2}$/) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    const { data: linhas, error } = await supabase
+      .from("transacoes")
+      .select("valor, categoria_id")
+      .eq("tipo", "despesa")
+      .eq("status_pagamento", "pendente")
+      .not("recorrencia_id", "is", null)
+      .gte("data", `${data.mes}-01`)
+      .lt("data", proximoMes(data.mes));
+    if (error) throw new Error(error.message);
+
+    let total = 0;
+    const porCategoria = new Map<string, number>();
+    for (const t of linhas ?? []) {
+      const centavos = emCentavos(Number(t.valor));
+      total += centavos;
+      const chave = t.categoria_id ?? "__sem_categoria__";
+      porCategoria.set(chave, (porCategoria.get(chave) ?? 0) + centavos);
+    }
+    return {
+      total: total / 100,
+      porCategoria: Array.from(porCategoria.entries()).map(
+        ([categoria_id, valor]) => ({
+          categoria_id:
+            categoria_id === "__sem_categoria__" ? null : categoria_id,
+          valor: valor / 100,
+        }),
+      ),
+    };
+  });
