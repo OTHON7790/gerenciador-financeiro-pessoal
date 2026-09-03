@@ -322,7 +322,7 @@ function PrevisoesPage() {
                 stroke="var(--color-despesasPrevistas)"
                 strokeWidth={2.5}
                 strokeDasharray="5 4"
-                dot={false}
+                dot={{ r: 3, strokeWidth: 2, stroke: "var(--card)", fill: "var(--color-despesasPrevistas)" }}
                 activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--card)" }}
               />
               <Line
