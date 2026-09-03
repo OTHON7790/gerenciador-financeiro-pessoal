@@ -10,9 +10,14 @@ import {
   AlertTriangle,
   CheckCircle2,
   Wallet,
+  Copy,
 } from "lucide-react";
 import { categoriasQuery, orcamentosQuery, resumoMesQuery } from "@/lib/queries";
-import { salvarOrcamento, excluirOrcamento } from "@/lib/orcamentos.functions";
+import {
+  salvarOrcamento,
+  excluirOrcamento,
+  copiarOrcamentosMesAnterior,
+} from "@/lib/orcamentos.functions";
 import { type Categoria, type Orcamento } from "@/lib/schemas";
 import { formatarMoeda, formatarMes, mesAtual } from "@/lib/format";
 import { parseMoedaBR } from "@/lib/format";
@@ -67,6 +72,7 @@ function OrcamentosPage() {
   const queryClient = useQueryClient();
   const salvar = useServerFn(salvarOrcamento);
   const excluir = useServerFn(excluirOrcamento);
+  const copiar = useServerFn(copiarOrcamentosMesAnterior);
 
   const orcamentosPorCategoria = useMemo(() => {
     const m = new Map<string, Orcamento>();
@@ -184,6 +190,35 @@ function OrcamentosPage() {
       queryClient.invalidateQueries({ queryKey: ["previsoes"] });
       toast.success("Orçamento removido.");
       setExcluindo(null);
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const copiarMutation = useMutation({
+    mutationFn: () => copiar({ data: { mes } }),
+    onSuccess: (res) => {
+      const nomeOrigem = formatarMes(res.origem).replace(/^./, (c) =>
+        c.toUpperCase(),
+      );
+      const nomeDestino = formatarMes(mes).replace(/^./, (c) =>
+        c.toUpperCase(),
+      );
+      if (res.semOrigem) {
+        toast.info(`${nomeOrigem} não possui orçamentos para copiar.`);
+        return;
+      }
+      if (res.copiados === 0) {
+        toast.info(
+          `Todas as categorias de ${nomeOrigem} já possuem orçamento em ${nomeDestino}.`,
+        );
+        return;
+      }
+      queryClient.invalidateQueries({ queryKey: ["orcamentos"] });
+      queryClient.invalidateQueries({ queryKey: ["resumo"] });
+      queryClient.invalidateQueries({ queryKey: ["previsoes"] });
+      toast.success(
+        `Orçamentos de ${nomeOrigem} copiados para ${nomeDestino} com sucesso.`,
+      );
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -379,6 +414,16 @@ function OrcamentosPage() {
               Nenhum orçamento definido para{" "}
               {formatarMes(mes).replace(/^./, (c) => c.toUpperCase())}.
             </p>
+            <Button
+              className="mt-2 w-full max-w-xs gap-2"
+              onClick={() => copiarMutation.mutate()}
+              disabled={copiarMutation.isPending}
+            >
+              <Copy className="h-4 w-4" />
+              {copiarMutation.isPending
+                ? "Copiando..."
+                : "Copiar orçamentos do mês anterior"}
+            </Button>
           </CardContent>
         </Card>
       ) : (
