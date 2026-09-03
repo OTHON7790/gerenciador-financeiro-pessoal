@@ -302,3 +302,7 @@ function proximoMes(mes: string): string {
 }
 
 export type { TipoTransacao };
+
+function mesAtualIso(): string {
+  return hojeIso().slice(0, 7);
+}
