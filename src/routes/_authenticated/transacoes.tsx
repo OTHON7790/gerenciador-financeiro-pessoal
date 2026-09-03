@@ -141,7 +141,7 @@ function TransacoesPage() {
       </div>
 
       {isPending ? <div className="space-y-2">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-16" />)}</div> : filtradas.length === 0 ? <Card><CardContent className="flex flex-col items-center gap-2 py-16 text-center"><div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted"><Wallet className="h-6 w-6 text-muted-foreground" /></div><p className="text-sm text-muted-foreground">Nenhuma transação encontrada com os filtros atuais.</p></CardContent></Card> : <Card><CardContent className="p-0"><ul className="divide-y">
-        {filtradas.map((t) => {
+        {ordenadas.map((t) => {
           const cat = t.categoria_id ? mapaCategorias.get(t.categoria_id) : null;
           const Icon = cat ? iconeCategoria(cat.icone) : Wallet;
           const statusEfetivo = statusTransacao(t);
