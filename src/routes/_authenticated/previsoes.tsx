@@ -94,60 +94,57 @@ function PrevisoesPage() {
 
   const { data: linhas } = useSuspenseQuery(previsaoAnualQuery(ano));
 
-  // Receita prevista base: média dos meses do ano com receita real lançada
-  const mediaReceita = useMemo(() => {
-    const comReceita = linhas.filter((l) => l.receitaReal > 0);
-    if (comReceita.length === 0) return null;
-    return (
-      comReceita.reduce((s, l) => s + l.receitaReal, 0) / comReceita.length
-    );
-  }, [linhas]);
-
   const dados = useMemo(
     () =>
       linhas.map((l, i) => {
-        const receitas = l.receitaReal > 0 ? l.receitaReal : (mediaReceita ?? 0);
-        const despesasPrevistas = l.temOrcamento ? l.orcado : l.despesaReal;
+        const receitas = l.receitaReal > 0 ? l.receitaReal : null;
+        const despesasPrevistas = l.temOrcamento ? l.orcado : null;
+        const gastosReais = l.temTransacoes ? l.despesaReal : null;
+        const saldoProjetado =
+          receitas === null && despesasPrevistas === null
+            ? null
+            : (receitas ?? 0) - (despesasPrevistas ?? 0);
         return {
           chave: l.mes,
           mes: NOMES_MESES[i]!.slice(0, 3),
           receitas,
           despesasPrevistas,
-          gastosReais: l.despesaReal,
-          saldoProjetado: receitas - despesasPrevistas,
+          gastosReais,
+          saldoProjetado,
           temOrcamento: l.temOrcamento,
           temTransacoes: l.temTransacoes,
           orcado: l.orcado,
           receitaReal: l.receitaReal,
+          despesaReal: l.despesaReal,
         };
       }),
-    [linhas, mediaReceita],
+    [linhas],
   );
 
   const atual = dados[mesNum - 1]!;
   const anterior = mesNum > 1 ? dados[mesNum - 2] : undefined;
 
   const percentualAtual =
-    atual.orcado > 0 ? (atual.gastosReais / atual.orcado) * 100 : 0;
+    atual.orcado > 0 ? (atual.despesaReal / atual.orcado) * 100 : 0;
   const altaDespesas =
-    anterior && anterior.gastosReais > 0
-      ? (atual.gastosReais - anterior.gastosReais) / anterior.gastosReais
+    anterior && anterior.despesaReal > 0
+      ? (atual.despesaReal - anterior.despesaReal) / anterior.despesaReal
       : 0;
 
   const cards = [
     {
       titulo: "Receitas previstas",
-      valor: mediaReceita === null ? null : atual.receitas,
+      valor: atual.receitas,
       icone: TrendingUp,
       classe: "text-success",
       nota:
         atual.receitaReal > 0
           ? "Receita real do mês"
-          : "Média dos meses com receita",
+          : "Nenhuma receita lançada no mês",
     },
     {
       titulo: "Despesas previstas",
-      valor: atual.temOrcamento ? atual.orcado : null,
+      valor: atual.despesasPrevistas,
       icone: Target,
       classe: "text-warning",
       nota: atual.temOrcamento
@@ -156,7 +153,7 @@ function PrevisoesPage() {
     },
     {
       titulo: "Gastos reais",
-      valor: atual.temTransacoes ? atual.gastosReais : null,
+      valor: atual.gastosReais,
       icone: TrendingDown,
       classe: "text-danger",
       nota: atual.temTransacoes
@@ -165,18 +162,14 @@ function PrevisoesPage() {
     },
     {
       titulo: "Saldo projetado",
-      valor:
-        mediaReceita === null && !atual.temOrcamento && !atual.temTransacoes
-          ? null
-          : atual.saldoProjetado,
+      valor: atual.saldoProjetado,
       icone: Wallet,
       classe:
-        atual.saldoProjetado < 0
-          ? "text-danger"
-          : "text-primary",
+        (atual.saldoProjetado ?? 0) < 0 ? "text-danger" : "text-primary",
       nota: "Receitas previstas − despesas previstas",
     },
   ];
+
 
   return (
     <div className="space-y-6">
