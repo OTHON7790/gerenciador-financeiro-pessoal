@@ -354,7 +354,7 @@ function CampoEmail({
           onChange={(e) => setEmail(e.target.value)}
           placeholder="voce@email.com"
           required
-          className="h-13 rounded-xl border border-border/80 bg-secondary/40 pl-11 text-base text-foreground placeholder:text-muted-foreground/70 focus-visible:border-glow-cyan focus-visible:ring-2 focus-visible:ring-primary/50"
+          className="h-11 rounded-lg border border-border bg-secondary/40 pl-11 text-base text-foreground placeholder:text-muted-foreground/70 focus-visible:border-glow-cyan focus-visible:ring-2 focus-visible:ring-primary/50"
         />
       </div>
     </div>
@@ -384,7 +384,7 @@ function CampoSenha({
           placeholder="••••••••"
           required
           minLength={6}
-          className="h-13 rounded-xl border border-border/80 bg-secondary/40 pl-11 pr-11 text-base text-foreground placeholder:text-muted-foreground/70 focus-visible:border-glow-cyan focus-visible:ring-2 focus-visible:ring-primary/50"
+          className="h-11 rounded-lg border border-border bg-secondary/40 pl-11 pr-11 text-base text-foreground placeholder:text-muted-foreground/70 focus-visible:border-glow-cyan focus-visible:ring-2 focus-visible:ring-primary/50"
         />
         <button
           type="button"
@@ -454,7 +454,7 @@ function FormularioRecuperacao({
       <CampoEmail email={email} setEmail={setEmail} />
       <Button
         type="submit"
-        className="h-13 w-full bg-linear-to-r from-primary to-glow-cyan text-base font-extrabold uppercase tracking-wide text-primary-foreground shadow-lg shadow-primary/30 transition-opacity hover:opacity-90"
+        className="h-11 w-full bg-linear-to-r from-primary to-glow-cyan text-sm font-extrabold uppercase tracking-wide text-primary-foreground shadow-lg shadow-primary/30 transition-opacity hover:opacity-90"
         disabled={enviando}
       >
         {enviando && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
