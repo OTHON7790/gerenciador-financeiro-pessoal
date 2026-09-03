@@ -10,9 +10,14 @@ import {
   AlertTriangle,
   CheckCircle2,
   Wallet,
+  Copy,
 } from "lucide-react";
 import { categoriasQuery, orcamentosQuery, resumoMesQuery } from "@/lib/queries";
-import { salvarOrcamento, excluirOrcamento } from "@/lib/orcamentos.functions";
+import {
+  salvarOrcamento,
+  excluirOrcamento,
+  copiarOrcamentosMesAnterior,
+} from "@/lib/orcamentos.functions";
 import { type Categoria, type Orcamento } from "@/lib/schemas";
 import { formatarMoeda, formatarMes, mesAtual } from "@/lib/format";
 import { parseMoedaBR } from "@/lib/format";
