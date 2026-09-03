@@ -485,10 +485,14 @@ function OrcamentosPage() {
           {orcamentos.map((o) => {
             const cat = despesaCategorias.find((c) => c.id === o.categoria_id);
             const gasto = gastoPorCategoria.get(o.categoria_id) ?? 0;
+            const comprometidoCat =
+              comprometidoPorCategoria.get(o.categoria_id) ?? 0;
+            const utilizado = gasto + comprometidoCat;
             const percentual =
-              o.limite > 0 ? Math.min(100, (gasto / o.limite) * 100) : 0;
-            const percentualReal = o.limite > 0 ? (gasto / o.limite) * 100 : 0;
-            const estourou = gasto > o.limite;
+              o.limite > 0 ? Math.min(100, (utilizado / o.limite) * 100) : 0;
+            const percentualReal =
+              o.limite > 0 ? (utilizado / o.limite) * 100 : 0;
+            const estourou = utilizado > o.limite;
             const nivel =
               percentualReal >= 100
                 ? "danger"
