@@ -91,7 +91,7 @@ function TransacoesPage() {
   const totalPendentes = filtradas.filter((t) => t.tipo === "despesa" && statusTransacao(t) === "pendente").reduce((s, t) => s + t.valor, 0);
 
   function invalidarTudo() {
-    for (const chave of ["transacoes", "resumo", "serie-mensal", "evolucao-saldo", "orcamentos", "previsoes", "recorrencias", "contas-a-pagar"]) {
+    for (const chave of ["transacoes", "resumo", "serie-mensal", "evolucao-saldo", "orcamentos", "previsoes", "recorrencias", "contas-a-pagar", "comprometido"]) {
       queryClient.invalidateQueries({ queryKey: [chave] });
     }
   }

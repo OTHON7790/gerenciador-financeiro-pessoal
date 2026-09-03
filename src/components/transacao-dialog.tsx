@@ -131,6 +131,7 @@ export function TransacaoDialog({ open, onOpenChange, categorias, transacao }: P
       "recorrencias",
       "recorrencia-da-transacao",
       "contas-a-pagar",
+      "comprometido",
     ]) queryClient.invalidateQueries({ queryKey: [chave] });
   }
 

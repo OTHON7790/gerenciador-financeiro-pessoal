@@ -254,6 +254,7 @@ function OrcamentosPage() {
       }
       queryClient.invalidateQueries({ queryKey: ["orcamentos"] });
       queryClient.invalidateQueries({ queryKey: ["resumo"] });
+      queryClient.invalidateQueries({ queryKey: ["comprometido"] });
       queryClient.invalidateQueries({ queryKey: ["previsoes"] });
       toast.success(
         `Orçamentos de ${nomeOrigem} copiados para ${nomeDestino} com sucesso.`,
@@ -655,7 +656,8 @@ function OrcamentosPage() {
                   {estourou && (
                     <div className="mt-3 flex items-center gap-2 rounded-lg bg-danger/15 px-3 py-2 text-sm font-semibold text-danger ring-1 ring-danger/40">
                       <AlertTriangle className="h-4 w-4 shrink-0" />
-                      Orçamento excedido em {formatarMoeda(gasto - o.limite)}.
+                      Orçamento excedido em{" "}
+                      {formatarMoeda(utilizado - o.limite)}.
                     </div>
                   )}
                 </CardContent>
@@ -677,6 +679,7 @@ function OrcamentosPage() {
             {semOrcamento.map((c) => {
               const Icon = iconeCategoria(c.icone);
               const gasto = gastoPorCategoria.get(c.id) ?? 0;
+              const comprometidoCat = comprometidoPorCategoria.get(c.id) ?? 0;
               return (
                 <div
                   key={c.id}
@@ -696,6 +699,9 @@ function OrcamentosPage() {
                       <p className="text-sm font-medium">{c.nome}</p>
                       <p className="text-xs text-muted-foreground">
                         {formatarMoeda(gasto)} gastos neste mês
+                        {comprometidoCat > 0
+                          ? ` · ${formatarMoeda(comprometidoCat)} comprometidos`
+                          : ""}
                       </p>
                     </div>
                   </div>
