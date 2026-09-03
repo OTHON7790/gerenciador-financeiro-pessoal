@@ -147,18 +147,20 @@ function PrevisoesPage() {
       icone: TrendingUp,
       classe: "text-success",
       nota:
-        atual.receitaReal > 0
-          ? "Receita real do mês"
-          : "Nenhuma receita lançada no mês",
+        atual.receitaRecorrente > 0
+          ? "Receitas recorrentes do mês"
+          : atual.receitaReal > 0
+            ? "Receita real do mês"
+            : "Nenhuma receita lançada no mês",
     },
     {
       titulo: "Despesas previstas",
       valor: atual.despesasPrevistas,
       icone: Target,
       classe: "text-warning",
-      nota: atual.temOrcamento
-        ? "Soma dos orçamentos do mês"
-        : "Nenhum orçamento definido",
+      nota: atual.temPrevisao
+        ? "Despesas recorrentes + gastos já pagos"
+        : "Nenhuma despesa recorrente no mês",
     },
     {
       titulo: "Gastos reais",
