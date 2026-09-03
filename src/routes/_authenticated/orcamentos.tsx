@@ -414,6 +414,16 @@ function OrcamentosPage() {
               Nenhum orçamento definido para{" "}
               {formatarMes(mes).replace(/^./, (c) => c.toUpperCase())}.
             </p>
+            <Button
+              className="mt-2 w-full max-w-xs gap-2"
+              onClick={() => copiarMutation.mutate()}
+              disabled={copiarMutation.isPending}
+            >
+              <Copy className="h-4 w-4" />
+              {copiarMutation.isPending
+                ? "Copiando..."
+                : "Copiar orçamentos do mês anterior"}
+            </Button>
           </CardContent>
         </Card>
       ) : (
