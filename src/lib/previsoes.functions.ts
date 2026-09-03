@@ -38,7 +38,7 @@ export const previsaoAnual = createServerFn({ method: "GET" })
     const [transacoesRes, orcamentosRes] = await Promise.all([
       supabase
 .from("transacoes")
-        .select("valor, tipo, data, status_pagamento")
+        .select("valor, tipo, data, status_pagamento, recorrencia_id")
         .gte("data", inicio)
         .lt("data", fim),
       supabase.from("orcamentos").select("limite, mes").in("mes", meses),
