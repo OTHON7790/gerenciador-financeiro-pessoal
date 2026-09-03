@@ -655,7 +655,8 @@ function OrcamentosPage() {
                   {estourou && (
                     <div className="mt-3 flex items-center gap-2 rounded-lg bg-danger/15 px-3 py-2 text-sm font-semibold text-danger ring-1 ring-danger/40">
                       <AlertTriangle className="h-4 w-4 shrink-0" />
-                      Orçamento excedido em {formatarMoeda(gasto - o.limite)}.
+                      Orçamento excedido em{" "}
+                      {formatarMoeda(utilizado - o.limite)}.
                     </div>
                   )}
                 </CardContent>
