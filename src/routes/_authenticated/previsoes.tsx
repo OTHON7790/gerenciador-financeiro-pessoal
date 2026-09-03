@@ -94,60 +94,57 @@ function PrevisoesPage() {
 
   const { data: linhas } = useSuspenseQuery(previsaoAnualQuery(ano));
 
-  // Receita prevista base: média dos meses do ano com receita real lançada
-  const mediaReceita = useMemo(() => {
-    const comReceita = linhas.filter((l) => l.receitaReal > 0);
-    if (comReceita.length === 0) return null;
-    return (
-      comReceita.reduce((s, l) => s + l.receitaReal, 0) / comReceita.length
-    );
-  }, [linhas]);
-
   const dados = useMemo(
     () =>
       linhas.map((l, i) => {
-        const receitas = l.receitaReal > 0 ? l.receitaReal : (mediaReceita ?? 0);
-        const despesasPrevistas = l.temOrcamento ? l.orcado : l.despesaReal;
+        const receitas = l.receitaReal > 0 ? l.receitaReal : null;
+        const despesasPrevistas = l.temOrcamento ? l.orcado : null;
+        const gastosReais = l.temTransacoes ? l.despesaReal : null;
+        const saldoProjetado =
+          receitas === null && despesasPrevistas === null
+            ? null
+            : (receitas ?? 0) - (despesasPrevistas ?? 0);
         return {
           chave: l.mes,
           mes: NOMES_MESES[i]!.slice(0, 3),
           receitas,
           despesasPrevistas,
-          gastosReais: l.despesaReal,
-          saldoProjetado: receitas - despesasPrevistas,
+          gastosReais,
+          saldoProjetado,
           temOrcamento: l.temOrcamento,
           temTransacoes: l.temTransacoes,
           orcado: l.orcado,
           receitaReal: l.receitaReal,
+          despesaReal: l.despesaReal,
         };
       }),
-    [linhas, mediaReceita],
+    [linhas],
   );
 
   const atual = dados[mesNum - 1]!;
   const anterior = mesNum > 1 ? dados[mesNum - 2] : undefined;
 
   const percentualAtual =
-    atual.orcado > 0 ? (atual.gastosReais / atual.orcado) * 100 : 0;
+    atual.orcado > 0 ? (atual.despesaReal / atual.orcado) * 100 : 0;
   const altaDespesas =
-    anterior && anterior.gastosReais > 0
-      ? (atual.gastosReais - anterior.gastosReais) / anterior.gastosReais
+    anterior && anterior.despesaReal > 0
+      ? (atual.despesaReal - anterior.despesaReal) / anterior.despesaReal
       : 0;
 
   const cards = [
     {
       titulo: "Receitas previstas",
-      valor: mediaReceita === null ? null : atual.receitas,
+      valor: atual.receitas,
       icone: TrendingUp,
       classe: "text-success",
       nota:
         atual.receitaReal > 0
           ? "Receita real do mês"
-          : "Média dos meses com receita",
+          : "Nenhuma receita lançada no mês",
     },
     {
       titulo: "Despesas previstas",
-      valor: atual.temOrcamento ? atual.orcado : null,
+      valor: atual.despesasPrevistas,
       icone: Target,
       classe: "text-warning",
       nota: atual.temOrcamento
@@ -156,7 +153,7 @@ function PrevisoesPage() {
     },
     {
       titulo: "Gastos reais",
-      valor: atual.temTransacoes ? atual.gastosReais : null,
+      valor: atual.gastosReais,
       icone: TrendingDown,
       classe: "text-danger",
       nota: atual.temTransacoes
@@ -165,18 +162,14 @@ function PrevisoesPage() {
     },
     {
       titulo: "Saldo projetado",
-      valor:
-        mediaReceita === null && !atual.temOrcamento && !atual.temTransacoes
-          ? null
-          : atual.saldoProjetado,
+      valor: atual.saldoProjetado,
       icone: Wallet,
       classe:
-        atual.saldoProjetado < 0
-          ? "text-danger"
-          : "text-primary",
+        (atual.saldoProjetado ?? 0) < 0 ? "text-danger" : "text-primary",
       nota: "Receitas previstas − despesas previstas",
     },
   ];
+
 
   return (
     <div className="space-y-6">
@@ -222,7 +215,7 @@ function PrevisoesPage() {
       </div>
 
       {/* Alertas */}
-      {(atual.saldoProjetado < 0 ||
+      {((atual.saldoProjetado ?? 0) < 0 ||
         percentualAtual >= 100 ||
         altaDespesas > 0.3) && (
         <div className="space-y-2">
@@ -231,16 +224,17 @@ function PrevisoesPage() {
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
               <span>
                 Orçamento de {formatarMes(mes)} excedido: gastos de{" "}
-                {formatarMoeda(atual.gastosReais)} contra{" "}
+                {formatarMoeda(atual.despesaReal)} contra{" "}
                 {formatarMoeda(atual.orcado)} previstos.
               </span>
             </div>
           )}
-          {atual.saldoProjetado < 0 && (
+          {(atual.saldoProjetado ?? 0) < 0 && (
             <div className="flex items-start gap-2 rounded-xl border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
               <span>
-                Saldo projetado negativo ({formatarMoeda(atual.saldoProjetado)})
+                Saldo projetado negativo ({formatarMoeda(atual.saldoProjetado ?? 0)})
+
                 para {formatarMes(mes)}.
               </span>
             </div>
@@ -314,6 +308,7 @@ function PrevisoesPage() {
               <ChartLegend content={<ChartLegendContent />} />
               <Line
                 type="linear"
+                connectNulls={false}
                 dataKey="receitas"
                 stroke="var(--color-receitas)"
                 strokeWidth={3}
@@ -322,6 +317,7 @@ function PrevisoesPage() {
               />
               <Line
                 type="linear"
+                connectNulls={false}
                 dataKey="despesasPrevistas"
                 stroke="var(--color-despesasPrevistas)"
                 strokeWidth={2.5}
@@ -331,6 +327,7 @@ function PrevisoesPage() {
               />
               <Line
                 type="linear"
+                connectNulls={false}
                 dataKey="gastosReais"
                 stroke="var(--color-gastosReais)"
                 strokeWidth={3}
@@ -339,6 +336,7 @@ function PrevisoesPage() {
               />
               <Line
                 type="linear"
+                connectNulls={false}
                 dataKey="saldoProjetado"
                 stroke="var(--color-saldoProjetado)"
                 strokeWidth={3}
@@ -375,9 +373,9 @@ function PrevisoesPage() {
             </thead>
             <tbody>
               {dados.map((d, i) => {
-                const pct = d.orcado > 0 ? (d.gastosReais / d.orcado) * 100 : 0;
+                const pct = d.orcado > 0 ? (d.despesaReal / d.orcado) * 100 : 0;
                 const nivel = nivelDe(pct);
-                const diferenca = d.orcado - d.gastosReais;
+                const diferenca = d.orcado - d.despesaReal;
                 const selecionado = i === mesNum - 1;
                 return (
                   <tr
@@ -397,7 +395,7 @@ function PrevisoesPage() {
                     </td>
                     <td className="py-2 pr-3 text-right tabular-nums">
                       {d.temTransacoes ? (
-                        formatarMoeda(d.gastosReais)
+                        formatarMoeda(d.despesaReal)
                       ) : (
                         <span className="text-muted-foreground">Sem dados</span>
                       )}
