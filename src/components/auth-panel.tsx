@@ -6,22 +6,26 @@ import {
   Wallet,
   Loader2,
   ArrowLeft,
-  ArrowRight,
   MailCheck,
   Mail,
   Lock,
   Eye,
   EyeOff,
   ShieldCheck,
-  LayoutDashboard,
+  PieChart,
   Target,
-  Sparkles,
+  BarChart3,
+  LockKeyhole,
+  Clock,
+  UserRound,
+  UserPlus,
+  Heart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 /**
  * Tela de acesso (apresentação + card de login/cadastro).
@@ -38,6 +42,7 @@ export function AuthScreen() {
     null,
   );
   const [modo, setModo] = useState<"auth" | "recuperar">("auth");
+  const [aba, setAba] = useState<"entrar" | "criar">("entrar");
 
   async function entrar(e: React.FormEvent) {
     e.preventDefault();
@@ -76,137 +81,168 @@ export function AuthScreen() {
   }
 
   return (
-    <div className="dark flex min-h-screen flex-col overflow-x-hidden bg-background text-foreground">
+    <div className="dark min-h-screen overflow-x-hidden bg-[#05070d] text-foreground">
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(45rem_28rem_at_12%_8%,color-mix(in_oklab,var(--primary)_14%,transparent),transparent),radial-gradient(38rem_24rem_at_92%_88%,color-mix(in_oklab,var(--glow-cyan)_9%,transparent),transparent)]"
+        className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(55rem_32rem_at_10%_0%,color-mix(in_oklab,var(--primary)_12%,transparent),transparent),radial-gradient(45rem_28rem_at_95%_100%,color-mix(in_oklab,var(--glow-cyan)_8%,transparent),transparent)]"
       />
 
-      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center px-4 py-6 sm:px-6 lg:py-8">
-        <div className="grid items-center gap-7 lg:grid-cols-[52fr_48fr] lg:gap-10">
-          {/* Card de acesso — primeiro no mobile, à direita no desktop */}
-          <section className="order-1 lg:order-2">
-            <div className="rounded-2xl border border-primary/30 bg-card/70 p-4 shadow-xl shadow-primary/10 backdrop-blur-xl sm:p-6">
-              {modo === "recuperar" ? (
-                <>
-                  <h2 className="text-xl font-bold tracking-tight sm:text-2xl">
-                    Recuperar senha
-                  </h2>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Informe seu e-mail para receber um link de redefinição.
-                  </p>
-                  <div className="mt-5">
-                    <FormularioRecuperacao
-                      email={email}
-                      setEmail={setEmail}
-                      onVoltar={() => setModo("auth")}
-                    />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <h2 className="text-xl font-bold tracking-tight sm:text-2xl">
-                    Acesse sua conta
-                  </h2>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Entre para acessar seu painel financeiro.
-                  </p>
-
-                  <Tabs defaultValue="entrar" className="mt-5">
-                    <TabsList className="grid h-auto w-full grid-cols-2 gap-1 rounded-xl border border-border/70 bg-secondary/60 p-1">
-                      <TabsTrigger
-                        value="entrar"
-                        className="h-10 cursor-pointer rounded-lg text-xs font-black uppercase tracking-wide text-foreground/70 transition-colors hover:bg-foreground/5 hover:text-foreground data-[state=active]:bg-linear-to-r data-[state=active]:from-primary data-[state=active]:to-glow-cyan data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/30"
-                      >
-                        Entrar
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="criar"
-                        className="h-10 cursor-pointer rounded-lg text-xs font-black uppercase tracking-wide text-foreground/70 transition-colors hover:bg-foreground/5 hover:text-foreground data-[state=active]:bg-success data-[state=active]:text-success-foreground data-[state=active]:shadow-md data-[state=active]:shadow-success/25"
-                      >
-                        Criar conta
-                      </TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="entrar" className="mt-5">
-                      <form onSubmit={entrar} className="space-y-3.5">
-                        <CampoEmail email={email} setEmail={setEmail} />
-                        <CampoSenha senha={senha} setSenha={setSenha} />
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-foreground/85">
-                            <Checkbox
-                              checked={lembrar}
-                              onCheckedChange={(v) => setLembrar(v === true)}
-                            />
-                            Lembrar de mim
-                          </label>
-                          <button
-                            type="button"
-                            onClick={() => setModo("recuperar")}
-                            className="text-sm font-semibold text-glow-cyan transition-colors hover:text-foreground hover:underline"
-                          >
-                            Esqueci minha senha?
-                          </button>
-                        </div>
-                        <Button
-                          type="submit"
-                          className="h-11 w-full bg-linear-to-r from-primary to-glow-cyan text-sm font-extrabold uppercase tracking-wide text-primary-foreground shadow-md shadow-primary/25 transition-opacity hover:opacity-90"
-                          disabled={carregando !== null}
-                        >
-                          {carregando === "login" ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          ) : null}
-                          Entrar
-                          {carregando !== "login" && (
-                            <ArrowRight className="ml-2 h-4 w-4" />
-                          )}
-                        </Button>
-                      </form>
-                    </TabsContent>
-
-                    <TabsContent value="criar" className="mt-5">
-                      <form onSubmit={cadastrar} className="space-y-3.5">
-                        <CampoEmail email={email} setEmail={setEmail} />
-                        <CampoSenha senha={senha} setSenha={setSenha} />
-                        <Button
-                          type="submit"
-                          className="h-11 w-full bg-success text-sm font-extrabold uppercase tracking-wide text-success-foreground shadow-md shadow-success/25 transition-colors hover:bg-success/90"
-                          disabled={carregando !== null}
-                        >
-                          {carregando === "cadastro" ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          ) : null}
-                          Criar conta grátis
-                        </Button>
-                        <p className="text-center text-xs font-medium text-muted-foreground">
-                          É rápido, fácil e seguro!
-                        </p>
-                      </form>
-                    </TabsContent>
-                  </Tabs>
-                </>
-              )}
-
-              <p className="mt-5 flex items-center justify-center gap-2 text-center text-xs text-muted-foreground">
-                <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-glow-cyan" />
-                Privacidade em primeiro lugar · seus dados financeiros são
-                privados.
-              </p>
+      <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:py-8">
+        {/* Topo */}
+        <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-primary/40 bg-primary/10">
+              <Wallet className="h-6 w-6 text-primary" />
             </div>
+            <span className="truncate text-xl font-extrabold tracking-tight sm:text-2xl">
+              Finanças <span className="text-primary">Pessoais</span>
+            </span>
+          </div>
+          <ThemeToggle className="shrink-0 border border-border/60 bg-card/70" />
+        </header>
+
+        {/* Painéis */}
+        <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+          {/* Painel direito no desktop (autenticação) — primeiro no mobile */}
+          <section className="order-1 rounded-2xl border border-border/60 bg-[#080b13] p-5 shadow-2xl shadow-primary/5 sm:p-8 lg:order-2">
+            {modo === "recuperar" ? (
+              <>
+                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-primary/30 bg-primary/10">
+                  <Wallet className="h-10 w-10 text-primary" />
+                </div>
+                <h2 className="mt-5 text-center text-2xl font-bold tracking-tight">
+                  Recuperar senha
+                </h2>
+                <p className="mt-2 text-center text-sm text-muted-foreground">
+                  Informe seu e-mail para receber um link de redefinição.
+                </p>
+                <div className="mt-6">
+                  <FormularioRecuperacao
+                    email={email}
+                    setEmail={setEmail}
+                    onVoltar={() => setModo("auth")}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-primary/25 bg-primary/10">
+                  <Wallet className="h-10 w-10 text-primary" />
+                </div>
+                <h2 className="mt-5 text-center text-2xl font-bold tracking-tight sm:text-3xl">
+                  Acesse sua conta
+                </h2>
+                <p className="mx-auto mt-2 max-w-sm text-center text-sm text-muted-foreground">
+                  Entre para acessar seu painel financeiro e gerenciar suas
+                  finanças com segurança.
+                </p>
+
+                {/* Seletor de abas */}
+                <div
+                  role="tablist"
+                  aria-label="Entrar ou criar conta"
+                  className="mt-6 grid grid-cols-2 border-b border-border/70"
+                >
+                  <AbaBotao
+                    ativo={aba === "entrar"}
+                    onClick={() => setAba("entrar")}
+                  >
+                    Entrar
+                  </AbaBotao>
+                  <AbaBotao
+                    ativo={aba === "criar"}
+                    onClick={() => setAba("criar")}
+                  >
+                    Criar conta
+                  </AbaBotao>
+                </div>
+
+                {aba === "entrar" ? (
+                  <form onSubmit={entrar} className="mt-6 space-y-4">
+                    <CampoEmail email={email} setEmail={setEmail} />
+                    <CampoSenha senha={senha} setSenha={setSenha} />
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-foreground/85">
+                        <Checkbox
+                          checked={lembrar}
+                          onCheckedChange={(v) => setLembrar(v === true)}
+                        />
+                        Lembrar de mim
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setModo("recuperar")}
+                        className="text-sm font-semibold text-primary transition-colors hover:text-glow-cyan hover:underline"
+                      >
+                        Esqueci minha senha?
+                      </button>
+                    </div>
+                    <Button
+                      type="submit"
+                      className="h-14 w-full rounded-xl bg-linear-to-r from-primary to-glow-cyan text-lg font-extrabold uppercase tracking-wide text-primary-foreground shadow-lg shadow-primary/25 transition-opacity hover:opacity-90"
+                      disabled={carregando !== null}
+                    >
+                      {carregando === "login" ? (
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      ) : (
+                        <UserRound className="mr-2 h-5 w-5" />
+                      )}
+                      Entrar
+                    </Button>
+                  </form>
+                ) : (
+                  <form onSubmit={cadastrar} className="mt-6 space-y-4">
+                    <CampoEmail email={email} setEmail={setEmail} />
+                    <CampoSenha senha={senha} setSenha={setSenha} />
+                    <Button
+                      type="submit"
+                      className="h-16 w-full flex-col gap-0 rounded-xl bg-success text-base font-extrabold uppercase tracking-wide text-success-foreground shadow-lg shadow-success/20 transition-colors hover:bg-success/90"
+                      disabled={carregando !== null}
+                    >
+                      <span className="flex items-center gap-2">
+                        {carregando === "cadastro" ? (
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                          <UserPlus className="h-5 w-5" />
+                        )}
+                        Criar conta grátis
+                      </span>
+                      <span className="text-xs font-medium normal-case opacity-90">
+                        É rápido, fácil e seguro!
+                      </span>
+                    </Button>
+                  </form>
+                )}
+
+                {aba === "entrar" && (
+                  <div className="mt-6">
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                      <span className="h-px flex-1 bg-border/70" />
+                      ou
+                      <span className="h-px flex-1 bg-border/70" />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setAba("criar")}
+                      className="mt-4 flex h-16 w-full flex-col items-center justify-center rounded-xl bg-success font-extrabold uppercase tracking-wide text-success-foreground shadow-lg shadow-success/20 transition-colors hover:bg-success/90"
+                    >
+                      <span className="flex items-center gap-2 text-base">
+                        <UserPlus className="h-5 w-5" />
+                        Criar conta grátis
+                      </span>
+                      <span className="text-xs font-medium normal-case opacity-90">
+                        É rápido, fácil e seguro!
+                      </span>
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
           </section>
 
-          {/* Apresentação */}
-          <section className="order-2 lg:order-1">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-primary to-glow-cyan shadow-md shadow-primary/25">
-                <Wallet className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <span className="text-lg font-bold tracking-tight sm:text-xl">
-                Finanças Pessoais
-              </span>
-            </div>
-
-            <h1 className="mt-5 text-3xl font-extrabold leading-[1.12] tracking-tight sm:text-4xl">
+          {/* Painel esquerdo (apresentação) */}
+          <section className="order-2 rounded-2xl border border-border/60 bg-[#080b13] p-5 sm:p-8 lg:order-1">
+            <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl">
               Seu dinheiro.
               <br />
               Seus dados.
@@ -215,26 +251,32 @@ export function AuthScreen() {
                 Seu controle.
               </span>
             </h1>
-            <p className="mt-3.5 max-w-md text-sm text-muted-foreground sm:text-base">
+            <p className="mt-4 max-w-md text-base text-muted-foreground">
               Organize suas finanças, acompanhe seus objetivos e tenha clareza
               total da sua vida financeira.
             </p>
 
-            <ul className="mt-5 space-y-2.5">
+            <ul className="mt-6 space-y-3">
               <Beneficio
-                icone={<LayoutDashboard className="h-4 w-4 text-primary" />}
+                icone={<PieChart className="h-6 w-6 text-primary" />}
+                corIcone="border-primary/30 bg-primary/10"
+                corTitulo="text-primary"
                 titulo="Visão completa"
-                texto="Receitas, despesas, orçamentos e relatórios."
+                texto="Acompanhe receitas, despesas, orçamentos, metas e relatórios em tempo real."
               />
               <Beneficio
-                icone={<Target className="h-4 w-4 text-glow-cyan" />}
+                icone={<Target className="h-6 w-6 text-success" />}
+                corIcone="border-success/30 bg-success/10"
+                corTitulo="text-success"
                 titulo="Metas e objetivos"
-                texto="Acompanhe seu progresso financeiro."
+                texto="Defina metas, acompanhe seu progresso e realize seus objetivos com planejamento."
               />
               <Beneficio
-                icone={<ShieldCheck className="h-4 w-4 text-success" />}
-                titulo="Privacidade"
-                texto="Seus dados ficam disponíveis somente após autenticação."
+                icone={<BarChart3 className="h-6 w-6 text-nav-purple" />}
+                corIcone="border-nav-purple/30 bg-nav-purple/10"
+                corTitulo="text-nav-purple"
+                titulo="Controle financeiro"
+                texto="Tenha controle dos seus gastos e veja sua evolução financeira de forma clara."
               />
             </ul>
 
@@ -242,92 +284,205 @@ export function AuthScreen() {
           </section>
         </div>
 
-        <footer className="mt-7 text-center text-xs text-muted-foreground">
-          Finanças Pessoais • Feito para você gerenciar seu dinheiro com
-          clareza.
+        {/* Faixa inferior */}
+        <div className="mt-5 grid gap-5 rounded-2xl border border-border/60 bg-[#080b13] p-5 sm:p-6 md:grid-cols-3">
+          <ItemFaixa
+            icone={<ShieldCheck className="h-6 w-6 text-success" />}
+            cor="border-success/30 bg-success/10"
+            titulo="Privacidade em primeiro lugar"
+            texto="Seus dados são seus e não são exibidos antes da autenticação."
+          />
+          <ItemFaixa
+            icone={<LockKeyhole className="h-6 w-6 text-primary" />}
+            cor="border-primary/30 bg-primary/10"
+            titulo="Acesso protegido"
+            texto="Suas informações ficam disponíveis somente após autenticação."
+          />
+          <ItemFaixa
+            icone={<Clock className="h-6 w-6 text-nav-purple" />}
+            cor="border-nav-purple/30 bg-nav-purple/10"
+            titulo="Disponível sempre"
+            texto="Acesse suas finanças de onde estiver."
+          />
+        </div>
+
+        <footer className="mt-5 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+          <span>© 2026 Finanças Pessoais.</span>
+          <span className="flex items-center gap-1.5">
+            Feito com clareza e propósito
+            <Heart className="h-3.5 w-3.5 text-success" />
+          </span>
         </footer>
       </div>
     </div>
   );
 }
 
+function AbaBotao({
+  ativo,
+  onClick,
+  children,
+}: {
+  ativo: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={ativo}
+      onClick={onClick}
+      className={
+        "-mb-px cursor-pointer border-b-2 pb-3 text-sm font-bold transition-colors " +
+        (ativo
+          ? "border-primary text-primary"
+          : "border-transparent text-muted-foreground hover:text-foreground")
+      }
+    >
+      {children}
+    </button>
+  );
+}
+
 function Beneficio({
   icone,
+  corIcone,
+  corTitulo,
   titulo,
   texto,
 }: {
   icone: React.ReactNode;
+  corIcone: string;
+  corTitulo: string;
   titulo: string;
   texto: string;
 }) {
   return (
-    <li className="flex items-start gap-2.5">
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border/70 bg-card/70">
+    <li className="flex items-start gap-3 rounded-xl border border-border/50 bg-card/40 p-3">
+      <span
+        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border ${corIcone}`}
+      >
         {icone}
       </span>
       <div className="min-w-0">
-        <p className="text-sm font-semibold text-foreground">{titulo}</p>
-        <p className="text-xs text-muted-foreground">{texto}</p>
+        <p className={`text-base font-bold ${corTitulo}`}>{titulo}</p>
+        <p className="text-sm leading-snug text-muted-foreground">{texto}</p>
       </div>
     </li>
   );
 }
 
+function ItemFaixa({
+  icone,
+  cor,
+  titulo,
+  texto,
+}: {
+  icone: React.ReactNode;
+  cor: string;
+  titulo: string;
+  texto: string;
+}) {
+  return (
+    <div className="flex items-start gap-3">
+      <span
+        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border ${cor}`}
+      >
+        {icone}
+      </span>
+      <div className="min-w-0">
+        <p className="text-sm font-bold text-foreground">{titulo}</p>
+        <p className="text-sm leading-snug text-muted-foreground">{texto}</p>
+      </div>
+    </div>
+  );
+}
+
 /** Ilustração decorativa (sem dados reais ou fictícios rotulados). */
 function GraficoDecorativo() {
-  const barras = [38, 55, 44, 70, 60, 86];
+  const barras = [14, 18, 22, 26, 24, 32, 38, 44, 52, 48, 62, 72, 84, 96, 78];
   const pontos: Array<[number, number]> = [
-    [8, 66],
-    [25, 50],
-    [42, 58],
-    [58, 32],
-    [75, 40],
-    [92, 16],
+    [3, 88],
+    [10, 80],
+    [17, 84],
+    [24, 66],
+    [31, 62],
+    [38, 68],
+    [45, 52],
+    [52, 46],
+    [59, 50],
+    [66, 34],
+    [73, 30],
+    [80, 22],
+    [87, 26],
+    [94, 8],
   ];
+  const linha = pontos.map(([x, y]) => `${x},${y}`).join(" ");
   return (
     <div
       aria-hidden
-      className="mt-5 rounded-xl border border-border/60 bg-card/40 p-3.5"
+      className="relative mt-6 overflow-hidden rounded-xl border border-border/50 bg-[#060910]"
     >
-      <div className="mb-2 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-        <Sparkles className="h-3.5 w-3.5 text-glow-cyan" />
-        Evolução financeira
-      </div>
-      <div className="relative h-16">
-        <div className="flex h-full items-end justify-around gap-2.5">
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,color-mix(in_oklab,var(--primary)_9%,transparent)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_oklab,var(--primary)_9%,transparent)_1px,transparent_1px)] bg-[size:28px_28px]" />
+      <div className="absolute inset-x-0 bottom-0 h-2/3 bg-[radial-gradient(20rem_10rem_at_70%_100%,color-mix(in_oklab,var(--success)_16%,transparent),transparent)]" />
+
+      <div className="relative h-56 p-4 sm:h-64">
+        <div className="absolute inset-x-4 bottom-4 flex h-[85%] items-end justify-between gap-1.5">
           {barras.map((h, i) => (
             <div
               key={i}
               style={{ height: `${h}%` }}
-              className="w-3 rounded-t-sm bg-linear-to-t from-primary/20 to-primary/65"
+              className="flex-1 rounded-t-sm bg-linear-to-t from-primary/15 via-primary/50 to-glow-cyan/80"
             />
           ))}
         </div>
         <svg
           viewBox="0 0 100 100"
           preserveAspectRatio="none"
-          className="pointer-events-none absolute inset-0 h-full w-full"
+          className="pointer-events-none absolute inset-4 h-[calc(100%-2rem)] w-[calc(100%-2rem)]"
         >
-          {pontos.map(([x, y]) => (
-            <circle
-              key={x}
-              cx={x}
-              cy={y}
-              r="3.2"
-              fill="var(--glow-cyan)"
-              vectorEffect="non-scaling-stroke"
-            />
-          ))}
           <polyline
-            points="8,66 25,50 42,58 58,32 75,40 92,16"
+            points={linha}
             fill="none"
             stroke="var(--glow-cyan)"
-            strokeWidth="1.5"
+            strokeWidth="2"
             vectorEffect="non-scaling-stroke"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
         </svg>
+        <svg
+          viewBox="0 0 100 100"
+          className="pointer-events-none absolute inset-4 h-[calc(100%-2rem)] w-[calc(100%-2rem)]"
+          preserveAspectRatio="none"
+        >
+          {pontos.map(([x, y], i) => (
+            <circle
+              key={x}
+              cx={x}
+              cy={y}
+              r="1.6"
+              fill={i < 5 ? "var(--success)" : "var(--glow-cyan)"}
+            />
+          ))}
+        </svg>
+
+        <div className="absolute bottom-4 right-4 max-w-[16rem] rounded-xl border border-border/60 bg-[#080b13]/90 p-3 backdrop-blur-sm">
+          <div className="flex items-start gap-2.5">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-primary/30 bg-primary/10">
+              <LockKeyhole className="h-4.5 w-4.5 text-primary" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-foreground">
+                Acesso protegido
+              </p>
+              <p className="text-xs leading-snug text-muted-foreground">
+                Seus dados ficam disponíveis somente após o login.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -346,15 +501,15 @@ function CampoEmail({
         E-mail
       </Label>
       <div className="relative">
-        <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-glow-cyan" />
+        <Mail className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
         <Input
           id="email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="voce@email.com"
+          placeholder="seu@email.com"
           required
-          className="h-11 rounded-lg border border-border bg-secondary/40 pl-11 text-base text-foreground placeholder:text-muted-foreground/70 focus-visible:border-glow-cyan focus-visible:ring-2 focus-visible:ring-primary/50"
+          className="h-14 rounded-xl border border-border/80 bg-[#05070d] pl-12 text-base text-foreground placeholder:text-muted-foreground/70 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/40"
         />
       </div>
     </div>
@@ -375,22 +530,22 @@ function CampoSenha({
         Senha
       </Label>
       <div className="relative">
-        <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-glow-cyan" />
+        <Lock className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
         <Input
           id="senha"
           type={visivel ? "text" : "password"}
           value={senha}
           onChange={(e) => setSenha(e.target.value)}
-          placeholder="••••••••"
+          placeholder="Digite sua senha"
           required
           minLength={6}
-          className="h-11 rounded-lg border border-border bg-secondary/40 pl-11 pr-11 text-base text-foreground placeholder:text-muted-foreground/70 focus-visible:border-glow-cyan focus-visible:ring-2 focus-visible:ring-primary/50"
+          className="h-14 rounded-xl border border-border/80 bg-[#05070d] pl-12 pr-12 text-base text-foreground placeholder:text-muted-foreground/70 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/40"
         />
         <button
           type="button"
           onClick={() => setVisivel((v) => !v)}
           aria-label={visivel ? "Ocultar senha" : "Mostrar senha"}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-glow-cyan/80 transition-colors hover:text-glow-cyan"
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
         >
           {visivel ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
         </button>
@@ -430,7 +585,7 @@ function FormularioRecuperacao({
     return (
       <div className="space-y-4 text-center">
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/15">
-          <MailCheck className="h-6 w-6 text-glow-cyan" />
+          <MailCheck className="h-6 w-6 text-primary" />
         </div>
         <p className="text-base text-foreground/85">
           Enviamos um link de recuperação para{" "}
@@ -454,7 +609,7 @@ function FormularioRecuperacao({
       <CampoEmail email={email} setEmail={setEmail} />
       <Button
         type="submit"
-        className="h-11 w-full bg-linear-to-r from-primary to-glow-cyan text-sm font-extrabold uppercase tracking-wide text-primary-foreground shadow-lg shadow-primary/30 transition-opacity hover:opacity-90"
+        className="h-14 w-full rounded-xl bg-linear-to-r from-primary to-glow-cyan text-base font-extrabold uppercase tracking-wide text-primary-foreground shadow-lg shadow-primary/25 transition-opacity hover:opacity-90"
         disabled={enviando}
       >
         {enviando && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
@@ -463,7 +618,7 @@ function FormularioRecuperacao({
       <button
         type="button"
         onClick={onVoltar}
-        className="flex w-full items-center justify-center gap-1.5 text-base font-semibold text-glow-cyan transition-colors hover:text-foreground hover:underline"
+        className="flex w-full items-center justify-center gap-1.5 text-base font-semibold text-primary transition-colors hover:text-glow-cyan hover:underline"
       >
         <ArrowLeft className="h-4 w-4" />
         Voltar para o login
