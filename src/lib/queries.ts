@@ -9,6 +9,7 @@ import {
   serieMensal,
   evolucaoSaldo,
   contasAPagar,
+  comprometidoMes,
 } from "./transacoes.functions";
 import { listarOrcamentos } from "./orcamentos.functions";
 import { listarMetas } from "./metas.functions";
