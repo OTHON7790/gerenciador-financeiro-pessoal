@@ -282,7 +282,7 @@ function OrcamentosPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
               <div>
                 <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
                   Total orçado
@@ -301,14 +301,29 @@ function OrcamentosPage() {
               </div>
               <div>
                 <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                  {totais.gasto > totais.orcado ? "Total excedido" : "Restante"}
+                  Total comprometido
+                </p>
+                <p className="text-lg font-semibold text-nav-orange">
+                  {formatarMoeda(totais.comprometido)}
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  Recorrentes pendentes
+                </p>
+              </div>
+              <div>
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  {totais.utilizado > totais.orcado
+                    ? "Total excedido"
+                    : "Disponível"}
                 </p>
                 <p
                   className={`text-lg font-semibold ${
-                    totais.gasto > totais.orcado ? "text-danger" : "text-nav-cyan"
+                    totais.utilizado > totais.orcado
+                      ? "text-danger"
+                      : "text-nav-cyan"
                   }`}
                 >
-                  {formatarMoeda(Math.abs(totais.orcado - totais.gasto))}
+                  {formatarMoeda(Math.abs(totais.orcado - totais.utilizado))}
                 </p>
               </div>
               <div>
