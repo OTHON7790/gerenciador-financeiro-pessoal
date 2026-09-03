@@ -256,12 +256,17 @@ export type ContaAPagar = {
 
 export const contasAPagar = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
+  .inputValidator((input) =>
+    z.object({ mes: z.string().regex(/^\d{4}-\d{2}$/) }).parse(input),
+  )
+  .handler(async ({ data: filtro, context }) => {
     const { data, error } = await context.supabase
       .from("transacoes")
       .select("id, descricao, valor, data_vencimento, tipo, status_pagamento")
       .eq("tipo", "despesa")
       .eq("status_pagamento", "pendente")
+      .gte("data", `${filtro.mes}-01`)
+      .lt("data", proximoMes(filtro.mes))
       .order("data_vencimento", { ascending: true, nullsFirst: false });
     if (error) throw new Error(error.message);
     const contas = (data ?? []).map((t) => ({
