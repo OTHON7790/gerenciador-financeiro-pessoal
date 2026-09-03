@@ -32,6 +32,16 @@ export const Route = createFileRoute("/_authenticated/transacoes")({
 
 type FiltroTipo = "todas" | TipoTransacao;
 type FiltroStatus = "todos" | StatusExibido;
+type Ordenacao = "recentes" | "antigas" | "az" | "za" | "maior" | "menor";
+
+const ORDENACOES: { valor: Ordenacao; rotulo: string }[] = [
+  { valor: "recentes", rotulo: "Mais recentes" },
+  { valor: "antigas", rotulo: "Mais antigas" },
+  { valor: "az", rotulo: "A–Z" },
+  { valor: "za", rotulo: "Z–A" },
+  { valor: "maior", rotulo: "Maior valor" },
+  { valor: "menor", rotulo: "Menor valor" },
+];
 
 function TransacoesPage() {
   const [mes, setMes] = useState(() => mesInicialValido(mesAtual()));
@@ -39,6 +49,7 @@ function TransacoesPage() {
   const [status, setStatus] = useState<FiltroStatus>("todos");
   const [categoriaId, setCategoriaId] = useState<string>("todas");
   const [busca, setBusca] = useState("");
+  const [ordenacao, setOrdenacao] = useState<Ordenacao>("recentes");
   const { data: categorias } = useSuspenseQuery(categoriasQuery);
   const filtros = {
     mes,
@@ -60,6 +71,21 @@ function TransacoesPage() {
     const b = busca.trim().toLowerCase();
     return b ? transacoes.filter((t) => t.descricao.toLowerCase().includes(b)) : transacoes;
   }, [transacoes, busca]);
+  const ordenadas = useMemo(() => {
+    const porTexto = (a: Transacao, b: Transacao) =>
+      a.descricao.localeCompare(b.descricao, "pt-BR", { sensitivity: "base" });
+    const porData = (a: Transacao, b: Transacao) =>
+      a.data === b.data ? porTexto(a, b) : a.data < b.data ? -1 : 1;
+    const comparadores: Record<Ordenacao, (a: Transacao, b: Transacao) => number> = {
+      recentes: (a, b) => -porData(a, b),
+      antigas: porData,
+      az: porTexto,
+      za: (a, b) => -porTexto(a, b),
+      maior: (a, b) => (b.valor - a.valor) || porTexto(a, b),
+      menor: (a, b) => (a.valor - b.valor) || porTexto(a, b),
+    };
+    return [...filtradas].sort(comparadores[ordenacao]);
+  }, [filtradas, ordenacao]);
   const totalReceitas = filtradas.filter((t) => t.tipo === "receita").reduce((s, t) => s + t.valor, 0);
   const totalDespesas = filtradas.filter((t) => t.tipo === "despesa" && statusTransacao(t) === "pago").reduce((s, t) => s + t.valor, 0);
   const totalPendentes = filtradas.filter((t) => t.tipo === "despesa" && statusTransacao(t) === "pendente").reduce((s, t) => s + t.valor, 0);
@@ -103,6 +129,7 @@ function TransacoesPage() {
           <div className="space-y-1.5"><label className="text-xs text-muted-foreground">Status</label><Select value={status} onValueChange={(v) => setStatus(v as FiltroStatus)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="todos">Todos</SelectItem><SelectItem value="pago">Pago</SelectItem><SelectItem value="pendente">Pendente</SelectItem><SelectItem value="vencido">Vencido</SelectItem></SelectContent></Select></div>
           <div className="space-y-1.5"><label className="text-xs text-muted-foreground">Categoria</label><Select value={categoriaId} onValueChange={setCategoriaId}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="todas">Todas as categorias</SelectItem>{categorias.map((c) => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}</SelectContent></Select></div>
           <div className="space-y-1.5 sm:col-span-2 lg:col-span-1"><label className="text-xs text-muted-foreground">Buscar</label><Input placeholder="Descrição..." value={busca} onChange={(e) => setBusca(e.target.value)} /></div>
+          <div className="space-y-1.5"><label className="text-xs text-muted-foreground">Ordenar por</label><Select value={ordenacao} onValueChange={(v) => setOrdenacao(v as Ordenacao)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{ORDENACOES.map((o) => <SelectItem key={o.valor} value={o.valor}>{o.rotulo}</SelectItem>)}</SelectContent></Select></div>
         </div>
       </CardContent></Card>
 
@@ -114,7 +141,7 @@ function TransacoesPage() {
       </div>
 
       {isPending ? <div className="space-y-2">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-16" />)}</div> : filtradas.length === 0 ? <Card><CardContent className="flex flex-col items-center gap-2 py-16 text-center"><div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted"><Wallet className="h-6 w-6 text-muted-foreground" /></div><p className="text-sm text-muted-foreground">Nenhuma transação encontrada com os filtros atuais.</p></CardContent></Card> : <Card><CardContent className="p-0"><ul className="divide-y">
-        {filtradas.map((t) => {
+        {ordenadas.map((t) => {
           const cat = t.categoria_id ? mapaCategorias.get(t.categoria_id) : null;
           const Icon = cat ? iconeCategoria(cat.icone) : Wallet;
           const statusEfetivo = statusTransacao(t);
