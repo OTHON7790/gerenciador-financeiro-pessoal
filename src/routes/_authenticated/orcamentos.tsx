@@ -73,6 +73,7 @@ function OrcamentosPage() {
   const { data: categorias } = useSuspenseQuery(categoriasQuery);
   const { data: orcamentos, isPending } = useSuspenseQuery(orcamentosQuery(mes));
   const { data: resumo } = useSuspenseQuery(resumoMesQuery(mes));
+  const { data: comprometido } = useSuspenseQuery(comprometidoMesQuery(mes));
 
   const queryClient = useQueryClient();
   const salvar = useServerFn(salvarOrcamento);
@@ -92,6 +93,14 @@ function OrcamentosPage() {
     return m;
   }, [resumo]);
 
+  // Despesas recorrentes pendentes (valor comprometido) por categoria
+  const comprometidoPorCategoria = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const g of comprometido.porCategoria)
+      if (g.categoria_id) m.set(g.categoria_id, g.valor);
+    return m;
+  }, [comprometido]);
+
   const despesaCategorias = categorias.filter((c) => c.tipo === "despesa");
 
   const semOrcamento = useMemo(
@@ -99,9 +108,15 @@ function OrcamentosPage() {
       despesaCategorias.filter(
         (c) =>
           !orcamentosPorCategoria.has(c.id) &&
-          (gastoPorCategoria.get(c.id) ?? 0) > 0,
+          ((gastoPorCategoria.get(c.id) ?? 0) > 0 ||
+            (comprometidoPorCategoria.get(c.id) ?? 0) > 0),
       ),
-    [despesaCategorias, orcamentosPorCategoria, gastoPorCategoria],
+    [
+      despesaCategorias,
+      orcamentosPorCategoria,
+      gastoPorCategoria,
+      comprometidoPorCategoria,
+    ],
   );
 
   const totais = useMemo(() => {
@@ -110,14 +125,26 @@ function OrcamentosPage() {
       (s, o) => s + (gastoPorCategoria.get(o.categoria_id) ?? 0),
       0,
     );
-    const percentualReal = orcado > 0 ? (gasto / orcado) * 100 : 0;
+    const comprometidoTotal = orcamentos.reduce(
+      (s, o) => s + (comprometidoPorCategoria.get(o.categoria_id) ?? 0),
+      0,
+    );
+    const utilizado = gasto + comprometidoTotal;
+    const percentualReal = orcado > 0 ? (utilizado / orcado) * 100 : 0;
     const nivel =
       percentualReal >= 100 ? "danger"
       : percentualReal >= 90 ? "alert"
       : percentualReal >= 70 ? "warning"
       : "success";
-    return { orcado, gasto, percentualReal, nivel } as const;
-  }, [orcamentos, gastoPorCategoria]);
+    return {
+      orcado,
+      gasto,
+      comprometido: comprometidoTotal,
+      utilizado,
+      percentualReal,
+      nivel,
+    } as const;
+  }, [orcamentos, gastoPorCategoria, comprometidoPorCategoria]);
 
   // Indicador automático de situação das categorias (mês selecionado)
   const situacao = useMemo(() => {
@@ -125,13 +152,15 @@ function OrcamentosPage() {
     const atingidos: string[] = [];
     const proximos: string[] = [];
     for (const o of orcamentos) {
-      const gasto = gastoPorCategoria.get(o.categoria_id) ?? 0;
+      const utilizado =
+        (gastoPorCategoria.get(o.categoria_id) ?? 0) +
+        (comprometidoPorCategoria.get(o.categoria_id) ?? 0);
       const nome =
         despesaCategorias.find((c) => c.id === o.categoria_id)?.nome ??
         "Categoria";
-      const percentual = o.limite > 0 ? (gasto / o.limite) * 100 : 0;
+      const percentual = o.limite > 0 ? (utilizado / o.limite) * 100 : 0;
       if (percentual > 100) {
-        excedidos.push({ nome, excesso: gasto - o.limite });
+        excedidos.push({ nome, excesso: utilizado - o.limite });
       } else if (percentual >= 100) {
         atingidos.push(nome);
       } else if (percentual >= 80) {
