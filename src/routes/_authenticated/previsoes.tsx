@@ -97,8 +97,15 @@ function PrevisoesPage() {
   const dados = useMemo(
     () =>
       linhas.map((l, i) => {
-        const receitas = l.receitaReal > 0 ? l.receitaReal : null;
-        const despesasPrevistas = l.temOrcamento ? l.orcado : null;
+        // Receita prevista: recorrente quando existir, senão a receita lançada.
+        const receitaPrevista =
+          l.receitaRecorrente > 0 ? l.receitaRecorrente : l.receitaReal;
+        const receitas = receitaPrevista > 0 ? receitaPrevista : null;
+        // Despesa prevista: recorrentes do mês (pagas + pendentes) + gastos
+        // variáveis já pagos. Orçamentos não são projetados.
+        const previsto = l.despesaRecorrente + l.despesaVariavelPaga;
+        const temPrevisao = previsto > 0;
+        const despesasPrevistas = temPrevisao ? previsto : null;
         const gastosReais = l.temTransacoes ? l.despesaReal : null;
         const saldoProjetado =
           receitas === null && despesasPrevistas === null
@@ -111,11 +118,13 @@ function PrevisoesPage() {
           despesasPrevistas,
           gastosReais,
           saldoProjetado,
-          temOrcamento: l.temOrcamento,
+          previsto,
+          temPrevisao,
           temTransacoes: l.temTransacoes,
-          orcado: l.orcado,
+          receitaRecorrente: l.receitaRecorrente,
           receitaReal: l.receitaReal,
           despesaReal: l.despesaReal,
+          despesaRecorrente: l.despesaRecorrente,
         };
       }),
     [linhas],
@@ -125,7 +134,7 @@ function PrevisoesPage() {
   const anterior = mesNum > 1 ? dados[mesNum - 2] : undefined;
 
   const percentualAtual =
-    atual.orcado > 0 ? (atual.despesaReal / atual.orcado) * 100 : 0;
+    atual.previsto > 0 ? (atual.despesaReal / atual.previsto) * 100 : 0;
   const altaDespesas =
     anterior && anterior.despesaReal > 0
       ? (atual.despesaReal - anterior.despesaReal) / anterior.despesaReal
@@ -138,18 +147,20 @@ function PrevisoesPage() {
       icone: TrendingUp,
       classe: "text-success",
       nota:
-        atual.receitaReal > 0
-          ? "Receita real do mês"
-          : "Nenhuma receita lançada no mês",
+        atual.receitaRecorrente > 0
+          ? "Receitas recorrentes do mês"
+          : atual.receitaReal > 0
+            ? "Receita real do mês"
+            : "Nenhuma receita lançada no mês",
     },
     {
       titulo: "Despesas previstas",
       valor: atual.despesasPrevistas,
       icone: Target,
       classe: "text-warning",
-      nota: atual.temOrcamento
-        ? "Soma dos orçamentos do mês"
-        : "Nenhum orçamento definido",
+      nota: atual.temPrevisao
+        ? "Despesas recorrentes + gastos já pagos"
+        : "Nenhuma despesa recorrente no mês",
     },
     {
       titulo: "Gastos reais",
@@ -223,9 +234,9 @@ function PrevisoesPage() {
             <div className="flex items-start gap-2 rounded-xl border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
               <span>
-                Orçamento de {formatarMes(mes)} excedido: gastos de{" "}
+                Previsão de {formatarMes(mes)} excedida: gastos de{" "}
                 {formatarMoeda(atual.despesaReal)} contra{" "}
-                {formatarMoeda(atual.orcado)} previstos.
+                {formatarMoeda(atual.previsto)} previstos.
               </span>
             </div>
           )}
@@ -366,16 +377,16 @@ function PrevisoesPage() {
                 <th className="py-2 pr-3 text-right font-medium">
                   Despesas realizadas
                 </th>
-                <th className="py-2 pr-3 text-right font-medium">Restante do orçamento</th>
+                <th className="py-2 pr-3 text-right font-medium">Restante da previsão</th>
                 <th className="py-2 pr-3 text-right font-medium">% usado</th>
                 <th className="py-2 text-right font-medium">Situação</th>
               </tr>
             </thead>
             <tbody>
               {dados.map((d, i) => {
-                const pct = d.orcado > 0 ? (d.despesaReal / d.orcado) * 100 : 0;
+                const pct = d.previsto > 0 ? (d.despesaReal / d.previsto) * 100 : 0;
                 const nivel = nivelDe(pct);
-                const diferenca = d.orcado - d.despesaReal;
+                const diferenca = d.previsto - d.despesaReal;
                 const selecionado = i === mesNum - 1;
                 return (
                   <tr
@@ -387,8 +398,8 @@ function PrevisoesPage() {
                   >
                     <td className="py-2 pr-3 font-medium">{NOMES_MESES[i]}</td>
                     <td className="py-2 pr-3 text-right tabular-nums">
-                      {d.temOrcamento ? (
-                        formatarMoeda(d.orcado)
+                      {d.temPrevisao ? (
+                        formatarMoeda(d.previsto)
                       ) : (
                         <span className="text-muted-foreground">Sem dados</span>
                       )}
@@ -403,27 +414,27 @@ function PrevisoesPage() {
                     <td
                       className={cn(
                         "py-2 pr-3 text-right tabular-nums",
-                        d.temOrcamento &&
+                        d.temPrevisao &&
                           (diferenca < 0
                             ? "text-danger"
                             : "text-success"),
                       )}
                     >
-                      {d.temOrcamento ? (
+                      {d.temPrevisao ? (
                         formatarMoeda(diferenca)
                       ) : (
                         <span className="text-muted-foreground">—</span>
                       )}
                     </td>
                     <td className="py-2 pr-3 text-right tabular-nums">
-                      {d.temOrcamento ? (
+                      {d.temPrevisao ? (
                         `${Math.round(pct)}%`
                       ) : (
                         <span className="text-muted-foreground">—</span>
                       )}
                     </td>
                     <td className="py-2 text-right">
-                      {d.temOrcamento ? (
+                      {d.temPrevisao ? (
                         <Badge className={cn("gap-1", nivel.classe)}>
                           {nivel.chave === "controle" ? (
                             <CheckCircle2 className="h-3 w-3" />

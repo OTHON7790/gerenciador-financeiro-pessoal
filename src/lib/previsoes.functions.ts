@@ -7,6 +7,12 @@ export type PrevisaoMes = {
   mes: string; // YYYY-MM
   receitaReal: number;
   despesaReal: number;
+  /** Despesas recorrentes do mês (pagas + pendentes). */
+  despesaRecorrente: number;
+  /** Despesas pagas do mês que NÃO são recorrentes (gastos variáveis). */
+  despesaVariavelPaga: number;
+  /** Receitas recorrentes do mês. */
+  receitaRecorrente: number;
   orcado: number;
   temTransacoes: boolean;
   temOrcamento: boolean;
@@ -32,7 +38,7 @@ export const previsaoAnual = createServerFn({ method: "GET" })
     const [transacoesRes, orcamentosRes] = await Promise.all([
       supabase
 .from("transacoes")
-        .select("valor, tipo, data, status_pagamento")
+        .select("valor, tipo, data, status_pagamento, recorrencia_id")
         .gte("data", inicio)
         .lt("data", fim),
       supabase.from("orcamentos").select("limite, mes").in("mes", meses),
@@ -47,20 +53,37 @@ export const previsaoAnual = createServerFn({ method: "GET" })
         mes: m,
         receitaReal: 0,
         despesaReal: 0,
+        despesaRecorrente: 0,
+        despesaVariavelPaga: 0,
+        receitaRecorrente: 0,
         orcado: 0,
         temTransacoes: false,
         temOrcamento: false,
       });
 
     for (const t of transacoesRes.data ?? []) {
-      if (t.tipo === "despesa" && t.status_pagamento !== "pago") continue;
       const chave = String(t.data).slice(0, 7);
       const linha = mapa.get(chave);
       if (!linha) continue;
+      const valor = Number(t.valor);
+      const recorrente = t.recorrencia_id != null;
+      const pago = t.status_pagamento === "pago";
+
+      if (t.tipo === "receita") {
+        linha.temTransacoes = true;
+        linha.receitaReal = somarCentavos(linha.receitaReal, valor);
+        if (recorrente)
+          linha.receitaRecorrente = somarCentavos(linha.receitaRecorrente, valor);
+        continue;
+      }
+
+      if (recorrente)
+        linha.despesaRecorrente = somarCentavos(linha.despesaRecorrente, valor);
+      if (!pago) continue;
       linha.temTransacoes = true;
-      if (t.tipo === "receita")
-        linha.receitaReal = somarCentavos(linha.receitaReal, Number(t.valor));
-      else linha.despesaReal = somarCentavos(linha.despesaReal, Number(t.valor));
+      linha.despesaReal = somarCentavos(linha.despesaReal, valor);
+      if (!recorrente)
+        linha.despesaVariavelPaga = somarCentavos(linha.despesaVariavelPaga, valor);
     }
 
     for (const o of orcamentosRes.data ?? []) {
