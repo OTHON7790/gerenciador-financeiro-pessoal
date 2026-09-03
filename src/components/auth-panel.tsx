@@ -261,13 +261,13 @@ function Beneficio({
   texto: string;
 }) {
   return (
-    <li className="flex items-start gap-3.5">
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border/70 bg-card/70">
+    <li className="flex items-start gap-2.5">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border/70 bg-card/70">
         {icone}
       </span>
       <div className="min-w-0">
-        <p className="text-base font-semibold text-foreground">{titulo}</p>
-        <p className="text-sm text-muted-foreground">{texto}</p>
+        <p className="text-sm font-semibold text-foreground">{titulo}</p>
+        <p className="text-xs text-muted-foreground">{texto}</p>
       </div>
     </li>
   );
@@ -276,22 +276,30 @@ function Beneficio({
 /** Ilustração decorativa (sem dados reais ou fictícios rotulados). */
 function GraficoDecorativo() {
   const barras = [38, 55, 44, 70, 60, 86];
+  const pontos: Array<[number, number]> = [
+    [8, 66],
+    [25, 50],
+    [42, 58],
+    [58, 32],
+    [75, 40],
+    [92, 16],
+  ];
   return (
     <div
       aria-hidden
-      className="mt-8 rounded-2xl border border-border/70 bg-card/50 p-5"
+      className="mt-5 rounded-xl border border-border/60 bg-card/40 p-3.5"
     >
-      <div className="mb-3 flex items-center gap-2 text-sm font-medium text-muted-foreground">
-        <Sparkles className="h-4 w-4 text-glow-cyan" />
+      <div className="mb-2 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+        <Sparkles className="h-3.5 w-3.5 text-glow-cyan" />
         Evolução financeira
       </div>
-      <div className="relative h-32">
-        <div className="flex h-full items-end gap-3">
+      <div className="relative h-16">
+        <div className="flex h-full items-end justify-between gap-2.5">
           {barras.map((h, i) => (
             <div
               key={i}
               style={{ height: `${h}%` }}
-              className="flex-1 rounded-t-md bg-linear-to-t from-primary/30 to-primary/80"
+              className="w-1.5 flex-1 rounded-t-sm bg-linear-to-t from-primary/15 to-primary/55"
             />
           ))}
         </div>
@@ -300,11 +308,21 @@ function GraficoDecorativo() {
           preserveAspectRatio="none"
           className="pointer-events-none absolute inset-0 h-full w-full"
         >
+          {pontos.map(([x, y]) => (
+            <circle
+              key={x}
+              cx={x}
+              cy={y}
+              r="1.6"
+              fill="var(--glow-cyan)"
+              vectorEffect="non-scaling-stroke"
+            />
+          ))}
           <polyline
             points="8,66 25,50 42,58 58,32 75,40 92,16"
             fill="none"
             stroke="var(--glow-cyan)"
-            strokeWidth="2"
+            strokeWidth="1.5"
             vectorEffect="non-scaling-stroke"
             strokeLinecap="round"
             strokeLinejoin="round"
