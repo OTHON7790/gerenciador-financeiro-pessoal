@@ -129,6 +129,7 @@ function TransacoesPage() {
           <div className="space-y-1.5"><label className="text-xs text-muted-foreground">Status</label><Select value={status} onValueChange={(v) => setStatus(v as FiltroStatus)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="todos">Todos</SelectItem><SelectItem value="pago">Pago</SelectItem><SelectItem value="pendente">Pendente</SelectItem><SelectItem value="vencido">Vencido</SelectItem></SelectContent></Select></div>
           <div className="space-y-1.5"><label className="text-xs text-muted-foreground">Categoria</label><Select value={categoriaId} onValueChange={setCategoriaId}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="todas">Todas as categorias</SelectItem>{categorias.map((c) => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}</SelectContent></Select></div>
           <div className="space-y-1.5 sm:col-span-2 lg:col-span-1"><label className="text-xs text-muted-foreground">Buscar</label><Input placeholder="Descrição..." value={busca} onChange={(e) => setBusca(e.target.value)} /></div>
+          <div className="space-y-1.5"><label className="text-xs text-muted-foreground">Ordenar por</label><Select value={ordenacao} onValueChange={(v) => setOrdenacao(v as Ordenacao)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{ORDENACOES.map((o) => <SelectItem key={o.valor} value={o.valor}>{o.rotulo}</SelectItem>)}</SelectContent></Select></div>
         </div>
       </CardContent></Card>
 
