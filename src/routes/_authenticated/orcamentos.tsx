@@ -72,6 +72,7 @@ function OrcamentosPage() {
   const queryClient = useQueryClient();
   const salvar = useServerFn(salvarOrcamento);
   const excluir = useServerFn(excluirOrcamento);
+  const copiar = useServerFn(copiarOrcamentosMesAnterior);
 
   const orcamentosPorCategoria = useMemo(() => {
     const m = new Map<string, Orcamento>();
