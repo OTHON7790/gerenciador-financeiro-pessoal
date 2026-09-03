@@ -257,7 +257,10 @@ export type ContaAPagar = {
 export const contasAPagar = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
-    z.object({ mes: z.string().regex(/^\d{4}-\d{2}$/) }).parse(input),
+    z
+      .object({ mes: z.string().regex(/^\d{4}-\d{2}$/).default(mesAtualIso()) })
+      .default({ mes: mesAtualIso() })
+      .parse(input ?? {}),
   )
   .handler(async ({ data: filtro, context }) => {
     const { data, error } = await context.supabase
@@ -299,3 +302,7 @@ function proximoMes(mes: string): string {
 }
 
 export type { TipoTransacao };
+
+function mesAtualIso(): string {
+  return hojeIso().slice(0, 7);
+}
