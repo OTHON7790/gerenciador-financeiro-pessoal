@@ -662,8 +662,8 @@ function CardMetas() {
   );
 }
 
-function CardContasAPagar() {
-  const { data } = useQuery({ ...contasAPagarQuery, placeholderData: keepPreviousData });
+function CardContasAPagar({ mes }: { mes: string }) {
+  const { data } = useQuery({ ...contasAPagarQuery(mes), placeholderData: keepPreviousData });
   if (!data || (data.pendente === 0 && data.vencido === 0)) return null;
   return (
     <Card className="shadow-card">
