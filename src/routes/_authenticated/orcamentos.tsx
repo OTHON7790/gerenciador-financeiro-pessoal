@@ -579,7 +579,7 @@ function OrcamentosPage() {
                     </div>
                   </div>
 
-                  <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
                     <div>
                       <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
                         Orçamento
@@ -598,14 +598,28 @@ function OrcamentosPage() {
                     </div>
                     <div>
                       <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                        {estourou ? "Excedido" : "Restante"}
+                        Comprometido
+                      </p>
+                      <p
+                        className={`text-sm font-semibold ${
+                          comprometidoCat > 0
+                            ? "text-nav-yellow"
+                            : "text-muted-foreground"
+                        }`}
+                      >
+                        {formatarMoeda(comprometidoCat)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                        {estourou ? "Excedido" : "Disponível"}
                       </p>
                       <p
                         className={`text-sm font-semibold ${
                           estourou ? "text-danger" : "text-success"
                         }`}
                       >
-                        {formatarMoeda(Math.abs(o.limite - gasto))}
+                        {formatarMoeda(Math.abs(o.limite - utilizado))}
                       </p>
                     </div>
                     <div>
