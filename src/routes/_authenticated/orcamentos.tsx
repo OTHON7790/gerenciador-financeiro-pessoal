@@ -12,7 +12,12 @@ import {
   Wallet,
   Copy,
 } from "lucide-react";
-import { categoriasQuery, orcamentosQuery, resumoMesQuery } from "@/lib/queries";
+import {
+  categoriasQuery,
+  orcamentosQuery,
+  resumoMesQuery,
+  comprometidoMesQuery,
+} from "@/lib/queries";
 import {
   salvarOrcamento,
   excluirOrcamento,
