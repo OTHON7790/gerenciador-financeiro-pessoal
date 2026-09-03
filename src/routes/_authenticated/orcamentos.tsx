@@ -678,6 +678,7 @@ function OrcamentosPage() {
             {semOrcamento.map((c) => {
               const Icon = iconeCategoria(c.icone);
               const gasto = gastoPorCategoria.get(c.id) ?? 0;
+              const comprometidoCat = comprometidoPorCategoria.get(c.id) ?? 0;
               return (
                 <div
                   key={c.id}
