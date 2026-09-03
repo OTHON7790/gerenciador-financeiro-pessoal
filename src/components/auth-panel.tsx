@@ -299,7 +299,7 @@ function GraficoDecorativo() {
             <div
               key={i}
               style={{ height: `${h}%` }}
-              className="w-2 rounded-t-sm bg-linear-to-t from-primary/15 to-primary/50"
+              className="w-3 rounded-t-sm bg-linear-to-t from-primary/20 to-primary/65"
             />
           ))}
         </div>
@@ -313,7 +313,7 @@ function GraficoDecorativo() {
               key={x}
               cx={x}
               cy={y}
-              r="2.4"
+              r="3.2"
               fill="var(--glow-cyan)"
               vectorEffect="non-scaling-stroke"
             />
