@@ -145,15 +145,23 @@ function TransacoesPage() {
           const cat = t.categoria_id ? mapaCategorias.get(t.categoria_id) : null;
           const Icon = cat ? iconeCategoria(cat.icone) : Wallet;
           const statusEfetivo = statusTransacao(t);
-          return <li key={t.id} className="group flex flex-wrap items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/50 sm:flex-nowrap sm:px-6">
-            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl ring-1 ring-border/60" style={{ backgroundColor: (cat?.cor ?? "#64748b") + "22", color: cat?.cor ?? "#64748b" }}><Icon className="h-4 w-4" /></div>
-            <div className="min-w-0 flex-1"><p className="flex flex-wrap items-center gap-1.5 text-sm font-medium">{t.descricao}{t.recorrencia_id && <span title="Despesa recorrente" className="inline-flex items-center gap-1 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground"><Repeat className="h-3 w-3" />Recorrente</span>}</p><p className="text-xs text-muted-foreground">{cat?.nome ?? "Sem categoria"} · {formatarData(t.data)}{t.data_vencimento ? ` · Vence em ${formatarData(t.data_vencimento)}` : ""}</p></div>
-            {t.tipo === "despesa" && <span className={`rounded-full px-2 py-1 text-[10px] font-semibold uppercase ${statusEfetivo === "pago" ? "bg-success/10 text-success" : statusEfetivo === "vencido" ? "bg-danger/10 text-danger" : "bg-warning/15 text-warning"}`}>{statusEfetivo}</span>}
-            <span className={`flex-shrink-0 text-sm font-semibold ${t.tipo === "receita" ? "text-success" : statusEfetivo === "pago" ? "text-danger" : "text-muted-foreground"}`}>{t.tipo === "receita" ? "+" : "−"}{formatarMoeda(t.valor)}</span>
-            <div className="ml-auto flex flex-shrink-0 gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
-              {t.tipo === "despesa" && statusEfetivo !== "pago" && <Button variant="outline" size="sm" className="h-8 px-2 text-xs" disabled={pagarMutation.isPending} onClick={() => pagarMutation.mutate(t.id)}><Check className="mr-1 h-3.5 w-3.5" />Marcar como pago</Button>}
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => { setEditando(t); setDialogoAberto(true); }} aria-label="Editar"><Pencil className="h-3.5 w-3.5" /></Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => setExcluindo(t)} aria-label="Excluir"><Trash2 className="h-3.5 w-3.5" /></Button>
+          return <li key={t.id} className="group grid grid-cols-[auto_minmax(0,1fr)] gap-3 px-4 py-4 transition-colors hover:bg-muted/50 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center sm:gap-4 sm:px-6">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ring-1 ring-border/60" style={{ backgroundColor: (cat?.cor ?? "#64748b") + "22", color: cat?.cor ?? "#64748b" }}><Icon className="h-4 w-4" /></div>
+            <div className="min-w-0 space-y-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="truncate text-sm font-medium">{t.descricao}</p>
+                {t.tipo === "despesa" && <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${statusEfetivo === "pago" ? "bg-success/10 text-success" : statusEfetivo === "vencido" ? "bg-danger/10 text-danger" : "bg-warning/15 text-warning"}`}>{statusEfetivo}</span>}
+                {t.recorrencia_id && <span title="Despesa recorrente" className="inline-flex shrink-0 items-center gap-1 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground"><Repeat className="h-3 w-3" />Recorrente</span>}
+              </div>
+              <p className="text-xs text-muted-foreground">{cat?.nome ?? "Sem categoria"} · {formatarData(t.data)}{t.data_vencimento ? ` · Vence em ${formatarData(t.data_vencimento)}` : ""}</p>
+            </div>
+            <div className="col-span-2 flex items-center justify-between gap-3 sm:col-span-1 sm:justify-end">
+              <span className={`shrink-0 text-sm font-semibold ${t.tipo === "receita" ? "text-success" : statusEfetivo === "pago" ? "text-danger" : "text-muted-foreground"}`}>{t.tipo === "receita" ? "+" : "−"}{formatarMoeda(t.valor)}</span>
+              <div className="flex shrink-0 flex-wrap items-center justify-end gap-1 opacity-100 transition-opacity sm:flex-nowrap sm:opacity-0 sm:group-hover:opacity-100">
+                {t.tipo === "despesa" && statusEfetivo !== "pago" && <Button variant="outline" size="sm" className="h-8 px-2 text-xs" disabled={pagarMutation.isPending} onClick={() => pagarMutation.mutate(t.id)}><Check className="mr-1 h-3.5 w-3.5" />Marcar como pago</Button>}
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => { setEditando(t); setDialogoAberto(true); }} aria-label="Editar"><Pencil className="h-3.5 w-3.5" /></Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => setExcluindo(t)} aria-label="Excluir"><Trash2 className="h-3.5 w-3.5" /></Button>
+              </div>
             </div>
           </li>;
         })}
