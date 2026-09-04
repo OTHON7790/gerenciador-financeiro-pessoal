@@ -357,10 +357,10 @@ function RelatoriosPage() {
                 </p>
               </div>
             ) : (
-              <div ref={pizzaContainerRef} className="w-full">
+              <div ref={pizzaContainerRef} className="w-full px-1">
                 <ChartContainer
                   config={config}
-                  className="mx-auto h-[300px] w-full sm:h-[260px]"
+                  className="mx-auto h-[320px] w-full sm:h-[260px]"
                 >
                   <PieChart>
                     <ChartTooltip
@@ -374,7 +374,7 @@ function RelatoriosPage() {
                       outerRadius={outerRadius}
                       paddingAngle={2}
                       cx="50%"
-                      cy="50%"
+                      cy="45%"
                     >
                       {dadosPizza.map((d, i) => (
                         <Cell key={i} fill={d.cor} />
@@ -385,11 +385,12 @@ function RelatoriosPage() {
                       verticalAlign="bottom"
                       align="center"
                       wrapperStyle={{
-                        fontSize: 11,
+                        fontSize: isMobileLegend ? 12 : 11,
                         width: "100%",
                         whiteSpace: "normal",
                         wordBreak: "break-word",
-                        paddingTop: isMobileLegend ? 12 : 0,
+                        textAlign: isMobileLegend ? "left" : "center",
+                        paddingTop: isMobileLegend ? 16 : 0,
                       }}
                     />
                   </PieChart>
