@@ -359,10 +359,13 @@ function RelatoriosPage() {
                 </p>
               </div>
             ) : (
-              <div ref={pizzaContainerRef} className="w-full px-1">
+              <div
+                ref={pizzaContainerRef}
+                className="w-full max-w-full overflow-hidden px-1"
+              >
                 <ChartContainer
                   config={config}
-                  className="mx-auto h-[260px] w-full"
+                  className="mx-auto h-[260px] w-full max-w-full"
                 >
                   <PieChart>
                     <ChartTooltip
