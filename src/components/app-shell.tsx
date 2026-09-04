@@ -98,14 +98,15 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             to={item.to}
             onClick={onNavigate}
             className={cn(
-              "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+              "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar",
               ativo
-                ? cor.ativo
+                ? cn(cor.ativo, "font-semibold")
                 : cn(
-                    "text-sidebar-muted-foreground hover:text-sidebar-foreground",
+                    "text-sidebar-foreground/90 hover:text-sidebar-foreground",
                     cor.hover,
                   ),
             )}
+
           >
             {ativo && (
               <span
