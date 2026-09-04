@@ -360,7 +360,7 @@ function RelatoriosPage() {
               <div ref={pizzaContainerRef} className="w-full px-1">
                 <ChartContainer
                   config={config}
-                  className="mx-auto h-[320px] w-full sm:h-[260px]"
+                  className="mx-auto h-[260px] w-full"
                 >
                   <PieChart>
                     <ChartTooltip
@@ -374,27 +374,43 @@ function RelatoriosPage() {
                       outerRadius={outerRadius}
                       paddingAngle={2}
                       cx="50%"
-                      cy="45%"
+                      cy="50%"
                     >
                       {dadosPizza.map((d, i) => (
                         <Cell key={i} fill={d.cor} />
                       ))}
                     </Pie>
-                    <Legend
-                      layout={isMobileLegend ? "vertical" : "horizontal"}
-                      verticalAlign="bottom"
-                      align="center"
-                      wrapperStyle={{
-                        fontSize: isMobileLegend ? 12 : 11,
-                        width: "100%",
-                        whiteSpace: "normal",
-                        wordBreak: "break-word",
-                        textAlign: isMobileLegend ? "left" : "center",
-                        paddingTop: isMobileLegend ? 16 : 0,
-                      }}
-                    />
+                    {!isMobileLegend && (
+                      <Legend
+                        layout="horizontal"
+                        verticalAlign="bottom"
+                        align="center"
+                        wrapperStyle={{
+                          fontSize: 11,
+                          width: "100%",
+                          whiteSpace: "normal",
+                          wordBreak: "break-word",
+                        }}
+                      />
+                    )}
                   </PieChart>
                 </ChartContainer>
+                {isMobileLegend && (
+                  <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-2">
+                    {dadosPizza.map((d) => (
+                      <div
+                        key={d.nome}
+                        className="flex max-w-[45%] items-center gap-1.5 text-xs"
+                      >
+                        <span
+                          className="h-2.5 w-2.5 shrink-0 rounded-full"
+                          style={{ backgroundColor: d.cor }}
+                        />
+                        <span className="break-words leading-tight">{d.nome}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
             {dadosPizza.length > 0 && (
