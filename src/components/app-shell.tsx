@@ -39,47 +39,48 @@ const NAV = [
 const CORES_NAV = {
   azul: {
     icone: "text-primary",
-    ativo: "bg-primary/15 light:bg-primary/25 text-primary",
+    ativo: "bg-primary/20 dark:bg-primary/25 text-primary",
     barra: "bg-primary",
-    hover: "hover:bg-primary/10 light:hover:bg-primary/20",
+    hover: "hover:bg-primary/12 dark:hover:bg-primary/18",
   },
   verde: {
     icone: "text-success",
-    ativo: "bg-success/15 light:bg-success/25 text-success",
+    ativo: "bg-success/20 dark:bg-success/25 text-success",
     barra: "bg-success",
-    hover: "hover:bg-success/10 light:hover:bg-success/20",
+    hover: "hover:bg-success/12 dark:hover:bg-success/18",
   },
   roxo: {
     icone: "text-nav-purple",
-    ativo: "bg-nav-purple/15 light:bg-nav-purple/25 text-nav-purple",
+    ativo: "bg-nav-purple/20 dark:bg-nav-purple/25 text-nav-purple",
     barra: "bg-nav-purple",
-    hover: "hover:bg-nav-purple/10 light:hover:bg-nav-purple/20",
+    hover: "hover:bg-nav-purple/12 dark:hover:bg-nav-purple/18",
   },
   laranja: {
     icone: "text-warning",
-    ativo: "bg-warning/15 light:bg-warning/25 text-warning",
+    ativo: "bg-warning/20 dark:bg-warning/25 text-warning",
     barra: "bg-warning",
-    hover: "hover:bg-warning/10 light:hover:bg-warning/20",
+    hover: "hover:bg-warning/12 dark:hover:bg-warning/18",
   },
   rosa: {
     icone: "text-nav-pink",
-    ativo: "bg-nav-pink/15 light:bg-nav-pink/25 text-nav-pink",
+    ativo: "bg-nav-pink/20 dark:bg-nav-pink/25 text-nav-pink",
     barra: "bg-nav-pink",
-    hover: "hover:bg-nav-pink/10 light:hover:bg-nav-pink/20",
+    hover: "hover:bg-nav-pink/12 dark:hover:bg-nav-pink/18",
   },
   ciano: {
     icone: "text-nav-cyan",
-    ativo: "bg-nav-cyan/15 light:bg-nav-cyan/25 text-nav-cyan",
+    ativo: "bg-nav-cyan/20 dark:bg-nav-cyan/25 text-nav-cyan",
     barra: "bg-nav-cyan",
-    hover: "hover:bg-nav-cyan/10 light:hover:bg-nav-cyan/20",
+    hover: "hover:bg-nav-cyan/12 dark:hover:bg-nav-cyan/18",
   },
   amarelo: {
     icone: "text-nav-yellow",
-    ativo: "bg-nav-yellow/15 light:bg-nav-yellow/25 text-nav-yellow",
+    ativo: "bg-nav-yellow/20 dark:bg-nav-yellow/25 text-nav-yellow",
     barra: "bg-nav-yellow",
-    hover: "hover:bg-nav-yellow/10 light:hover:bg-nav-yellow/20",
+    hover: "hover:bg-nav-yellow/12 dark:hover:bg-nav-yellow/18",
   },
 } as const;
+
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const location = useLocation();
@@ -97,14 +98,15 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             to={item.to}
             onClick={onNavigate}
             className={cn(
-              "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+              "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar",
               ativo
-                ? cor.ativo
+                ? cn(cor.ativo, "font-semibold")
                 : cn(
-                    "text-sidebar-muted-foreground hover:text-sidebar-foreground",
+                    "text-sidebar-foreground/90 hover:text-sidebar-foreground",
                     cor.hover,
                   ),
             )}
+
           >
             {ativo && (
               <span
@@ -161,23 +163,25 @@ function RodapeUsuario({ onSair }: { onSair: () => void }) {
   const inicial = (email ?? "?").charAt(0).toUpperCase();
 
   return (
-    <div className="mt-6 space-y-3 border-t border-sidebar-border pt-4">
+    <div className="mt-6 space-y-3 border-t-2 border-sidebar-border pt-4">
       <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sidebar-accent text-sm font-semibold text-sidebar-foreground">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sidebar-primary text-sm font-semibold text-sidebar-primary-foreground">
           {inicial}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-xs font-medium text-sidebar-foreground">
+          <p className="truncate text-xs font-semibold text-sidebar-foreground">
             {email ?? "Carregando..."}
           </p>
-          <p className="text-[11px] text-sidebar-muted-foreground">Conectado</p>
+          <p className="text-[11px] font-medium text-sidebar-muted-foreground">
+            Conectado
+          </p>
         </div>
       </div>
       <Link
         to="/seguranca"
-        className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-medium text-sidebar-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+        className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold text-sidebar-foreground/90 outline-none transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar"
       >
-        <ShieldCheck className="h-4 w-4" />
+        <ShieldCheck className="h-4 w-4 text-primary" />
         Segurança da conta
       </Link>
       <div className="flex items-center justify-between gap-2">
@@ -186,13 +190,14 @@ function RodapeUsuario({ onSair }: { onSair: () => void }) {
           variant="ghost"
           size="sm"
           onClick={onSair}
-          className="gap-2 text-sidebar-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+          className="gap-2 font-semibold text-sidebar-foreground/90 hover:bg-sidebar-accent hover:text-sidebar-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar"
         >
           <LogOut className="h-4 w-4" />
           Sair
         </Button>
       </div>
     </div>
+
   );
 }
 

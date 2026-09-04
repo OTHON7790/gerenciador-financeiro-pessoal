@@ -30,7 +30,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       role="group"
       aria-label="Tema"
       className={cn(
-        "inline-flex items-center gap-1 rounded-full bg-sidebar-foreground/10 p-1",
+        "inline-flex items-center gap-1 rounded-full bg-sidebar-accent p-1",
         className,
       )}
     >
@@ -40,10 +40,10 @@ export function ThemeToggle({ className }: { className?: string }) {
         aria-pressed={tema === "claro"}
         onClick={() => alternar("claro")}
         className={cn(
-          "flex h-7 w-7 items-center justify-center rounded-full transition-colors",
+          "flex h-7 w-7 items-center justify-center rounded-full outline-none transition-colors focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar",
           tema === "claro"
             ? "bg-sidebar-primary text-sidebar-primary-foreground"
-            : "text-sidebar-muted-foreground hover:text-sidebar-foreground",
+            : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
         )}
       >
         <Sun className="h-3.5 w-3.5" />
@@ -54,14 +54,15 @@ export function ThemeToggle({ className }: { className?: string }) {
         aria-pressed={tema === "escuro"}
         onClick={() => alternar("escuro")}
         className={cn(
-          "flex h-7 w-7 items-center justify-center rounded-full transition-colors",
+          "flex h-7 w-7 items-center justify-center rounded-full outline-none transition-colors focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar",
           tema === "escuro"
             ? "bg-sidebar-primary text-sidebar-primary-foreground"
-            : "text-sidebar-muted-foreground hover:text-sidebar-foreground",
+            : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
         )}
       >
         <Moon className="h-3.5 w-3.5" />
       </button>
     </div>
+
   );
 }
