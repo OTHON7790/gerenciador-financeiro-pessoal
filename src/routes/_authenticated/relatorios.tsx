@@ -94,8 +94,8 @@ function RelatoriosPage() {
   }, []);
 
   const isMobileLegend = cardWidth > 0 && cardWidth < 640;
-  const outerRadius = Math.min(Math.max((cardWidth || 300) / 2 - 32, 70), 110);
-  const innerRadius = Math.max(Math.round(outerRadius * 0.55), 40);
+  const outerRadius = Math.min(Math.max((cardWidth || 300) / 2 - 48, 64), 110);
+  const innerRadius = Math.max(Math.round(outerRadius * 0.55), 36);
 
   const { data: categorias } = useSuspenseQuery(categoriasQuery);
   const { data: serie } = useSuspenseQuery(serieMensalQuery(meses));
