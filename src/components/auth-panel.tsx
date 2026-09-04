@@ -41,8 +41,9 @@ export function AuthScreen() {
   const [carregando, setCarregando] = useState<null | "login" | "cadastro">(
     null,
   );
-  const [modo, setModo] = useState<"auth" | "recuperar">("auth");
+  const [modo, setModo] = useState<"auth" | "recuperar" | "2fa">("auth");
   const [aba, setAba] = useState<"entrar" | "criar">("entrar");
+  const [codigo2fa, setCodigo2fa] = useState("");
 
   async function entrar(e: React.FormEvent) {
     e.preventDefault();
@@ -51,13 +52,52 @@ export function AuthScreen() {
       email,
       password: senha,
     });
-    setCarregando(null);
     if (error) {
+      setCarregando(null);
       toast.error("Credenciais inválidas. Verifique e tente novamente.");
+      return;
+    }
+    // 2FA opcional: só pede o segundo fator quando o usuário ativou.
+    const { data: aal } =
+      await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    setCarregando(null);
+    if (aal?.currentLevel === "aal1" && aal?.nextLevel === "aal2") {
+      setCodigo2fa("");
+      setModo("2fa");
       return;
     }
     toast.success("Bem-vindo de volta!");
     navigate({ to: sanitizarDestino(search.redirect), replace: true });
+  }
+
+  async function verificar2fa(e: React.FormEvent) {
+    e.preventDefault();
+    setCarregando("login");
+    const { data: fatores } = await supabase.auth.mfa.listFactors();
+    const fator = (fatores?.totp ?? []).find((f) => f.status === "verified");
+    if (!fator) {
+      setCarregando(null);
+      toast.error("Nenhum autenticador encontrado para esta conta.");
+      return;
+    }
+    const { error } = await supabase.auth.mfa.challengeAndVerify({
+      factorId: fator.id,
+      code: codigo2fa.trim(),
+    });
+    setCarregando(null);
+    if (error) {
+      toast.error("Código inválido. Tente novamente.");
+      return;
+    }
+    toast.success("Bem-vindo de volta!");
+    navigate({ to: sanitizarDestino(search.redirect), replace: true });
+  }
+
+  async function cancelar2fa() {
+    await supabase.auth.signOut();
+    setCodigo2fa("");
+    setSenha("");
+    setModo("auth");
   }
 
   async function cadastrar(e: React.FormEvent) {
