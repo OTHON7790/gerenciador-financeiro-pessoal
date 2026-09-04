@@ -22,7 +22,16 @@ import {
 
 type FatorVerificado = { id: string };
 
-type Enroll = { id: string; qr: string; secret: string };
+type Enroll = { id: string; uri: string; secret: string; qr: string };
+
+async function limparFatoresNaoVerificados() {
+  const { data: lista } = await supabase.auth.mfa.listFactors();
+  for (const f of lista?.all ?? []) {
+    if (f.factor_type === "totp" && f.status !== "verified") {
+      await supabase.auth.mfa.unenroll({ factorId: f.id });
+    }
+  }
+}
 
 export function Seguranca2FA() {
   const [carregando, setCarregando] = useState(true);
