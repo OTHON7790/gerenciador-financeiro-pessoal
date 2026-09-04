@@ -163,23 +163,25 @@ function RodapeUsuario({ onSair }: { onSair: () => void }) {
   const inicial = (email ?? "?").charAt(0).toUpperCase();
 
   return (
-    <div className="mt-6 space-y-3 border-t border-sidebar-border pt-4">
+    <div className="mt-6 space-y-3 border-t-2 border-sidebar-border pt-4">
       <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sidebar-accent text-sm font-semibold text-sidebar-foreground">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sidebar-primary text-sm font-semibold text-sidebar-primary-foreground">
           {inicial}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-xs font-medium text-sidebar-foreground">
+          <p className="truncate text-xs font-semibold text-sidebar-foreground">
             {email ?? "Carregando..."}
           </p>
-          <p className="text-[11px] text-sidebar-muted-foreground">Conectado</p>
+          <p className="text-[11px] font-medium text-sidebar-muted-foreground">
+            Conectado
+          </p>
         </div>
       </div>
       <Link
         to="/seguranca"
-        className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-medium text-sidebar-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+        className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold text-sidebar-foreground/90 outline-none transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar"
       >
-        <ShieldCheck className="h-4 w-4" />
+        <ShieldCheck className="h-4 w-4 text-primary" />
         Segurança da conta
       </Link>
       <div className="flex items-center justify-between gap-2">
@@ -188,13 +190,14 @@ function RodapeUsuario({ onSair }: { onSair: () => void }) {
           variant="ghost"
           size="sm"
           onClick={onSair}
-          className="gap-2 text-sidebar-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+          className="gap-2 font-semibold text-sidebar-foreground/90 hover:bg-sidebar-accent hover:text-sidebar-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar"
         >
           <LogOut className="h-4 w-4" />
           Sair
         </Button>
       </div>
     </div>
+
   );
 }
 
