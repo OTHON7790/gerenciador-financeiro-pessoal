@@ -41,8 +41,9 @@ export function AuthScreen() {
   const [carregando, setCarregando] = useState<null | "login" | "cadastro">(
     null,
   );
-  const [modo, setModo] = useState<"auth" | "recuperar">("auth");
+  const [modo, setModo] = useState<"auth" | "recuperar" | "2fa">("auth");
   const [aba, setAba] = useState<"entrar" | "criar">("entrar");
+  const [codigo2fa, setCodigo2fa] = useState("");
 
   async function entrar(e: React.FormEvent) {
     e.preventDefault();
@@ -51,13 +52,52 @@ export function AuthScreen() {
       email,
       password: senha,
     });
-    setCarregando(null);
     if (error) {
+      setCarregando(null);
       toast.error("Credenciais inválidas. Verifique e tente novamente.");
+      return;
+    }
+    // 2FA opcional: só pede o segundo fator quando o usuário ativou.
+    const { data: aal } =
+      await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    setCarregando(null);
+    if (aal?.currentLevel === "aal1" && aal?.nextLevel === "aal2") {
+      setCodigo2fa("");
+      setModo("2fa");
       return;
     }
     toast.success("Bem-vindo de volta!");
     navigate({ to: sanitizarDestino(search.redirect), replace: true });
+  }
+
+  async function verificar2fa(e: React.FormEvent) {
+    e.preventDefault();
+    setCarregando("login");
+    const { data: fatores } = await supabase.auth.mfa.listFactors();
+    const fator = (fatores?.totp ?? []).find((f) => f.status === "verified");
+    if (!fator) {
+      setCarregando(null);
+      toast.error("Nenhum autenticador encontrado para esta conta.");
+      return;
+    }
+    const { error } = await supabase.auth.mfa.challengeAndVerify({
+      factorId: fator.id,
+      code: codigo2fa.trim(),
+    });
+    setCarregando(null);
+    if (error) {
+      toast.error("Código inválido. Tente novamente.");
+      return;
+    }
+    toast.success("Bem-vindo de volta!");
+    navigate({ to: sanitizarDestino(search.redirect), replace: true });
+  }
+
+  async function cancelar2fa() {
+    await supabase.auth.signOut();
+    setCodigo2fa("");
+    setSenha("");
+    setModo("auth");
   }
 
   async function cadastrar(e: React.FormEvent) {
@@ -105,7 +145,61 @@ export function AuthScreen() {
         <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           {/* Painel direito no desktop (autenticação) — primeiro no mobile */}
           <section className="order-1 rounded-2xl border border-border/60 bg-[#080b13] p-5 shadow-2xl shadow-primary/5 sm:p-8 lg:order-2">
-            {modo === "recuperar" ? (
+            {modo === "2fa" ? (
+              <>
+                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-primary/30 bg-primary/10">
+                  <ShieldCheck className="h-10 w-10 text-primary" />
+                </div>
+                <h2 className="mt-5 text-center text-2xl font-bold tracking-tight">
+                  Verificação em dois fatores
+                </h2>
+                <p className="mx-auto mt-2 max-w-sm text-center text-sm text-muted-foreground">
+                  Digite o código de 6 dígitos gerado pelo seu app autenticador.
+                </p>
+                <form onSubmit={verificar2fa} className="mt-6 space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="codigo-login-2fa">
+                      Código de verificação
+                    </Label>
+                    <Input
+                      id="codigo-login-2fa"
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
+                      autoFocus
+                      maxLength={6}
+                      placeholder="000000"
+                      value={codigo2fa}
+                      onChange={(ev) =>
+                        setCodigo2fa(ev.target.value.replace(/\D/g, ""))
+                      }
+                      className="h-14 text-center text-xl tracking-[0.5em]"
+                    />
+                  </div>
+                  <Button
+                    type="submit"
+                    className="h-14 w-full rounded-xl bg-linear-to-r from-primary to-glow-cyan text-lg font-extrabold uppercase tracking-wide text-primary-foreground shadow-lg shadow-primary/25 transition-opacity hover:opacity-90"
+                    disabled={carregando !== null || codigo2fa.length < 6}
+                  >
+                    {carregando === "login" ? (
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    ) : (
+                      <ShieldCheck className="mr-2 h-5 w-5" />
+                    )}
+                    Verificar e entrar
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="w-full"
+                    onClick={cancelar2fa}
+                    disabled={carregando !== null}
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Voltar
+                  </Button>
+                </form>
+              </>
+            ) : modo === "recuperar" ? (
               <>
                 <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-primary/30 bg-primary/10">
                   <Wallet className="h-10 w-10 text-primary" />
