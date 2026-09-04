@@ -30,7 +30,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       role="group"
       aria-label="Tema"
       className={cn(
-        "inline-flex items-center gap-1 rounded-full bg-white/10 p-1",
+        "inline-flex items-center gap-1 rounded-full bg-sidebar-foreground/10 p-1",
         className,
       )}
     >

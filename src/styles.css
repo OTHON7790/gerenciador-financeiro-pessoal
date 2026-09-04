@@ -3,6 +3,7 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant light (&:is(:not(.dark) *));
 
 /*
  * Design system definition.
@@ -115,15 +116,15 @@
   --chart-3: oklch(0.52 0.19 259);
   --chart-4: oklch(0.62 0.15 62);
   --chart-5: oklch(0.52 0.16 300);
-  --sidebar: oklch(0.235 0.048 264);
-  --sidebar-foreground: oklch(0.97 0.008 250);
-  --sidebar-muted-foreground: oklch(0.74 0.03 255);
-  --sidebar-primary: oklch(0.62 0.2 259);
+  --sidebar: oklch(0.88 0.028 255);
+  --sidebar-foreground: oklch(0.18 0.04 260);
+  --sidebar-muted-foreground: oklch(0.42 0.045 260);
+  --sidebar-primary: oklch(0.55 0.2 259);
   --sidebar-primary-foreground: oklch(0.99 0.005 250);
-  --sidebar-accent: oklch(0.31 0.06 261);
-  --sidebar-accent-foreground: oklch(0.97 0.008 250);
-  --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: oklch(0.62 0.2 259);
+  --sidebar-accent: oklch(0.78 0.035 255);
+  --sidebar-accent-foreground: oklch(0.18 0.04 260);
+  --sidebar-border: oklch(0.6 0.03 255 / 22%);
+  --sidebar-ring: oklch(0.55 0.2 259);
   --nav-purple: oklch(0.55 0.19 300);
   --nav-pink: oklch(0.57 0.21 350);
   --nav-cyan: oklch(0.54 0.12 230);
