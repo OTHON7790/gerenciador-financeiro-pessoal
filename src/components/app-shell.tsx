@@ -13,7 +13,6 @@ import {
   LogOut,
   ShieldCheck,
   Wallet,
-  X,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -241,21 +240,12 @@ export function AppShell() {
               side="left"
               className="flex w-72 flex-col border-sidebar-border bg-sidebar p-5"
             >
-              <SheetHeader className="mb-6 flex flex-row items-center justify-between space-y-0">
+              <SheetHeader className="mb-6 flex flex-row items-center space-y-0">
                 <SheetTitle asChild>
                   <div>
                     <Brand />
                   </div>
                 </SheetTitle>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setOpen(false)}
-                  aria-label="Fechar"
-                  className="text-sidebar-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
-                >
-                  <X className="h-5 w-5" />
-                </Button>
               </SheetHeader>
               <div className="flex-1">
                 <NavLinks onNavigate={() => setOpen(false)} />
