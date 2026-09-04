@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { PieChart as PieChartIcon, TrendingUp, Wallet } from "lucide-react";
 import { categoriasQuery, serieMensalQuery, evolucaoSaldoQuery, resumoMesQuery } from "@/lib/queries";
@@ -73,6 +73,31 @@ const CORES_GRAFICO = [
 function RelatoriosPage() {
   const [mes, setMes] = useState(() => mesInicialValido(mesAtual()));
   const meses = useMemo(() => mesesAte(mes, 6), [mes]);
+
+  const pizzaContainerRef = useRef<HTMLDivElement>(null);
+  const [cardWidth, setCardWidth] = useState(0);
+
+  useEffect(() => {
+    const el = pizzaContainerRef.current;
+    if (!el) return;
+    const update = () => setCardWidth(el.getBoundingClientRect().width);
+    update();
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) setCardWidth(entry.contentRect.width);
+    });
+    ro.observe(el);
+    window.addEventListener("resize", update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+
+  const isMobileLegend = cardWidth > 0 && cardWidth < 640;
+  const outerRadius = isMobileLegend
+    ? Math.min(Math.max((cardWidth || 320) / 2 - 64, 56), 90)
+    : Math.min(Math.max((cardWidth || 500) / 2 - 80, 70), 110);
+  const innerRadius = Math.max(Math.round(outerRadius * 0.55), 34);
 
   const { data: categorias } = useSuspenseQuery(categoriasQuery);
   const { data: serie } = useSuspenseQuery(serieMensalQuery(meses));
@@ -314,15 +339,15 @@ function RelatoriosPage() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-2">
         {/* Despesas por categoria */}
-        <Card>
+        <Card className="min-w-0">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <PieChartIcon className="h-4 w-4" /> Despesas por categoria
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="min-w-0 overflow-hidden">
             {dadosPizza.length === 0 ? (
               <div className="flex h-[260px] flex-col items-center justify-center gap-2 text-center">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
@@ -334,47 +359,80 @@ function RelatoriosPage() {
                 </p>
               </div>
             ) : (
-              <ChartContainer config={config} className="mx-auto h-[260px] w-full">
-                <PieChart>
-                  <ChartTooltip
-                    content={<ChartTooltipContent nameKey="nome" hideLabel />}
-                  />
-                  <Pie
-                    data={dadosPizza}
-                    dataKey="valor"
-                    nameKey="nome"
-                    innerRadius={50}
-                    outerRadius={90}
-                    paddingAngle={2}
-                  >
-                    {dadosPizza.map((d, i) => (
-                      <Cell key={i} fill={d.cor} />
+              <div
+                ref={pizzaContainerRef}
+                className="w-full max-w-full overflow-hidden"
+              >
+                <ChartContainer
+                  config={config}
+                  className="mx-auto h-[260px] w-full max-w-full"
+                >
+                  <PieChart>
+                    <ChartTooltip
+                      content={<ChartTooltipContent nameKey="nome" hideLabel />}
+                    />
+                    <Pie
+                      data={dadosPizza}
+                      dataKey="valor"
+                      nameKey="nome"
+                      innerRadius={innerRadius}
+                      outerRadius={outerRadius}
+                      paddingAngle={2}
+                      cx="50%"
+                      cy="50%"
+                    >
+                      {dadosPizza.map((d, i) => (
+                        <Cell key={i} fill={d.cor} />
+                      ))}
+                    </Pie>
+                    {!isMobileLegend && (
+                      <Legend
+                        layout="horizontal"
+                        verticalAlign="bottom"
+                        align="center"
+                        wrapperStyle={{
+                          fontSize: 11,
+                          width: "100%",
+                          whiteSpace: "normal",
+                          wordBreak: "break-word",
+                        }}
+                      />
+                    )}
+                  </PieChart>
+                </ChartContainer>
+                {isMobileLegend && (
+                  <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-2 px-1">
+                    {dadosPizza.map((d) => (
+                      <div
+                        key={d.nome}
+                        className="flex max-w-[45%] items-center gap-1.5 text-xs"
+                      >
+                        <span
+                          className="h-2.5 w-2.5 shrink-0 rounded-full"
+                          style={{ backgroundColor: d.cor }}
+                        />
+                        <span className="break-words leading-tight">{d.nome}</span>
+                      </div>
                     ))}
-                  </Pie>
-                  <Legend
-                    layout="horizontal"
-                    verticalAlign="bottom"
-                    align="center"
-                    wrapperStyle={{ fontSize: 11 }}
-                  />
-                </PieChart>
-              </ChartContainer>
+                  </div>
+                )}
+              </div>
             )}
             {dadosPizza.length > 0 && (
               <div className="mt-3 space-y-1.5">
                 {dadosPizza.slice(0, 5).map((d) => (
                   <div
                     key={d.nome}
-                    className="flex items-center justify-between text-sm"
+                    className="flex items-center justify-between gap-2 text-sm"
                   >
-                    <span className="flex items-center gap-2">
+                    <span className="flex min-w-0 items-center gap-2">
                       <span
-                        className="h-2.5 w-2.5 rounded-full"
+                        className="h-2.5 w-2.5 shrink-0 rounded-full"
                         style={{ backgroundColor: d.cor }}
                       />
-                      {d.nome}
+                      <span className="break-words">{d.nome}</span>
                     </span>
-                    <span className="font-medium">
+                    <span className="shrink-0 font-medium">
                       {totalDespesas > 0
                         ? `${((d.valor / totalDespesas) * 100).toFixed(0)}%`
                         : "0%"}
@@ -387,11 +445,11 @@ function RelatoriosPage() {
         </Card>
 
         {/* Evolução do saldo */}
-        <Card>
+        <Card className="min-w-0">
           <CardHeader>
             <CardTitle className="text-base">Evolução do saldo acumulado</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="min-w-0 overflow-hidden">
             <ChartContainer config={config} className="h-[300px] w-full">
               <AreaChart data={dadosEvolucao}>
                 <defs>
