@@ -58,6 +58,13 @@ export function Seguranca2FA() {
     void carregarStatus();
   }, [carregarStatus]);
 
+  // Ao sair da tela, descarta qualquer configuração pendente não confirmada.
+  useEffect(() => {
+    return () => {
+      void limparFatoresNaoVerificados();
+    };
+  }, []);
+
   async function iniciarAtivacao() {
     setOcupado(true);
     // Descarta segredos de tentativas anteriores não concluídas.
