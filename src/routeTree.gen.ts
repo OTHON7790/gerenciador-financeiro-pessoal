@@ -19,6 +19,7 @@ import { Route as AuthenticatedMetasRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedOrcamentosRouteImport } from './routes/_authenticated/orcamentos'
 import { Route as AuthenticatedPrevisoesRouteImport } from './routes/_authenticated/previsoes'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
+import { Route as AuthenticatedSegurancaRouteImport } from './routes/_authenticated/seguranca'
 import { Route as AuthenticatedTransacoesRouteImport } from './routes/_authenticated/transacoes'
 
 const IndexRoute = IndexRouteImport.update({
@@ -70,6 +71,11 @@ const AuthenticatedRelatoriosRoute = AuthenticatedRelatoriosRouteImport.update({
   path: '/relatorios',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSegurancaRoute = AuthenticatedSegurancaRouteImport.update({
+  id: '/seguranca',
+  path: '/seguranca',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedTransacoesRoute = AuthenticatedTransacoesRouteImport.update({
   id: '/transacoes',
   path: '/transacoes',
@@ -86,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/orcamentos': typeof AuthenticatedOrcamentosRoute
   '/previsoes': typeof AuthenticatedPrevisoesRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/seguranca': typeof AuthenticatedSegurancaRoute
   '/transacoes': typeof AuthenticatedTransacoesRoute
 }
 export interface FileRoutesByTo {
@@ -98,6 +105,7 @@ export interface FileRoutesByTo {
   '/orcamentos': typeof AuthenticatedOrcamentosRoute
   '/previsoes': typeof AuthenticatedPrevisoesRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/seguranca': typeof AuthenticatedSegurancaRoute
   '/transacoes': typeof AuthenticatedTransacoesRoute
 }
 export interface FileRoutesById {
@@ -112,6 +120,7 @@ export interface FileRoutesById {
   '/_authenticated/orcamentos': typeof AuthenticatedOrcamentosRoute
   '/_authenticated/previsoes': typeof AuthenticatedPrevisoesRoute
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/_authenticated/seguranca': typeof AuthenticatedSegurancaRoute
   '/_authenticated/transacoes': typeof AuthenticatedTransacoesRoute
 }
 export interface FileRouteTypes {
@@ -126,6 +135,7 @@ export interface FileRouteTypes {
     | '/orcamentos'
     | '/previsoes'
     | '/relatorios'
+    | '/seguranca'
     | '/transacoes'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/orcamentos'
     | '/previsoes'
     | '/relatorios'
+    | '/seguranca'
     | '/transacoes'
   id:
     | '__root__'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/_authenticated/orcamentos'
     | '/_authenticated/previsoes'
     | '/_authenticated/relatorios'
+    | '/_authenticated/seguranca'
     | '/_authenticated/transacoes'
   fileRoutesById: FileRoutesById
 }
@@ -233,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRelatoriosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/seguranca': {
+      id: '/_authenticated/seguranca'
+      path: '/seguranca'
+      fullPath: '/seguranca'
+      preLoaderRoute: typeof AuthenticatedSegurancaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/transacoes': {
       id: '/_authenticated/transacoes'
       path: '/transacoes'
@@ -250,6 +269,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOrcamentosRoute: typeof AuthenticatedOrcamentosRoute
   AuthenticatedPrevisoesRoute: typeof AuthenticatedPrevisoesRoute
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
+  AuthenticatedSegurancaRoute: typeof AuthenticatedSegurancaRoute
   AuthenticatedTransacoesRoute: typeof AuthenticatedTransacoesRoute
 }
 
@@ -260,6 +280,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOrcamentosRoute: AuthenticatedOrcamentosRoute,
   AuthenticatedPrevisoesRoute: AuthenticatedPrevisoesRoute,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
+  AuthenticatedSegurancaRoute: AuthenticatedSegurancaRoute,
   AuthenticatedTransacoesRoute: AuthenticatedTransacoesRoute,
 }
 

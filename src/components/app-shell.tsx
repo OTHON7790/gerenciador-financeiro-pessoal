@@ -174,6 +174,13 @@ function RodapeUsuario({ onSair }: { onSair: () => void }) {
           <p className="text-[11px] text-sidebar-muted-foreground">Conectado</p>
         </div>
       </div>
+      <Link
+        to="/seguranca"
+        className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-medium text-sidebar-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+      >
+        <ShieldCheck className="h-4 w-4" />
+        Segurança da conta
+      </Link>
       <div className="flex items-center justify-between gap-2">
         <ThemeToggle />
         <Button
