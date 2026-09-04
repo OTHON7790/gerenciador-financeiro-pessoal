@@ -345,7 +345,7 @@ function RelatoriosPage() {
               <PieChartIcon className="h-4 w-4" /> Despesas por categoria
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="min-w-0 overflow-hidden">
             {dadosPizza.length === 0 ? (
               <div className="flex h-[260px] flex-col items-center justify-center gap-2 text-center">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
@@ -357,47 +357,60 @@ function RelatoriosPage() {
                 </p>
               </div>
             ) : (
-              <ChartContainer config={config} className="mx-auto h-[260px] w-full">
-                <PieChart>
-                  <ChartTooltip
-                    content={<ChartTooltipContent nameKey="nome" hideLabel />}
-                  />
-                  <Pie
-                    data={dadosPizza}
-                    dataKey="valor"
-                    nameKey="nome"
-                    innerRadius={50}
-                    outerRadius={90}
-                    paddingAngle={2}
-                  >
-                    {dadosPizza.map((d, i) => (
-                      <Cell key={i} fill={d.cor} />
-                    ))}
-                  </Pie>
-                  <Legend
-                    layout="horizontal"
-                    verticalAlign="bottom"
-                    align="center"
-                    wrapperStyle={{ fontSize: 11 }}
-                  />
-                </PieChart>
-              </ChartContainer>
+              <div ref={pizzaContainerRef} className="w-full">
+                <ChartContainer
+                  config={config}
+                  className="mx-auto h-[300px] w-full sm:h-[260px]"
+                >
+                  <PieChart>
+                    <ChartTooltip
+                      content={<ChartTooltipContent nameKey="nome" hideLabel />}
+                    />
+                    <Pie
+                      data={dadosPizza}
+                      dataKey="valor"
+                      nameKey="nome"
+                      innerRadius={innerRadius}
+                      outerRadius={outerRadius}
+                      paddingAngle={2}
+                      cx="50%"
+                      cy="50%"
+                    >
+                      {dadosPizza.map((d, i) => (
+                        <Cell key={i} fill={d.cor} />
+                      ))}
+                    </Pie>
+                    <Legend
+                      layout={isMobileLegend ? "vertical" : "horizontal"}
+                      verticalAlign="bottom"
+                      align="center"
+                      wrapperStyle={{
+                        fontSize: 11,
+                        width: "100%",
+                        whiteSpace: "normal",
+                        wordBreak: "break-word",
+                        paddingTop: isMobileLegend ? 12 : 0,
+                      }}
+                    />
+                  </PieChart>
+                </ChartContainer>
+              </div>
             )}
             {dadosPizza.length > 0 && (
               <div className="mt-3 space-y-1.5">
                 {dadosPizza.slice(0, 5).map((d) => (
                   <div
                     key={d.nome}
-                    className="flex items-center justify-between text-sm"
+                    className="flex items-center justify-between gap-2 text-sm"
                   >
-                    <span className="flex items-center gap-2">
+                    <span className="flex min-w-0 items-center gap-2">
                       <span
-                        className="h-2.5 w-2.5 rounded-full"
+                        className="h-2.5 w-2.5 shrink-0 rounded-full"
                         style={{ backgroundColor: d.cor }}
                       />
-                      {d.nome}
+                      <span className="break-words">{d.nome}</span>
                     </span>
-                    <span className="font-medium">
+                    <span className="shrink-0 font-medium">
                       {totalDespesas > 0
                         ? `${((d.valor / totalDespesas) * 100).toFixed(0)}%`
                         : "0%"}
