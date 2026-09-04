@@ -339,9 +339,9 @@ function RelatoriosPage() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-2">
         {/* Despesas por categoria */}
-        <Card>
+        <Card className="min-w-0">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <PieChartIcon className="h-4 w-4" /> Despesas por categoria
@@ -361,7 +361,7 @@ function RelatoriosPage() {
             ) : (
               <div
                 ref={pizzaContainerRef}
-                className="w-full max-w-full overflow-hidden px-1"
+                className="w-full max-w-full overflow-hidden"
               >
                 <ChartContainer
                   config={config}
@@ -401,7 +401,7 @@ function RelatoriosPage() {
                   </PieChart>
                 </ChartContainer>
                 {isMobileLegend && (
-                  <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-2">
+                  <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-2 px-1">
                     {dadosPizza.map((d) => (
                       <div
                         key={d.nome}
@@ -445,11 +445,11 @@ function RelatoriosPage() {
         </Card>
 
         {/* Evolução do saldo */}
-        <Card>
+        <Card className="min-w-0">
           <CardHeader>
             <CardTitle className="text-base">Evolução do saldo acumulado</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="min-w-0 overflow-hidden">
             <ChartContainer config={config} className="h-[300px] w-full">
               <AreaChart data={dadosEvolucao}>
                 <defs>
