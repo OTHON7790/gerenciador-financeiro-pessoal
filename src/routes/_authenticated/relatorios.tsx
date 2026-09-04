@@ -475,8 +475,11 @@ function RelatoriosPage() {
                   fill="url(#saldoRel)"
                   strokeWidth={2}
                   connectNulls={false}
-                  dot={{ r: 3, strokeWidth: 2, stroke: "var(--card)", fill: "var(--color-saldo)" }}
+                  isAnimationActive={false}
+                  dot={{ r: 4, strokeWidth: 2, stroke: "var(--card)", fill: "var(--color-saldo)" }}
+                  activeDot={{ r: 6, strokeWidth: 2, stroke: "var(--card)" }}
                 />
+
               </AreaChart>
             </ChartContainer>
           </CardContent>
