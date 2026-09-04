@@ -59,26 +59,36 @@ export function Seguranca2FA() {
 
   async function iniciarAtivacao() {
     setOcupado(true);
-    // Remove fatores TOTP não verificados de tentativas anteriores.
-    const { data: lista } = await supabase.auth.mfa.listFactors();
-    for (const f of lista?.all ?? []) {
-      if (f.factor_type === "totp" && f.status !== "verified") {
-        await supabase.auth.mfa.unenroll({ factorId: f.id });
-      }
-    }
+    // Descarta segredos de tentativas anteriores não concluídas.
+    await limparFatoresNaoVerificados();
     const { data, error } = await supabase.auth.mfa.enroll({
       factorType: "totp",
+      issuer: "Finanças Pessoais",
       friendlyName: `Finanças Pessoais ${Date.now()}`,
     });
-    setOcupado(false);
     if (error || !data) {
+      setOcupado(false);
       toast.error(error?.message ?? "Não foi possível iniciar a ativação.");
       return;
     }
+    // Gera o QR localmente a partir do URI otpauth:// oficial do backend,
+    // garantindo que QR e chave manual usem exatamente o mesmo segredo.
+    let qr = "";
+    try {
+      qr = await QRCode.toDataURL(data.totp.uri, {
+        margin: 1,
+        width: 320,
+        errorCorrectionLevel: "M",
+      });
+    } catch {
+      toast.error("Não foi possível gerar o QR Code. Use a chave manual.");
+    }
+    setOcupado(false);
     setCodigo("");
     setEnroll({
       id: data.id,
-      qr: data.totp.qr_code,
+      uri: data.totp.uri,
+      qr,
       secret: data.totp.secret,
     });
   }
