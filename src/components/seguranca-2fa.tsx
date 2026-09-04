@@ -8,6 +8,7 @@ import {
   Copy,
   X,
 } from "lucide-react";
+import QRCode from "qrcode";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,7 +23,16 @@ import {
 
 type FatorVerificado = { id: string };
 
-type Enroll = { id: string; qr: string; secret: string };
+type Enroll = { id: string; uri: string; secret: string; qr: string };
+
+async function limparFatoresNaoVerificados() {
+  const { data: lista } = await supabase.auth.mfa.listFactors();
+  for (const f of lista?.all ?? []) {
+    if (f.factor_type === "totp" && f.status !== "verified") {
+      await supabase.auth.mfa.unenroll({ factorId: f.id });
+    }
+  }
+}
 
 export function Seguranca2FA() {
   const [carregando, setCarregando] = useState(true);
@@ -48,28 +58,45 @@ export function Seguranca2FA() {
     void carregarStatus();
   }, [carregarStatus]);
 
+  // Ao sair da tela, descarta qualquer configuração pendente não confirmada.
+  useEffect(() => {
+    return () => {
+      void limparFatoresNaoVerificados();
+    };
+  }, []);
+
   async function iniciarAtivacao() {
     setOcupado(true);
-    // Remove fatores TOTP não verificados de tentativas anteriores.
-    const { data: lista } = await supabase.auth.mfa.listFactors();
-    for (const f of lista?.all ?? []) {
-      if (f.factor_type === "totp" && f.status !== "verified") {
-        await supabase.auth.mfa.unenroll({ factorId: f.id });
-      }
-    }
+    // Descarta segredos de tentativas anteriores não concluídas.
+    await limparFatoresNaoVerificados();
     const { data, error } = await supabase.auth.mfa.enroll({
       factorType: "totp",
+      issuer: "Finanças Pessoais",
       friendlyName: `Finanças Pessoais ${Date.now()}`,
     });
-    setOcupado(false);
     if (error || !data) {
+      setOcupado(false);
       toast.error(error?.message ?? "Não foi possível iniciar a ativação.");
       return;
     }
+    // Gera o QR localmente a partir do URI otpauth:// oficial do backend,
+    // garantindo que QR e chave manual usem exatamente o mesmo segredo.
+    let qr = "";
+    try {
+      qr = await QRCode.toDataURL(data.totp.uri, {
+        margin: 1,
+        width: 320,
+        errorCorrectionLevel: "M",
+      });
+    } catch {
+      toast.error("Não foi possível gerar o QR Code. Use a chave manual.");
+    }
+    setOcupado(false);
     setCodigo("");
     setEnroll({
       id: data.id,
-      qr: data.totp.qr_code,
+      uri: data.totp.uri,
+      qr,
       secret: data.totp.secret,
     });
   }
@@ -168,11 +195,17 @@ export function Seguranca2FA() {
               de 6 dígitos gerado para concluir a ativação.
             </p>
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
-              <img
-                src={enroll.qr}
-                alt="QR Code para configurar o 2FA"
-                className="h-44 w-44 shrink-0 rounded-xl border border-border bg-white p-2"
-              />
+              {enroll.qr ? (
+                <img
+                  src={enroll.qr}
+                  alt="QR Code para configurar o 2FA"
+                  className="h-44 w-44 shrink-0 rounded-xl border border-border bg-white p-2"
+                />
+              ) : (
+                <div className="flex h-44 w-44 shrink-0 items-center justify-center rounded-xl border border-border bg-muted p-3 text-center text-xs text-muted-foreground">
+                  QR Code indisponível. Use a chave manual abaixo.
+                </div>
+              )}
               <div className="min-w-0 flex-1 space-y-2">
                 <Label className="text-xs uppercase tracking-wide text-muted-foreground">
                   Chave manual (guarde como backup)
