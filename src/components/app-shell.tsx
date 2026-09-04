@@ -11,6 +11,7 @@ import {
   LineChart,
   Menu,
   LogOut,
+  ShieldCheck,
   Wallet,
   X,
 } from "lucide-react";
