@@ -74,6 +74,29 @@ function RelatoriosPage() {
   const [mes, setMes] = useState(() => mesInicialValido(mesAtual()));
   const meses = useMemo(() => mesesAte(mes, 6), [mes]);
 
+  const pizzaContainerRef = useRef<HTMLDivElement>(null);
+  const [cardWidth, setCardWidth] = useState(0);
+
+  useEffect(() => {
+    const el = pizzaContainerRef.current;
+    if (!el) return;
+    const update = () => setCardWidth(el.getBoundingClientRect().width);
+    update();
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) setCardWidth(entry.contentRect.width);
+    });
+    ro.observe(el);
+    window.addEventListener("resize", update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+
+  const isMobileLegend = cardWidth > 0 && cardWidth < 640;
+  const outerRadius = Math.min(Math.max((cardWidth || 300) / 2 - 32, 70), 110);
+  const innerRadius = Math.max(Math.round(outerRadius * 0.55), 40);
+
   const { data: categorias } = useSuspenseQuery(categoriasQuery);
   const { data: serie } = useSuspenseQuery(serieMensalQuery(meses));
   const { data: evolucao } = useSuspenseQuery(evolucaoSaldoQuery(meses));
