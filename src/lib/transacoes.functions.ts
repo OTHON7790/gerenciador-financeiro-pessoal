@@ -231,19 +231,31 @@ export const evolucaoSaldo = createServerFn({ method: "GET" })
       .order("data", { ascending: true });
     if (error) throw new Error(error.message);
 
-    let acumulado = 0;
-    const porMes = new Map<string, number>();
+    const primeiroMes = data.meses[0] ?? "";
+    // Saldo realizado por mês (receitas - despesas pagas), em centavos.
+    const deltaPorMes = new Map<string, number>();
+    let anterior = 0; // saldo realizado antes do período exibido
     for (const t of linhas ?? []) {
       if (t.tipo === "despesa" && t.status_pagamento !== "pago") continue;
-      acumulado += t.tipo === "receita" ? emCentavos(Number(t.valor)) : -emCentavos(Number(t.valor));
-      porMes.set(String(t.data).slice(0, 7), acumulado);
+      const valor =
+        t.tipo === "receita"
+          ? emCentavos(Number(t.valor))
+          : -emCentavos(Number(t.valor));
+      const mes = String(t.data).slice(0, 7);
+      if (mes < primeiroMes) {
+        anterior += valor;
+        continue;
+      }
+      deltaPorMes.set(mes, (deltaPorMes.get(mes) ?? 0) + valor);
     }
-    let ultimo: number | null = null;
+
+    let acumulado: number | null = anterior !== 0 ? anterior : null;
     return data.meses.map((m) => {
-      const valor = porMes.get(m);
-      if (valor !== undefined) ultimo = valor;
-      return { mes: m, saldo: ultimo === null ? null : ultimo / 100 };
+      const delta = deltaPorMes.get(m);
+      if (delta !== undefined) acumulado = (acumulado ?? 0) + delta;
+      return { mes: m, saldo: acumulado === null ? null : acumulado / 100 };
     });
+
   });
 
 export type ContaAPagar = {
