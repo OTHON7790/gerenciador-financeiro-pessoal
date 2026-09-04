@@ -39,47 +39,48 @@ const NAV = [
 const CORES_NAV = {
   azul: {
     icone: "text-primary",
-    ativo: "bg-primary/15 light:bg-primary/25 text-primary",
+    ativo: "bg-primary/20 dark:bg-primary/25 text-primary",
     barra: "bg-primary",
-    hover: "hover:bg-primary/10 light:hover:bg-primary/20",
+    hover: "hover:bg-primary/12 dark:hover:bg-primary/18",
   },
   verde: {
     icone: "text-success",
-    ativo: "bg-success/15 light:bg-success/25 text-success",
+    ativo: "bg-success/20 dark:bg-success/25 text-success",
     barra: "bg-success",
-    hover: "hover:bg-success/10 light:hover:bg-success/20",
+    hover: "hover:bg-success/12 dark:hover:bg-success/18",
   },
   roxo: {
     icone: "text-nav-purple",
-    ativo: "bg-nav-purple/15 light:bg-nav-purple/25 text-nav-purple",
+    ativo: "bg-nav-purple/20 dark:bg-nav-purple/25 text-nav-purple",
     barra: "bg-nav-purple",
-    hover: "hover:bg-nav-purple/10 light:hover:bg-nav-purple/20",
+    hover: "hover:bg-nav-purple/12 dark:hover:bg-nav-purple/18",
   },
   laranja: {
     icone: "text-warning",
-    ativo: "bg-warning/15 light:bg-warning/25 text-warning",
+    ativo: "bg-warning/20 dark:bg-warning/25 text-warning",
     barra: "bg-warning",
-    hover: "hover:bg-warning/10 light:hover:bg-warning/20",
+    hover: "hover:bg-warning/12 dark:hover:bg-warning/18",
   },
   rosa: {
     icone: "text-nav-pink",
-    ativo: "bg-nav-pink/15 light:bg-nav-pink/25 text-nav-pink",
+    ativo: "bg-nav-pink/20 dark:bg-nav-pink/25 text-nav-pink",
     barra: "bg-nav-pink",
-    hover: "hover:bg-nav-pink/10 light:hover:bg-nav-pink/20",
+    hover: "hover:bg-nav-pink/12 dark:hover:bg-nav-pink/18",
   },
   ciano: {
     icone: "text-nav-cyan",
-    ativo: "bg-nav-cyan/15 light:bg-nav-cyan/25 text-nav-cyan",
+    ativo: "bg-nav-cyan/20 dark:bg-nav-cyan/25 text-nav-cyan",
     barra: "bg-nav-cyan",
-    hover: "hover:bg-nav-cyan/10 light:hover:bg-nav-cyan/20",
+    hover: "hover:bg-nav-cyan/12 dark:hover:bg-nav-cyan/18",
   },
   amarelo: {
     icone: "text-nav-yellow",
-    ativo: "bg-nav-yellow/15 light:bg-nav-yellow/25 text-nav-yellow",
+    ativo: "bg-nav-yellow/20 dark:bg-nav-yellow/25 text-nav-yellow",
     barra: "bg-nav-yellow",
-    hover: "hover:bg-nav-yellow/10 light:hover:bg-nav-yellow/20",
+    hover: "hover:bg-nav-yellow/12 dark:hover:bg-nav-yellow/18",
   },
 } as const;
+
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const location = useLocation();
