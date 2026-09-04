@@ -188,11 +188,17 @@ export function Seguranca2FA() {
               de 6 dígitos gerado para concluir a ativação.
             </p>
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
-              <img
-                src={enroll.qr}
-                alt="QR Code para configurar o 2FA"
-                className="h-44 w-44 shrink-0 rounded-xl border border-border bg-white p-2"
-              />
+              {enroll.qr ? (
+                <img
+                  src={enroll.qr}
+                  alt="QR Code para configurar o 2FA"
+                  className="h-44 w-44 shrink-0 rounded-xl border border-border bg-white p-2"
+                />
+              ) : (
+                <div className="flex h-44 w-44 shrink-0 items-center justify-center rounded-xl border border-border bg-muted p-3 text-center text-xs text-muted-foreground">
+                  QR Code indisponível. Use a chave manual abaixo.
+                </div>
+              )}
               <div className="min-w-0 flex-1 space-y-2">
                 <Label className="text-xs uppercase tracking-wide text-muted-foreground">
                   Chave manual (guarde como backup)
