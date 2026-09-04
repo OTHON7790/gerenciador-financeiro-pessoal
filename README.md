@@ -1,40 +1,60 @@
-# Gerenciador Financeiro Pessoal    
+# Gerenciador Financeiro Pessoal
 
-Crie um aplicativo simples de lista de tarefas.
+Aplicação web desenvolvida para facilitar o controle das finanças pessoais, permitindo acompanhar receitas, despesas, orçamentos, metas e a evolução financeira de forma visual e organizada.
 
-O aplicativo deve ter:
+## Sobre o projeto
 
-- um título escrito "Minha Lista de Tarefas";
+O Gerenciador Financeiro Pessoal foi desenvolvido com foco em organização financeira, facilidade de uso e visualização clara das informações.
 
-- um campo para digitar uma nova tarefa;
+O sistema permite registrar movimentações financeiras, organizar despesas por categorias, definir limites de orçamento, acompanhar metas e analisar os dados por meio de dashboards, gráficos e relatórios.
 
-- um botão "Adicionar";
+O projeto possui interface responsiva, suporte aos modos claro e escuro e utiliza autenticação para proteger os dados de cada usuário.
 
-- uma lista mostrando as tarefas adicionadas;
+## Principais funcionalidades
 
-- um botão para marcar a tarefa como concluída;
+- Cadastro e autenticação de usuários
+- Registro de receitas e despesas
+- Organização das transações por categorias
+- Controle de contas pagas e não pagas
+- Transações recorrentes
+- Definição de limites de orçamento por categoria
+- Acompanhamento do orçamento utilizado e disponível
+- Criação e acompanhamento de metas financeiras
+- Dashboard com resumo financeiro
+- Gráficos para análise de receitas e despesas
+- Relatórios e filtros por período
+- Valores apresentados em Real (BRL)
+- Interface em português (PT-BR)
+- Tema claro e escuro
+- Layout responsivo para diferentes tamanhos de tela
 
-- um botão para excluir a tarefa.
+## Tecnologias utilizadas
 
-Use um visual simples, limpo e em português.
+- React
+- TypeScript
+- Supabase
+- Lovable
+- Git
+- GitHub
 
-This project was built with [Lovable](https://lovable.dev).
+## Banco de dados e autenticação
 
-## Build with Lovable
+O projeto utiliza o Supabase para persistência dos dados e autenticação dos usuários.
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/0c810119-8787-4955-aec3-0654ef642d22).
+As informações financeiras são associadas às respectivas contas, permitindo que cada usuário tenha acesso aos seus próprios dados.
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+## Objetivo
 
-## Development
+Este projeto foi desenvolvido como parte do meu portfólio de tecnologia, com o objetivo de aplicar conhecimentos de desenvolvimento web, banco de dados, autenticação, organização de dados, interface responsiva e controle de versão.
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+Além da implementação técnica, o projeto passou por diversas etapas de testes e melhorias de usabilidade, layout e visualização das informações.
 
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
-```
+## Status do projeto
+
+Em desenvolvimento e aprimoramento contínuo.
+
+## Autor
+
+**Othon Moraes**
+
+Estudante de Tecnologia com foco em Banco de Dados, Inteligência Artificial e Engenharia de Software.
