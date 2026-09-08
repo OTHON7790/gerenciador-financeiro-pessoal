@@ -746,3 +746,29 @@ function sanitizarDestino(raw?: string): string {
   }
   return "/dashboard";
 }
+
+const MENSAGEM_SEM_CONFIGURACAO =
+  "Este site está sem a configuração de servidor. Não é problema da sua senha — publique novamente ou use a versão de prévia.";
+
+/** Indica se as chaves de conexão foram embutidas nesta versão do site. */
+function configuracaoDisponivel(): boolean {
+  return Boolean(
+    import.meta.env["VITE_SUPABASE_URL"] &&
+      import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"],
+  );
+}
+
+/** Diferencia credenciais inválidas de falhas de rede/configuração. */
+function mensagemDeErroDeLogin(mensagem: string): string {
+  const m = mensagem.toLowerCase();
+  if (m.includes("invalid login credentials")) {
+    return "E-mail ou senha incorretos. Verifique e tente novamente.";
+  }
+  if (m.includes("email not confirmed")) {
+    return "Confirme seu e-mail antes de entrar.";
+  }
+  if (m.includes("failed to fetch") || m.includes("networkerror")) {
+    return "Não foi possível falar com o servidor. Verifique sua conexão e tente de novo.";
+  }
+  return `Não foi possível entrar: ${mensagem}`;
+}
