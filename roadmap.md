@@ -1,6 +1,8 @@
 # Roadmap
 
-- [ ] 1. Login publicado: variáveis vinculadas + mensagem distinta (credenciais x configuração ausente), preservando 2FA
-- [ ] 2. Tema claro/escuro: remover `dark` fixo da tela pública, usar tokens, aplicar tema salvo no carregamento
-- [ ] 3. Português: lang pt-BR, título/descrição, telas de erro/404, textos do login
-- [ ] 4. Validar build, login/2FA, tema e telas principais (sem publicar)
+- [x] Login: verificação de configuração + mensagens de erro distintas (auth-panel.tsx)
+- [x] Avisos (toasts) montados no app (__root.tsx)
+- [x] Tema claro/escuro na tela pública (auth-panel.tsx, styles.css)
+- [x] Português: lang pt-BR, título/descrição, 404/erro, textos do login
+- [x] Validação: typecheck + navegador (tema, mensagens, rotas)
+- [ ] Publicar (aguardando pedido do usuário)
