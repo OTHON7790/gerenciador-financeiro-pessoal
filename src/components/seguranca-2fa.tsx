@@ -9,7 +9,7 @@ import {
   X,
 } from "lucide-react";
 import QRCode from "qrcode";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

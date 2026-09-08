@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase-client";
 import { precisaSegundoFator } from "@/lib/mfa";
 import { AppShell } from "@/components/app-shell";
 import { useCategoriasSincronizadas } from "@/hooks/use-categorias-sincronizadas";

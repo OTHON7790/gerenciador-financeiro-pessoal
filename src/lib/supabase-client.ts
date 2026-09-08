@@ -9,8 +9,10 @@ const URL_PUBLICA_FALLBACK = "https://gcuyeebwclajhipcxxsx.supabase.co";
 const CHAVE_PUBLICAVEL_FALLBACK =
   "sb_publishable_5MbbL_2Bs0sTUnv3f0F5BQ_6sQEnZwp";
 
+// @ts-expect-error Acesso estático necessário para substituição pelo Vite.
 const URL_PUBLICA = import.meta.env.VITE_SUPABASE_URL || URL_PUBLICA_FALLBACK;
 const CHAVE_PUBLICAVEL =
+  // @ts-expect-error Acesso estático necessário para substituição pelo Vite.
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || CHAVE_PUBLICAVEL_FALLBACK;
 
 function criarFetchPublicavel(chave: string): typeof fetch {

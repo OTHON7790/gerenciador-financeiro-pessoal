@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase-client";
 
 /** Lê a reivindicação "aal" do token da sessão atual (aal1 / aal2 / null). */
 function lerAalDoToken(accessToken?: string | null): string | null {
