@@ -71,8 +71,8 @@ export function AuthScreen() {
       navigate({ to: sanitizarDestino(search.redirect), replace: true });
     } catch (erro) {
       toast.error(
-        erro instanceof Error && /Missing Supabase environment/i.test(erro.message)
-          ? MENSAGEM_SEM_CONFIGURACAO
+        erro instanceof Error && erro.message
+          ? mensagemDeErroDeLogin(erro.message)
           : "Não foi possível entrar agora. Tente novamente.",
       );
     } finally {
@@ -744,12 +744,6 @@ function sanitizarDestino(raw?: string): string {
   }
   return "/dashboard";
 }
-
-const MENSAGEM_SEM_CONFIGURACAO =
-  "Este site está sem a configuração de servidor. Não é problema da sua senha — publique novamente ou use a versão de prévia.";
-
-
-
 
 /** Diferencia credenciais inválidas de falhas de rede/configuração. */
 function mensagemDeErroDeLogin(mensagem: string): string {
