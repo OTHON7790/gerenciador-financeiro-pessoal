@@ -1,6 +1,9 @@
 # Gerenciador Financeiro Pessoal
 
 Aplicação web desenvolvida para facilitar o controle das finanças pessoais, permitindo acompanhar receitas, despesas, orçamentos, metas e a evolução financeira de forma visual e organizada.
+## 🌐 Acesse o projeto online
+
+🔗 https://gerenciador-financeiro-app.lovable.app
 
 ## Sobre o projeto
 
