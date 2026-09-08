@@ -48,27 +48,30 @@ export function AuthScreen() {
   async function entrar(e: React.FormEvent) {
     e.preventDefault();
     setCarregando("login");
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password: senha,
-    });
-    if (error) {
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password: senha,
+      });
+      if (error) {
+        toast.error("Credenciais inválidas. Verifique e tente novamente.");
+        return;
+      }
+      // 2FA opcional: só pede o segundo fator quando o usuário ativou.
+      if (await precisaSegundoFator()) {
+        setCodigo2fa("");
+        setModo("2fa");
+        return;
+      }
+      toast.success("Bem-vindo de volta!");
+      navigate({ to: sanitizarDestino(search.redirect), replace: true });
+    } catch {
+      toast.error("Não foi possível entrar agora. Tente novamente.");
+    } finally {
       setCarregando(null);
-      toast.error("Credenciais inválidas. Verifique e tente novamente.");
-      return;
     }
-    // 2FA opcional: só pede o segundo fator quando o usuário ativou.
-    const { data: aal } =
-      await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-    setCarregando(null);
-    if (aal?.currentLevel === "aal1" && aal?.nextLevel === "aal2") {
-      setCodigo2fa("");
-      setModo("2fa");
-      return;
-    }
-    toast.success("Bem-vindo de volta!");
-    navigate({ to: sanitizarDestino(search.redirect), replace: true });
   }
+
 
   async function verificar2fa(e: React.FormEvent) {
     e.preventDefault();
