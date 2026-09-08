@@ -49,6 +49,10 @@ export function AuthScreen() {
 
   async function entrar(e: React.FormEvent) {
     e.preventDefault();
+    if (!configuracaoDisponivel()) {
+      toast.error(MENSAGEM_SEM_CONFIGURACAO);
+      return;
+    }
     setCarregando("login");
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -56,7 +60,7 @@ export function AuthScreen() {
         password: senha,
       });
       if (error) {
-        toast.error("Credenciais inválidas. Verifique e tente novamente.");
+        toast.error(mensagemDeErroDeLogin(error.message));
         return;
       }
       // 2FA opcional: só pede o segundo fator quando o usuário ativou.
@@ -67,8 +71,12 @@ export function AuthScreen() {
       }
       toast.success("Que bom te ver de novo!");
       navigate({ to: sanitizarDestino(search.redirect), replace: true });
-    } catch {
-      toast.error("Não foi possível entrar agora. Tente novamente.");
+    } catch (erro) {
+      toast.error(
+        erro instanceof Error && /Missing Supabase environment/i.test(erro.message)
+          ? MENSAGEM_SEM_CONFIGURACAO
+          : "Não foi possível entrar agora. Tente novamente.",
+      );
     } finally {
       setCarregando(null);
     }
