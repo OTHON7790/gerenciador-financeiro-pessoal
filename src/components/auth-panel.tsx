@@ -49,10 +49,8 @@ export function AuthScreen() {
 
   async function entrar(e: React.FormEvent) {
     e.preventDefault();
-    if (!configuracaoDisponivel()) {
-      toast.error(MENSAGEM_SEM_CONFIGURACAO);
-      return;
-    }
+    // Sem pré-checagem de variáveis: o próprio cliente informa se falta configuração.
+
     setCarregando("login");
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -750,13 +748,8 @@ function sanitizarDestino(raw?: string): string {
 const MENSAGEM_SEM_CONFIGURACAO =
   "Este site está sem a configuração de servidor. Não é problema da sua senha — publique novamente ou use a versão de prévia.";
 
-/** Indica se as chaves de conexão foram embutidas nesta versão do site. */
-function configuracaoDisponivel(): boolean {
-  return Boolean(
-    import.meta.env["VITE_SUPABASE_URL"] &&
-      import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"],
-  );
-}
+
+
 
 /** Diferencia credenciais inválidas de falhas de rede/configuração. */
 function mensagemDeErroDeLogin(mensagem: string): string {
