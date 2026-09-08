@@ -13,6 +13,7 @@ O projeto possui interface responsiva, suporte aos modos claro e escuro e utiliz
 ## Principais funcionalidades
 
 - Cadastro e autenticação de usuários
+- Autenticação em dois fatores (2FA) para maior segurança
 - Registro de receitas e despesas
 - Organização das transações por categorias
 - Controle de contas pagas e não pagas
