@@ -65,7 +65,7 @@ export function AuthScreen() {
         setModo("2fa");
         return;
       }
-      toast.success("Bem-vindo de volta!");
+      toast.success("Que bom te ver de novo!");
       navigate({ to: sanitizarDestino(search.redirect), replace: true });
     } catch {
       toast.error("Não foi possível entrar agora. Tente novamente.");
@@ -94,7 +94,7 @@ export function AuthScreen() {
       toast.error("Código inválido. Tente novamente.");
       return;
     }
-    toast.success("Bem-vindo de volta!");
+    toast.success("Que bom te ver de novo!");
     navigate({ to: sanitizarDestino(search.redirect), replace: true });
   }
 
@@ -126,7 +126,7 @@ export function AuthScreen() {
   }
 
   return (
-    <div className="dark min-h-screen overflow-x-hidden bg-[#05070d] text-foreground">
+    <div className="min-h-screen overflow-x-hidden bg-background text-foreground">
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(55rem_32rem_at_10%_0%,color-mix(in_oklab,var(--primary)_12%,transparent),transparent),radial-gradient(45rem_28rem_at_95%_100%,color-mix(in_oklab,var(--glow-cyan)_8%,transparent),transparent)]"
@@ -149,7 +149,7 @@ export function AuthScreen() {
         {/* Painéis */}
         <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           {/* Painel direito no desktop (autenticação) — primeiro no mobile */}
-          <section className="order-1 rounded-2xl border border-border/60 bg-[#080b13] p-5 shadow-2xl shadow-primary/5 sm:p-8 lg:order-2">
+          <section className="order-1 rounded-2xl border border-border/60 bg-card p-5 shadow-2xl shadow-primary/5 sm:p-8 lg:order-2">
             {modo === "2fa" ? (
               <>
                 <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-primary/30 bg-primary/10">
@@ -266,14 +266,14 @@ export function AuthScreen() {
                           checked={lembrar}
                           onCheckedChange={(v) => setLembrar(v === true)}
                         />
-                        Lembrar de mim
+                        Lembrar-me
                       </label>
                       <button
                         type="button"
                         onClick={() => setModo("recuperar")}
                         className="text-sm font-semibold text-primary transition-colors hover:text-glow-cyan hover:underline"
                       >
-                        Esqueci minha senha?
+                        Esqueceu sua senha?
                       </button>
                     </div>
                     <Button
@@ -340,7 +340,7 @@ export function AuthScreen() {
           </section>
 
           {/* Painel esquerdo (apresentação) */}
-          <section className="order-2 rounded-2xl border border-border/60 bg-[#080b13] p-5 sm:p-8 lg:order-1">
+          <section className="order-2 rounded-2xl border border-border/60 bg-card p-5 sm:p-8 lg:order-1">
             <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl">
               Seu dinheiro.
               <br />
@@ -384,23 +384,23 @@ export function AuthScreen() {
         </div>
 
         {/* Faixa inferior */}
-        <div className="mt-5 grid gap-5 rounded-2xl border border-border/60 bg-[#080b13] p-5 sm:p-6 md:grid-cols-3">
+        <div className="mt-5 grid gap-5 rounded-2xl border border-border/60 bg-card p-5 sm:p-6 md:grid-cols-3">
           <ItemFaixa
             icone={<ShieldCheck className="h-6 w-6 text-success" />}
             cor="border-success/30 bg-success/10"
             titulo="Privacidade em primeiro lugar"
-            texto="Seus dados são seus e não são exibidos antes da autenticação."
+            texto="Seus dados são seus e só aparecem depois que você entra."
           />
           <ItemFaixa
             icone={<LockKeyhole className="h-6 w-6 text-primary" />}
             cor="border-primary/30 bg-primary/10"
             titulo="Acesso protegido"
-            texto="Suas informações ficam disponíveis somente após autenticação."
+            texto="Suas informações ficam disponíveis somente após a autenticação."
           />
           <ItemFaixa
             icone={<Clock className="h-6 w-6 text-nav-purple" />}
             cor="border-nav-purple/30 bg-nav-purple/10"
-            titulo="Disponível sempre"
+            titulo="Sempre disponível"
             texto="Acesse suas finanças de onde estiver."
           />
         </div>
@@ -408,7 +408,7 @@ export function AuthScreen() {
         <footer className="mt-5 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
           <span>© 2026 Finanças Pessoais.</span>
           <span className="flex items-center gap-1.5">
-            Feito com clareza e propósito
+            Feito com clareza e cuidado
             <Heart className="h-3.5 w-3.5 text-success" />
           </span>
         </footer>
@@ -521,7 +521,7 @@ function GraficoDecorativo() {
   return (
     <div
       aria-hidden
-      className="relative mt-6 overflow-hidden rounded-xl border border-border/50 bg-[#060910]"
+      className="relative mt-6 overflow-hidden rounded-xl border border-border/50 bg-muted/40"
     >
       <div className="absolute inset-0 bg-[linear-gradient(to_right,color-mix(in_oklab,var(--primary)_9%,transparent)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_oklab,var(--primary)_9%,transparent)_1px,transparent_1px)] bg-[size:28px_28px]" />
       <div className="absolute inset-x-0 bottom-0 h-2/3 bg-[radial-gradient(20rem_10rem_at_70%_100%,color-mix(in_oklab,var(--success)_16%,transparent),transparent)]" />
@@ -567,7 +567,7 @@ function GraficoDecorativo() {
           ))}
         </svg>
 
-        <div className="absolute bottom-4 right-4 max-w-[16rem] rounded-xl border border-border/60 bg-[#080b13]/90 p-3 backdrop-blur-sm">
+        <div className="absolute bottom-4 right-4 max-w-[16rem] rounded-xl border border-border/60 bg-card/90 p-3 backdrop-blur-sm">
           <div className="flex items-start gap-2.5">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-primary/30 bg-primary/10">
               <LockKeyhole className="h-4.5 w-4.5 text-primary" />
@@ -608,7 +608,7 @@ function CampoEmail({
           onChange={(e) => setEmail(e.target.value)}
           placeholder="seu@email.com"
           required
-          className="h-14 rounded-xl border border-border/80 bg-[#05070d] pl-12 text-base text-foreground placeholder:text-muted-foreground/70 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/40"
+          className="h-14 rounded-xl border border-border/80 bg-background pl-12 text-base text-foreground placeholder:text-muted-foreground/70 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/40"
         />
       </div>
     </div>
@@ -638,7 +638,7 @@ function CampoSenha({
           placeholder="Digite sua senha"
           required
           minLength={6}
-          className="h-14 rounded-xl border border-border/80 bg-[#05070d] pl-12 pr-12 text-base text-foreground placeholder:text-muted-foreground/70 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/40"
+          className="h-14 rounded-xl border border-border/80 bg-background pl-12 pr-12 text-base text-foreground placeholder:text-muted-foreground/70 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/40"
         />
         <button
           type="button"
