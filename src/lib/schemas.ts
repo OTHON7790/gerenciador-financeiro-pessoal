@@ -47,13 +47,16 @@ export function statusTransacao(t: {
   tipo: TipoTransacao;
   status_pagamento?: StatusPagamento | null;
   data_vencimento?: string | null;
+  data?: string | null;
 }): StatusExibido {
   if (t.tipo !== "despesa") return "pago";
   const status = t.status_pagamento ?? "pago";
   if (status === "pago") return "pago";
-  if (t.data_vencimento && t.data_vencimento < hojeIso()) return "vencido";
+  const vencimento = t.data_vencimento ?? t.data ?? null;
+  if (vencimento && vencimento < hojeIso()) return "vencido";
   return "pendente";
 }
+
 
 export const ROTULO_STATUS: Record<StatusExibido, string> = {
   pago: "Pago",

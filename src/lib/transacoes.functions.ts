@@ -277,7 +277,7 @@ export const contasAPagar = createServerFn({ method: "GET" })
   .handler(async ({ data: filtro, context }) => {
     const { data, error } = await context.supabase
       .from("transacoes")
-      .select("id, descricao, valor, data_vencimento, tipo, status_pagamento")
+      .select("id, descricao, valor, data, data_vencimento, tipo, status_pagamento")
       .eq("tipo", "despesa")
       .eq("status_pagamento", "pendente")
       .gte("data", `${filtro.mes}-01`)
@@ -288,15 +288,35 @@ export const contasAPagar = createServerFn({ method: "GET" })
       id: t.id,
       descricao: t.descricao,
       valor: Number(t.valor),
-      data_vencimento: t.data_vencimento,
+      data_vencimento: t.data_vencimento ?? t.data,
       status: statusTransacao(t),
     }));
+
+    // Todas as pendências vencidas, de qualquer mês (acumulado em atraso).
+    const { data: todas, error: erroTodas } = await context.supabase
+      .from("transacoes")
+      .select("valor, data, data_vencimento, tipo, status_pagamento")
+      .eq("tipo", "despesa")
+      .eq("status_pagamento", "pendente");
+    if (erroTodas) throw new Error(erroTodas.message);
+    let atrasadoAcumulado = 0;
+    let desde: string | null = null;
+    for (const t of todas ?? []) {
+      if (statusTransacao(t) !== "vencido") continue;
+      atrasadoAcumulado += emCentavos(Number(t.valor));
+      const ref = t.data_vencimento ?? t.data;
+      if (ref && (desde === null || ref < desde)) desde = ref;
+    }
+
     return {
       pendente: contas.filter((c) => c.status === "pendente").reduce((s, c) => s + c.valor, 0),
       vencido: contas.filter((c) => c.status === "vencido").reduce((s, c) => s + c.valor, 0),
+      atrasadoAcumulado: atrasadoAcumulado / 100,
+      desde,
       proximos: contas.filter((c) => c.status === "pendente").slice(0, 5),
     };
   });
+
 
 function hojeIso(): string {
   const d = new Date();
