@@ -664,7 +664,8 @@ function CardMetas() {
 
 function CardContasAPagar({ mes }: { mes: string }) {
   const { data } = useQuery({ ...contasAPagarQuery(mes), placeholderData: keepPreviousData });
-  if (!data || (data.pendente === 0 && data.vencido === 0)) return null;
+  if (!data || (data.pendente === 0 && data.vencido === 0 && data.atrasadoAcumulado === 0))
+    return null;
   return (
     <Card className="shadow-card">
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
@@ -676,16 +677,28 @@ function CardContasAPagar({ mes }: { mes: string }) {
         </Link>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <div className="rounded-lg border border-warning/30 bg-warning/10 p-3">
-            <p className="text-xs text-muted-foreground">Total pendente</p>
+            <p className="text-xs text-muted-foreground">Pendente no mês</p>
             <p className="text-lg font-bold text-warning">{formatarMoeda(data.pendente)}</p>
           </div>
           <div className="rounded-lg border border-danger/30 bg-danger/10 p-3">
-            <p className="text-xs text-muted-foreground">Total vencido</p>
+            <p className="text-xs text-muted-foreground">Vencido no mês</p>
             <p className="text-lg font-bold text-danger">{formatarMoeda(data.vencido)}</p>
           </div>
+          <div className="rounded-lg border border-danger/40 bg-danger/15 p-3">
+            <p className="text-xs text-muted-foreground">Total acumulado em atraso</p>
+            <p className="text-lg font-bold text-danger">
+              {formatarMoeda(data.atrasadoAcumulado)}
+            </p>
+            {data.desde && (
+              <p className="text-[11px] text-muted-foreground">
+                Desde {formatarData(data.desde)}
+              </p>
+            )}
+          </div>
         </div>
+
         {data.proximos.length > 0 && (
           <div className="space-y-1.5">
             <p className="text-xs font-medium text-muted-foreground">Próximos vencimentos</p>
